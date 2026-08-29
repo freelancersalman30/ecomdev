@@ -140,8 +140,8 @@
             @click="activeTab = 'tracking'" 
             :class="activeTab === 'tracking' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
-            <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i>
-            <span class="font-bold">8. Google & Pixel Setup</span>
+            <i data-lucide="crosshair" class="w-4 h-4 text-sky-400"></i>
+            <span class="font-bold">8. Ad Setup & Connect (Google, Facebook, Etc)</span>
         </button>
 
         <button 
@@ -914,90 +914,89 @@
         </div>
 
         <!-- ========================================================= -->
-        <!-- TAB 8: GOOGLE & PIXEL TRACKING SETUP                      -->
+        <!-- TAB 8: AD SETUP & CONNECT (GOOGLE, FACEBOOK, ETC)         -->
         <!-- ========================================================= -->
         <div x-show="activeTab === 'tracking'" x-cloak class="space-y-6">
             
-            <!-- Google Services Suite -->
-            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+            <!-- Live Catalog Feeds for Facebook & Google Ads -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 border border-slate-800 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i data-lucide="globe" class="w-4 h-4 text-sky-500"></i>
-                            <span>Google Services Integration (Analytics, GTM & Webmaster)</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">Dynamic Product Catalog Feeds</span>
+                        <h3 class="text-base font-extrabold text-white flex items-center gap-2 mt-0.5">
+                            <i data-lucide="rss" class="w-5 h-5 text-emerald-400"></i>
+                            <span>Facebook Catalog & Google Merchant Center Live Sync</span>
                         </h3>
-                        <p class="text-xs text-slate-500">Connect Google Analytics 4, Tag Manager, and Search Console site verification.</p>
+                        <p class="text-xs text-slate-400 mt-1">Copy these automated XML feed URLs into Facebook Commerce Manager and Google Merchant Center to run dynamic retargeting ads and Google Shopping campaigns.</p>
                     </div>
-                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">Google Ecosystem</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono font-bold self-start">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Auto-Sync Active</span>
+                    </span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    
-                    <!-- 1. Google Analytics 4 -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                    <!-- Facebook Feed Card -->
+                    <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-3">
                         <div class="flex items-center justify-between">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="google_analytics_enabled" value="1" {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
-                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Analytics 4 (GA4)</span>
-                            </label>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
-                                {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            <span class="text-xs font-bold text-sky-400 flex items-center gap-1.5">
+                                <i data-lucide="facebook" class="w-4 h-4"></i>
+                                <span>Meta / Facebook & Instagram Catalog Feed</span>
                             </span>
+                            <a href="{{ route('feed.facebook') }}" target="_blank" class="text-[11px] font-bold text-slate-300 hover:text-white hover:underline flex items-center gap-1">
+                                <span>View XML</span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
                         </div>
-                        <p class="text-[11px] text-slate-500">Tracks visitor traffic, product pageviews, search queries, and conversions.</p>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">GA4 Measurement ID</label>
-                            <input type="text" name="google_analytics_id" value="{{ $settings['google_analytics_id'] ?? '' }}" placeholder="G-XXXXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-sky-500">
+                        <div class="flex items-center gap-2">
+                            <input type="text" readonly value="{{ route('feed.facebook') }}" id="fbFeedInput" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-[11px] font-mono text-emerald-300 select-all outline-none">
+                            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('fbFeedInput').value); alert('Facebook Catalog Feed URL copied to clipboard!');" class="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shrink-0 transition flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
                         </div>
+                        <p class="text-[10px] text-slate-400">Paste in <strong>Meta Business Suite &rarr; Commerce &rarr; Data Sources &rarr; Data Feed URL</strong>.</p>
                     </div>
 
-                    <!-- 2. Google Tag Manager -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                    <!-- Google Merchant Feed Card -->
+                    <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-3">
                         <div class="flex items-center justify-between">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="google_tag_manager_enabled" value="1" {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
-                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Tag Manager (GTM)</span>
-                            </label>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
-                                {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                <span>Google Merchant Center Shopping Feed</span>
                             </span>
+                            <a href="{{ route('feed.google') }}" target="_blank" class="text-[11px] font-bold text-slate-300 hover:text-white hover:underline flex items-center gap-1">
+                                <span>View XML</span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
                         </div>
-                        <p class="text-[11px] text-slate-500">Automatically injects the head container and body noscript fallback tag.</p>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">GTM Container ID</label>
-                            <input type="text" name="google_tag_manager_id" value="{{ $settings['google_tag_manager_id'] ?? '' }}" placeholder="GTM-XXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-sky-500">
+                        <div class="flex items-center gap-2">
+                            <input type="text" readonly value="{{ route('feed.google') }}" id="googleFeedInput" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-[11px] font-mono text-emerald-300 select-all outline-none">
+                            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('googleFeedInput').value); alert('Google Merchant Shopping Feed URL copied to clipboard!');" class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shrink-0 transition flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
                         </div>
+                        <p class="text-[10px] text-slate-400">Paste in <strong>Google Merchant Center &rarr; Products &rarr; Feeds &rarr; Scheduled Fetch URL</strong>.</p>
                     </div>
-
-                    <!-- 3. Google Search Console Verification -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3 md:col-span-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Search Console Verification Token</span>
-                            <span class="text-[10px] text-slate-400 font-mono">HTML Meta Tag Verification</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500">Paste only the verification string or code provided by Google Search Console Webmaster Tools.</p>
-                        <input type="text" name="google_site_verification" value="{{ $settings['google_site_verification'] ?? '' }}" placeholder="e.g. 4vX_randomStringToken_abcdef12345" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-sky-500">
-                    </div>
-
                 </div>
             </div>
 
-            <!-- Social Pixel Tracking Suite (Meta / Facebook & TikTok) -->
+            <!-- Facebook & Meta Marketing Suite -->
             <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i data-lucide="crosshair" class="w-4 h-4 text-emerald-500"></i>
-                            <span>Advertising Pixel Tracking (Meta / Facebook & TikTok)</span>
+                            <i data-lucide="facebook" class="w-4 h-4 text-blue-600"></i>
+                            <span>Facebook / Meta Ads Setup & Domain Verification</span>
                         </h3>
-                        <p class="text-xs text-slate-500">Track standard e-commerce events: PageView, AddToCart, and Purchases for targeted ad campaigns.</p>
+                        <p class="text-xs text-slate-500">Connect Facebook Pixel, Meta Conversions API (CAPI), and verify your custom domain.</p>
                     </div>
-                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Ad Retargeting</span>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">Meta Marketing</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    
-                    <!-- 1. Meta / Facebook Pixel -->
+                    <!-- Meta Pixel ID -->
                     <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center gap-2 cursor-pointer">
@@ -1008,14 +1007,188 @@
                                 {{ ($settings['facebook_pixel_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
                             </span>
                         </div>
-                        <p class="text-[11px] text-slate-500">Enables standard Meta Pixel base code and triggers automatic PageView events.</p>
+                        <p class="text-[11px] text-slate-500">Automatically tracks PageView, AddToCart, and Purchase conversions.</p>
                         <div>
                             <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Meta Pixel ID (15-16 digits)</label>
-                            <input type="text" name="facebook_pixel_id" value="{{ $settings['facebook_pixel_id'] ?? '' }}" placeholder="e.g. 1234567890123456" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <input type="text" name="facebook_pixel_id" value="{{ $settings['facebook_pixel_id'] ?? '' }}" placeholder="e.g. 1234567890123456" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
-                    <!-- 2. TikTok Pixel -->
+                    <!-- Facebook Domain Verification -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Facebook Domain Verification</span>
+                            <span class="text-[10px] font-mono text-slate-400">Meta Business Manager</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Required by Apple iOS 14.5+ App Tracking Transparency to verify domain ownership.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Verification Meta Content String</label>
+                            <input type="text" name="facebook_domain_verification" value="{{ $settings['facebook_domain_verification'] ?? '' }}" placeholder="e.g. 1234567890abcdefghijklmnopqrstuv" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Meta Conversions API (CAPI) Token -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="facebook_capi_enabled" value="1" {{ ($settings['facebook_capi_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Conversions API (CAPI Server Token)</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['facebook_capi_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['facebook_capi_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Bypasses ad-blockers and iOS privacy restrictions with server-to-server tracking.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Meta CAPI Access Token</label>
+                            <input type="password" name="facebook_conversions_api_token" value="{{ $settings['facebook_conversions_api_token'] ?? '' }}" placeholder="e.g. EAABwz..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Facebook Ad Account ID / App ID -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Facebook Ad Account & App ID</span>
+                            <span class="text-[10px] font-mono text-slate-400">Meta Marketing API</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Used for campaign reporting and social login app linking.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Ad Account ID / Meta App ID</label>
+                            <input type="text" name="facebook_ad_account_id" value="{{ $settings['facebook_ad_account_id'] ?? '' }}" placeholder="act_1234567890 or App ID" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Ads & Marketing Suite -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="target" class="w-4 h-4 text-amber-500"></i>
+                            <span>Google Ads & Conversion Tracking Setup</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Track Google Search, Display, and Shopping campaign purchase conversions.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">Google Ads</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Google Ads Conversion ID -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="google_ads_enabled" value="1" {{ ($settings['google_ads_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Ads Conversion Tag</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_ads_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['google_ads_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Injects Google Ads global site tag and tracks sales conversions.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Google Ads Conversion ID</label>
+                            <input type="text" name="google_ads_id" value="{{ $settings['google_ads_id'] ?? '' }}" placeholder="AW-XXXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Google Ads Purchase Conversion Label -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Purchase Conversion Label</span>
+                            <span class="text-[10px] font-mono text-slate-400">Order Success Trigger</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Sent on successful order placement alongside the invoice grand total.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Conversion Label Code</label>
+                            <input type="text" name="google_ads_purchase_label" value="{{ $settings['google_ads_purchase_label'] ?? '' }}" placeholder="e.g. AB12CD34EF56GH78" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Google Analytics 4 (GA4) -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="google_analytics_enabled" value="1" {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Analytics 4 (GA4)</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Tracks visitor demographics, traffic sources, and behavioral engagement.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">GA4 Measurement ID</label>
+                            <input type="text" name="google_analytics_id" value="{{ $settings['google_analytics_id'] ?? '' }}" placeholder="G-XXXXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Google Tag Manager (GTM) -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="google_tag_manager_enabled" value="1" {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Tag Manager (GTM)</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Dual injection: head container script and body noscript fallback.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">GTM Container ID</label>
+                            <input type="text" name="google_tag_manager_id" value="{{ $settings['google_tag_manager_id'] ?? '' }}" placeholder="GTM-XXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Google AdSense Auto Ads -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="google_adsense_enabled" value="1" {{ ($settings['google_adsense_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google AdSense Monetization</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_adsense_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['google_adsense_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Display automatic banner ads and monetize blog or product review visitors.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">AdSense Publisher ID</label>
+                            <input type="text" name="google_adsense_id" value="{{ $settings['google_adsense_id'] ?? '' }}" placeholder="ca-pub-1234567890123456" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Google Search Console Verification -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Search Console Verification Token</span>
+                            <span class="text-[10px] text-slate-400 font-mono">Google Webmaster</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Verification string or code provided by Google Search Console.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Verification String</label>
+                            <input type="text" name="google_site_verification" value="{{ $settings['google_site_verification'] ?? '' }}" placeholder="e.g. 4vX_randomStringToken_abcdef12345" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Ad Networks (TikTok, Bing/Microsoft Ads & Pexels) -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4 text-teal-500"></i>
+                            <span>Other Ad Networks & Media APIs (TikTok, Microsoft Bing & Pexels)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Expand reach across TikTok video campaigns, Bing Search Ads, and stock media.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400">Multi-Channel Ads</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- TikTok Pixel -->
                     <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center gap-2 cursor-pointer">
@@ -1026,36 +1199,46 @@
                                 {{ ($settings['tiktok_pixel_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
                             </span>
                         </div>
-                        <p class="text-[11px] text-slate-500">Tracks high-converting TikTok video ad traffic and hardware buyer conversions.</p>
+                        <p class="text-[11px] text-slate-500">Track viral TikTok hardware video ad buyers.</p>
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">TikTok Pixel Code / ID</label>
-                            <input type="text" name="tiktok_pixel_id" value="{{ $settings['tiktok_pixel_id'] ?? '' }}" placeholder="e.g. C1234567890ABCDEF" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">TikTok Pixel Code</label>
+                            <input type="text" name="tiktok_pixel_id" value="{{ $settings['tiktok_pixel_id'] ?? '' }}" placeholder="e.g. C1234567890ABCDEF" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-teal-500">
                         </div>
                     </div>
 
-                </div>
-            </div>
-
-            <!-- Pexels Free Stock Photo API -->
-            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i data-lucide="camera" class="w-4 h-4 text-teal-500"></i>
-                            <span>Pexels Stock Photography & Media API</span>
-                        </h3>
-                        <p class="text-xs text-slate-500">Integrate royalty-free high-resolution photography for banners and catalog imagery.</p>
+                    <!-- Microsoft / Bing Ads -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="bing_ads_enabled" value="1" {{ ($settings['bing_ads_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Microsoft / Bing Ads</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['bing_ads_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['bing_ads_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Bing Universal Event Tracking (UET).</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Bing Tag ID (UET)</label>
+                            <input type="text" name="bing_ads_id" value="{{ $settings['bing_ads_id'] ?? '' }}" placeholder="e.g. 12345678" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-teal-500">
+                        </div>
                     </div>
-                    <a href="https://www.pexels.com/api/" target="_blank" class="text-[10px] font-bold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1">
-                        <span>Get Free Pexels Key</span>
-                        <i data-lucide="external-link" class="w-3 h-3"></i>
-                    </a>
-                </div>
 
-                <div class="space-y-2">
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Pexels Authorization API Key</label>
-                    <input type="password" name="pexels_api_key" value="{{ $settings['pexels_api_key'] ?? '' }}" placeholder="e.g. 563492ad6f91700001000001..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-teal-500">
-                    <p class="text-[11px] text-slate-400">Used by media tools to search and fetch license-free electronics, robotics, and hardware imagery.</p>
+                    <!-- Pexels Stock Photo API -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Pexels Free Stock Media</span>
+                            <a href="https://www.pexels.com/api/" target="_blank" class="text-[10px] font-bold text-teal-600 hover:underline flex items-center gap-1">
+                                <span>Get Key</span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Royalty-free photos for banners and ads.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Pexels API Key</label>
+                            <input type="password" name="pexels_api_key" value="{{ $settings['pexels_api_key'] ?? '' }}" placeholder="e.g. 563492ad..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-teal-500">
+                        </div>
+                    </div>
                 </div>
             </div>
 

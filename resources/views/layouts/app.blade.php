@@ -94,6 +94,11 @@
     </style>
     @stack('styles')
 
+    <!-- Facebook Domain Verification -->
+    @if(\App\Models\Setting::get('facebook_domain_verification'))
+    <meta name="facebook-domain-verification" content="{{ \App\Models\Setting::get('facebook_domain_verification') }}" />
+    @endif
+
     <!-- Google Search Console Verification -->
     @if(\App\Models\Setting::get('google_site_verification'))
     <meta name="google-site-verification" content="{{ \App\Models\Setting::get('google_site_verification') }}">
@@ -117,6 +122,22 @@
       gtag('js', new Date());
       gtag('config', '{{ \App\Models\Setting::get("google_analytics_id") }}');
     </script>
+    @endif
+
+    <!-- Google Ads Conversion Tag (gtag.js) -->
+    @if(\App\Models\Setting::get('google_ads_enabled', '0') === '1' && \App\Models\Setting::get('google_ads_id'))
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ \App\Models\Setting::get('google_ads_id') }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ \App\Models\Setting::get("google_ads_id") }}');
+    </script>
+    @endif
+
+    <!-- Google AdSense Auto Ads -->
+    @if(\App\Models\Setting::get('google_adsense_enabled', '0') === '1' && \App\Models\Setting::get('google_adsense_id'))
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ \App\Models\Setting::get('google_adsense_id') }}" crossorigin="anonymous"></script>
     @endif
 
     <!-- Meta / Facebook Pixel -->
@@ -146,6 +167,13 @@
       ttq.load('{{ \App\Models\Setting::get("tiktok_pixel_id") }}');
       ttq.page();
     }(window, document, 'ttq');
+    </script>
+    @endif
+
+    <!-- Microsoft / Bing Ads UET Tag -->
+    @if(\App\Models\Setting::get('bing_ads_enabled', '0') === '1' && \App\Models\Setting::get('bing_ads_id'))
+    <script>
+    (function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"{{ \App\Models\Setting::get('bing_ads_id') }}"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");
     </script>
     @endif
 

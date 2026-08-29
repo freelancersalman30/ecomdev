@@ -62,6 +62,12 @@ Route::get('/order-success/{order_no}', [CheckoutController::class, 'success'])-
 // Order Live Tracker
 Route::get('/track-order', [FrontendController::class, 'trackOrder'])->name('order.track');
 
+use App\Http\Controllers\Frontend\ProductFeedController;
+
+// Automated Ad & Shopping Product Feeds (Facebook Catalog & Google Merchant)
+Route::get('/feeds/facebook-catalog.xml', [ProductFeedController::class, 'facebookCatalog'])->name('feed.facebook');
+Route::get('/feeds/google-merchant.xml', [ProductFeedController::class, 'googleMerchant'])->name('feed.google');
+
 use App\Http\Controllers\Customer\Auth\CustomerAuthController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 

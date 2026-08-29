@@ -202,4 +202,59 @@ class SiteSettingsTest extends TestCase
         $storefront->assertSee('987654321012345');
         $storefront->assertSee('CTIKTOKTEST888');
     }
+
+    /**
+     * Test admin can configure Google Ads, Facebook Ads, Bing Ads, and access live XML product feeds.
+     */
+    public function test_admin_can_configure_ad_networks_and_access_catalog_feeds(): void
+    {
+        $response = $this->actingAs($this->admin, 'web')->put('/admin/settings/general', [
+            'facebook_domain_verification' => 'fb-domain-token-999',
+            'facebook_capi_enabled' => '1',
+            'facebook_conversions_api_token' => 'EAAtest_token_capi',
+            'facebook_ad_account_id' => 'act_987654321',
+            'google_ads_enabled' => '1',
+            'google_ads_id' => 'AW-987654321',
+            'google_ads_purchase_label' => 'LABEL_PURCHASE_123',
+            'google_adsense_enabled' => '1',
+            'google_adsense_id' => 'ca-pub-1234567890123456',
+            'bing_ads_enabled' => '1',
+            'bing_ads_id' => '88889999',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals('fb-domain-token-999', Setting::get('facebook_domain_verification'));
+        $this->assertEquals('1', Setting::get('facebook_capi_enabled'));
+        $this->assertEquals('EAAtest_token_capi', Setting::get('facebook_conversions_api_token'));
+        $this->assertEquals('act_987654321', Setting::get('facebook_ad_account_id'));
+        $this->assertEquals('1', Setting::get('google_ads_enabled'));
+        $this->assertEquals('AW-987654321', Setting::get('google_ads_id'));
+        $this->assertEquals('LABEL_PURCHASE_123', Setting::get('google_ads_purchase_label'));
+        $this->assertEquals('1', Setting::get('google_adsense_enabled'));
+        $this->assertEquals('ca-pub-1234567890123456', Setting::get('google_adsense_id'));
+        $this->assertEquals('1', Setting::get('bing_ads_enabled'));
+        $this->assertEquals('88889999', Setting::get('bing_ads_id'));
+
+        // Verify storefront renders Google Ads, AdSense, Facebook verification, and Bing UET
+        $storefront = $this->get('/');
+        $storefront->assertStatus(200);
+        $storefront->assertSee('fb-domain-token-999');
+        $storefront->assertSee('AW-987654321');
+        $storefront->assertSee('ca-pub-1234567890123456');
+        $storefront->assertSee('88889999');
+
+        // Verify Facebook Catalog XML Feed
+        $fbFeed = $this->get('/feeds/facebook-catalog.xml');
+        $fbFeed->assertStatus(200);
+        $fbFeed->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+        $fbFeed->assertSee('Meta Product Catalog', false);
+
+        // Verify Google Merchant XML Feed
+        $googleFeed = $this->get('/feeds/google-merchant.xml');
+        $googleFeed->assertStatus(200);
+        $googleFeed->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+        $googleFeed->assertSee('<channel>', false);
+    }
 }

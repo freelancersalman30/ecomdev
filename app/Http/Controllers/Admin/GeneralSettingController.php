@@ -70,6 +70,10 @@ class GeneralSettingController extends Controller
             'google_tag_manager_enabled',
             'facebook_pixel_enabled',
             'tiktok_pixel_enabled',
+            'google_ads_enabled',
+            'google_adsense_enabled',
+            'bing_ads_enabled',
+            'facebook_capi_enabled',
         ];
 
         foreach ($toggleKeys as $toggleKey) {

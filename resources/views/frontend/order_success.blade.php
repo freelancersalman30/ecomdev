@@ -93,4 +93,40 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Meta / Facebook Pixel Purchase Event
+        if (typeof fbq === 'function') {
+            fbq('track', 'Purchase', {
+                value: {{ (float) $order->grand_total }},
+                currency: '{{ \App\Models\Setting::get("currency_code", "BDT") }}',
+                content_type: 'product',
+                num_items: {{ $order->items->sum('quantity') }}
+            });
+        }
+
+        // 2. Google Ads Purchase Conversion Event
+        @if(\App\Models\Setting::get('google_ads_enabled', '0') === '1' && \App\Models\Setting::get('google_ads_id') && \App\Models\Setting::get('google_ads_purchase_label'))
+        if (typeof gtag === 'function') {
+            gtag('event', 'conversion', {
+                'send_to': '{{ \App\Models\Setting::get("google_ads_id") }}/{{ \App\Models\Setting::get("google_ads_purchase_label") }}',
+                'value': {{ (float) $order->grand_total }},
+                'currency': '{{ \App\Models\Setting::get("currency_code", "BDT") }}',
+                'transaction_id': '{{ $order->order_no }}'
+            });
+        }
+        @endif
+
+        // 3. TikTok Pixel PlaceAnOrder / CompletePayment Event
+        if (typeof ttq === 'object') {
+            ttq.track('CompletePayment', {
+                value: {{ (float) $order->grand_total }},
+                currency: '{{ \App\Models\Setting::get("currency_code", "BDT") }}'
+            });
+        }
+    });
+</script>
+@endpush
 @endsection
