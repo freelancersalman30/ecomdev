@@ -13,20 +13,43 @@
     <link rel="icon" href="{{ asset(\App\Models\Setting::get('site_favicon')) }}">
     @endif
 
-    <!-- Google Fonts -->
+    <!-- Dynamic Google Fonts Loader -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     
     @php
+        $fontBody = \App\Models\Setting::get('theme_font_body', 'Plus Jakarta Sans');
+        $fontHeading = \App\Models\Setting::get('theme_font_heading', 'Outfit');
+        $fontMono = \App\Models\Setting::get('theme_font_mono', 'JetBrains Mono');
+        $fontSizeBase = \App\Models\Setting::get('theme_font_size_base', '16px');
+
         $primaryColor = \App\Models\Setting::get('theme_primary_color', '#f85606');
         $primaryHover = \App\Models\Setting::get('theme_primary_hover', '#d04300');
         $secondaryColor = \App\Models\Setting::get('theme_secondary_color', '#10b981');
+        $bodyBg = \App\Models\Setting::get('theme_body_bg', '#f8fafc');
+        $textColor = \App\Models\Setting::get('theme_text_color', '#1e293b');
+        $headingColor = \App\Models\Setting::get('theme_heading_color', '#0f172a');
+        $cardBg = \App\Models\Setting::get('theme_card_bg', '#ffffff');
+        $cardBorder = \App\Models\Setting::get('theme_card_border', '#e2e8f0');
+        $priceColor = \App\Models\Setting::get('theme_price_color', '#f85606');
+        $saleBadgeColor = \App\Models\Setting::get('theme_sale_badge_color', '#ef4444');
         $headerBg = \App\Models\Setting::get('theme_header_bg', '#0f172a');
         $announcementBg = \App\Models\Setting::get('theme_announcement_bg', '#0f172a');
         $announcementText = \App\Models\Setting::get('theme_announcement_text_color', '#fbbf24');
         $footerBg = \App\Models\Setting::get('theme_footer_bg', '#020617');
+        $footerText = \App\Models\Setting::get('theme_footer_text_color', '#94a3b8');
+
+        // Dynamically build Google Fonts URL
+        $fontList = array_unique([$fontBody, $fontHeading, $fontMono]);
+        $fontQueryParts = [];
+        foreach ($fontList as $f) {
+            $weights = ($f === $fontMono) ? ':wght@400;500;700' : ':wght@300;400;500;600;700;800;900';
+            $fontQueryParts[] = 'family=' . str_replace(' ', '+', $f) . $weights;
+        }
+        $googleFontsUrl = 'https://fonts.googleapis.com/css2?' . implode('&', $fontQueryParts) . '&display=swap';
     @endphp
+
+    <link href="{{ $googleFontsUrl }}" rel="stylesheet">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,8 +59,9 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
+                        sans: ['"{{ $fontBody }}"', 'sans-serif'],
+                        heading: ['"{{ $fontHeading }}"', 'sans-serif'],
+                        mono: ['"{{ $fontMono }}"', 'monospace']
                     },
                     colors: {
                         brand: {
@@ -68,15 +92,46 @@
 
     <style>
         :root {
+            --theme-font-body: '{{ $fontBody }}', sans-serif;
+            --theme-font-heading: '{{ $fontHeading }}', sans-serif;
+            --theme-font-mono: '{{ $fontMono }}', monospace;
+            --theme-font-size: {{ $fontSizeBase }};
             --theme-primary: {{ $primaryColor }};
             --theme-primary-hover: {{ $primaryHover }};
             --theme-secondary: {{ $secondaryColor }};
+            --theme-body-bg: {{ $bodyBg }};
+            --theme-text: {{ $textColor }};
+            --theme-heading: {{ $headingColor }};
+            --theme-card-bg: {{ $cardBg }};
+            --theme-card-border: {{ $cardBorder }};
+            --theme-price: {{ $priceColor }};
+            --theme-sale-badge: {{ $saleBadgeColor }};
             --theme-header-bg: {{ $headerBg }};
             --theme-announcement-bg: {{ $announcementBg }};
             --theme-announcement-text: {{ $announcementText }};
             --theme-footer-bg: {{ $footerBg }};
+            --theme-footer-text: {{ $footerText }};
         }
-        .code-font { font-family: 'JetBrains Mono', monospace; }
+
+        html {
+            font-size: var(--theme-font-size);
+        }
+
+        body {
+            font-family: var(--theme-font-body);
+            background-color: var(--theme-body-bg);
+            color: var(--theme-text);
+        }
+
+        h1, h2, h3, h4, h5, h6, .heading-font {
+            font-family: var(--theme-font-heading);
+            color: var(--theme-heading);
+        }
+
+        .code-font {
+            font-family: var(--theme-font-mono);
+        }
+
         [x-cloak] { display: none !important; }
         
         /* Daraz style scrollbar */

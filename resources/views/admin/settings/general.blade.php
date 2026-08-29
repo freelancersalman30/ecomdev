@@ -6,14 +6,26 @@
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6" x-data="{ 
     activeTab: 'branding',
+    fontBody: '{{ $settings['theme_font_body'] ?? 'Plus Jakarta Sans' }}',
+    fontHeading: '{{ $settings['theme_font_heading'] ?? 'Outfit' }}',
+    fontMono: '{{ $settings['theme_font_mono'] ?? 'JetBrains Mono' }}',
+    fontSizeBase: '{{ $settings['theme_font_size_base'] ?? '16px' }}',
     primaryColor: '{{ $settings['theme_primary_color'] ?? '#f85606' }}',
     primaryHover: '{{ $settings['theme_primary_hover'] ?? '#d04300' }}',
     secondaryColor: '{{ $settings['theme_secondary_color'] ?? '#10b981' }}',
+    bodyBg: '{{ $settings['theme_body_bg'] ?? '#f8fafc' }}',
+    textColor: '{{ $settings['theme_text_color'] ?? '#1e293b' }}',
+    headingColor: '{{ $settings['theme_heading_color'] ?? '#0f172a' }}',
+    cardBg: '{{ $settings['theme_card_bg'] ?? '#ffffff' }}',
+    cardBorder: '{{ $settings['theme_card_border'] ?? '#e2e8f0' }}',
+    priceColor: '{{ $settings['theme_price_color'] ?? '#f85606' }}',
+    saleBadgeColor: '{{ $settings['theme_sale_badge_color'] ?? '#ef4444' }}',
     headerBg: '{{ $settings['theme_header_bg'] ?? '#0f172a' }}',
     announcementBg: '{{ $settings['theme_announcement_bg'] ?? '#0f172a' }}',
     announcementText: '{{ $settings['theme_announcement_text_color'] ?? '#fbbf24' }}',
     footerBg: '{{ $settings['theme_footer_bg'] ?? '#020617' }}',
-    applyPreset(p, ph, s, h, a, at, f) {
+    footerText: '{{ $settings['theme_footer_text_color'] ?? '#94a3b8' }}',
+    applyPreset(p, ph, s, h, a, at, f, bbg = '#f8fafc', txt = '#1e293b', hdg = '#0f172a') {
         this.primaryColor = p;
         this.primaryHover = ph;
         this.secondaryColor = s;
@@ -21,6 +33,14 @@
         this.announcementBg = a;
         this.announcementText = at;
         this.footerBg = f;
+        this.bodyBg = bbg;
+        this.textColor = txt;
+        this.headingColor = hdg;
+    },
+    applyFontPreset(b, h, m) {
+        this.fontBody = b;
+        this.fontHeading = h;
+        this.fontMono = m;
     }
 }">
 
@@ -87,7 +107,7 @@
             :class="activeTab === 'theme' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="palette" class="w-4 h-4 text-amber-500"></i>
-            <span class="font-bold">2. Theme & Colors</span>
+            <span class="font-bold">2. Typography & Colors</span>
         </button>
 
         <button 
@@ -322,16 +342,144 @@
         </div>
 
         <!-- ========================================================= -->
-        <!-- TAB 2: THEME & WEBSITE COLOR CONTROL                      -->
+        <!-- TAB 2: TYPOGRAPHY & FULL WEBSITE COLOR STUDIO             -->
         <!-- ========================================================= -->
         <div x-show="activeTab === 'theme'" x-cloak class="space-y-6">
-            
-            <!-- Curated 1-Click Color Presets -->
+
+            <!-- 1. TYPOGRAPHY & FONT FAMILY STUDIO -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="type" class="w-4 h-4 text-emerald-500"></i>
+                            <span>Typography & Google Fonts Family Control</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Select Google font families for body text, headings, and specifications. Dynamic webfonts load automatically.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 self-start">Dynamic Font Engine</span>
+                </div>
+
+                <!-- 1-Click Font Combos -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">1-Click Typography Presets</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        
+                        <!-- Preset 1 -->
+                        <div 
+                            @click="applyFontPreset('Inter', 'Outfit', 'JetBrains Mono')"
+                            :class="fontBody === 'Inter' && fontHeading === 'Outfit' ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'"
+                            class="p-3.5 rounded-2xl border bg-slate-50/50 dark:bg-slate-950/40 cursor-pointer transition space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">Silicon Valley Tech</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600">Modern</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Body: Inter &bull; Headings: Outfit</p>
+                        </div>
+
+                        <!-- Preset 2 -->
+                        <div 
+                            @click="applyFontPreset('Space Grotesk', 'Space Grotesk', 'Fira Code')"
+                            :class="fontBody === 'Space Grotesk' && fontHeading === 'Space Grotesk' ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'"
+                            class="p-3.5 rounded-2xl border bg-slate-50/50 dark:bg-slate-950/40 cursor-pointer transition space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">Cyberpunk Hardware</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600">Robotics</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Body & Hdg: Space Grotesk</p>
+                        </div>
+
+                        <!-- Preset 3 -->
+                        <div 
+                            @click="applyFontPreset('Hind Siliguri', 'Poppins', 'JetBrains Mono')"
+                            :class="fontBody === 'Hind Siliguri' && fontHeading === 'Poppins' ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'"
+                            class="p-3.5 rounded-2xl border bg-slate-50/50 dark:bg-slate-950/40 cursor-pointer transition space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">Bangladesh Bilingual</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600">বাংলা+EN</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Body: Hind Siliguri &bull; Hdg: Poppins</p>
+                        </div>
+
+                        <!-- Preset 4 -->
+                        <div 
+                            @click="applyFontPreset('Plus Jakarta Sans', 'Plus Jakarta Sans', 'Roboto Mono')"
+                            :class="fontBody === 'Plus Jakarta Sans' && fontHeading === 'Plus Jakarta Sans' ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'"
+                            class="p-3.5 rounded-2xl border bg-slate-50/50 dark:bg-slate-950/40 cursor-pointer transition space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">Clean Minimal Lab</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600">Standard</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Body & Hdg: Plus Jakarta Sans</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Font Selectors Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                    
+                    <!-- 1. Body Font -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Main Body Font Family *</label>
+                        <p class="text-[10px] text-slate-400">Buttons, descriptions, menu items, table data</p>
+                        <select name="theme_font_body" x-model="fontBody" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="Plus Jakarta Sans">Plus Jakarta Sans (Default)</option>
+                            <option value="Inter">Inter (Ultra-Clean)</option>
+                            <option value="Roboto">Roboto (Google Standard)</option>
+                            <option value="Poppins">Poppins (Friendly Geometric)</option>
+                            <option value="Outfit">Outfit (Brand Sans)</option>
+                            <option value="Open Sans">Open Sans (High Legibility)</option>
+                            <option value="Hind Siliguri">Hind Siliguri (Bengali & English)</option>
+                            <option value="Space Grotesk">Space Grotesk (Tech Hardware)</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. Heading Font -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Headings & Titles Font *</label>
+                        <p class="text-[10px] text-slate-400">Hero titles, product titles, section banners</p>
+                        <select name="theme_font_heading" x-model="fontHeading" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="Outfit">Outfit (Default)</option>
+                            <option value="Space Grotesk">Space Grotesk (Hardware Accent)</option>
+                            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                            <option value="Inter">Inter</option>
+                            <option value="Montserrat">Montserrat (Strong Bold)</option>
+                            <option value="Poppins">Poppins</option>
+                            <option value="Syne">Syne (High-End Design)</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. Monospace / Code Font -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Specs & SKU Code Font *</label>
+                        <p class="text-[10px] text-slate-400">Product SKU, PCB part numbers, invoice bills</p>
+                        <select name="theme_font_mono" x-model="fontMono" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="JetBrains Mono">JetBrains Mono (Default)</option>
+                            <option value="Fira Code">Fira Code</option>
+                            <option value="Roboto Mono">Roboto Mono</option>
+                        </select>
+                    </div>
+
+                    <!-- 4. Base Font Size -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Base Root Font Scaling *</label>
+                        <p class="text-[10px] text-slate-400">Controls overall website typography scale</p>
+                        <select name="theme_font_size_base" x-model="fontSizeBase" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="15px">15px (Compact - High Density)</option>
+                            <option value="16px">16px (Standard Default)</option>
+                            <option value="17px">17px (Spacious & High Readability)</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 2. CURATED 1-CLICK THEME PALETTES -->
             <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
-                        <span>1-Click Curated Color Presets</span>
+                        <span>1-Click Curated Color & Surface Presets</span>
                     </h3>
                     <p class="text-xs text-slate-500">Select any industry-crafted palette to instantly re-theme your store, or customize each color below.</p>
                 </div>
@@ -340,7 +488,7 @@
                     
                     <!-- Preset 1: Daraz Orange & PCB Tech (Default) -->
                     <div 
-                        @click="applyPreset('#f85606', '#d04300', '#10b981', '#0f172a', '#0f172a', '#fbbf24', '#020617')" 
+                        @click="applyPreset('#f85606', '#d04300', '#10b981', '#0f172a', '#0f172a', '#fbbf24', '#020617', '#f8fafc', '#1e293b', '#0f172a')" 
                         class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 bg-slate-50/60 dark:bg-slate-950/40 cursor-pointer transition space-y-2.5 group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-400 transition">Daraz Orange & Tech</span>
@@ -356,7 +504,7 @@
 
                     <!-- Preset 2: Cyberpunk PCB Emerald -->
                     <div 
-                        @click="applyPreset('#10b981', '#059669', '#06b6d4', '#022c22', '#022c22', '#34d399', '#021a14')" 
+                        @click="applyPreset('#10b981', '#059669', '#06b6d4', '#022c22', '#022c22', '#34d399', '#021a14', '#f0fdf4', '#064e3b', '#022c22')" 
                         class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 bg-slate-50/60 dark:bg-slate-950/40 cursor-pointer transition space-y-2.5 group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-400 transition">Cyberpunk Emerald PCB</span>
@@ -372,7 +520,7 @@
 
                     <!-- Preset 3: Electric Royal Blue (DigiKey Style) -->
                     <div 
-                        @click="applyPreset('#2563eb', '#1d4ed8', '#f59e0b', '#0f172a', '#1e293b', '#93c5fd', '#0b1120')" 
+                        @click="applyPreset('#2563eb', '#1d4ed8', '#f59e0b', '#0f172a', '#1e293b', '#93c5fd', '#0b1120', '#f8fafc', '#1e293b', '#0f172a')" 
                         class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 bg-slate-50/60 dark:bg-slate-950/40 cursor-pointer transition space-y-2.5 group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-400 transition">Electric Royal Blue</span>
@@ -388,7 +536,7 @@
 
                     <!-- Preset 4: Crimson Red High-Performance -->
                     <div 
-                        @click="applyPreset('#e11d48', '#be123c', '#f97316', '#1c1917', '#292524', '#fda4af', '#0c0a09')" 
+                        @click="applyPreset('#e11d48', '#be123c', '#f97316', '#1c1917', '#292524', '#fda4af', '#0c0a09', '#fff1f2', '#881337', '#4c0519')" 
                         class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 bg-slate-50/60 dark:bg-slate-950/40 cursor-pointer transition space-y-2.5 group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-400 transition">Crimson High-Power</span>
@@ -402,13 +550,13 @@
                         </div>
                     </div>
 
-                    <!-- Preset 5: Robotics Purple / AI Tech -->
+                    <!-- Preset 5: Robotics Purple AI Lab -->
                     <div 
-                        @click="applyPreset('#7c3aed', '#6d28d9', '#06b6d4', '#18181b', '#27272a', '#c084fc', '#09090b')" 
+                        @click="applyPreset('#7c3aed', '#6d28d9', '#06b6d4', '#18181b', '#27272a', '#c4b5fd', '#09090b', '#faf5ff', '#3b0764', '#18181b')" 
                         class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 bg-slate-50/60 dark:bg-slate-950/40 cursor-pointer transition space-y-2.5 group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-400 transition">Robotics Purple & AI</span>
-                            <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600">Futuristic</span>
+                            <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600">Innovation</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <span class="w-5 h-5 rounded-full shadow-sm" style="background-color: #7c3aed;"></span>
@@ -420,7 +568,7 @@
 
                     <!-- Preset 6: Stealth Midnight Gold -->
                     <div 
-                        @click="applyPreset('#f59e0b', '#d97706', '#38bdf8', '#000000', '#171717', '#fde68a', '#000000')" 
+                        @click="applyPreset('#f59e0b', '#d97706', '#38bdf8', '#000000', '#171717', '#fde68a', '#000000', '#f8fafc', '#18181b', '#000000')" 
                         class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 bg-slate-50/60 dark:bg-slate-950/40 cursor-pointer transition space-y-2.5 group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-400 transition">Stealth Midnight & Amber</span>
@@ -437,135 +585,251 @@
                 </div>
             </div>
 
-            <!-- Custom Color Pickers Grid -->
-            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-                <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <i data-lucide="sliders" class="w-4 h-4 text-emerald-500"></i>
-                        <span>Fine-Tuned Color Palette Pickers</span>
-                    </h3>
-                    <p class="text-xs text-slate-500">Pick any exact HEX color code or use the native color wheel picker.</p>
+            <!-- 3. COMPREHENSIVE FULL WEBSITE COLOR MATRIX -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-4 h-4 text-emerald-500"></i>
+                            <span>Complete Website Color Matrix</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Fine-tune brand colors, page background, card surfaces, price highlights, and header/footer tones.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">14 Dynamic Tokens</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Group A: Brand & Buttons -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>A. Brand, CTAs & Accent Colors</span>
+                    </h4>
                     
-                    <!-- 1. Primary Color -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Primary Brand / Button Color *</label>
-                        <p class="text-[10px] text-slate-400">Main buttons, active badges, order placement CTAs</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="primaryColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_primary_color" x-model="primaryColor" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        
+                        <!-- Primary Color -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Primary Brand / Button Color *</label>
+                            <p class="text-[10px] text-slate-400">Buttons, active tabs, checkout CTAs</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="primaryColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_primary_color" x-model="primaryColor" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 2. Primary Hover Color -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Primary Hover State Color *</label>
-                        <p class="text-[10px] text-slate-400">Darkened state on mouse hover</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="primaryHover" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_primary_hover" x-model="primaryHover" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                        <!-- Primary Hover -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Primary Hover State Color *</label>
+                            <p class="text-[10px] text-slate-400">Button hover and click interaction state</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="primaryHover" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_primary_hover" x-model="primaryHover" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 3. Secondary Tech Accent -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Secondary / Hardware Accent Color *</label>
-                        <p class="text-[10px] text-slate-400">Verified badges, PCB icons, stock status pills</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="secondaryColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_secondary_color" x-model="secondaryColor" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                        <!-- Secondary Tech Accent -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Secondary Accent Color *</label>
+                            <p class="text-[10px] text-slate-400">Verified badges, in-stock pills, success highlights</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="secondaryColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_secondary_color" x-model="secondaryColor" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 4. Header Background -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Top Navigation Navy Background</label>
-                        <p class="text-[10px] text-slate-400">Utility strip and sub-navbar containers</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="headerBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_header_bg" x-model="headerBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                        <!-- Price Color -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Product Price Highlight Color *</label>
+                            <p class="text-[10px] text-slate-400">Discount price tag, grand total amounts</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="priceColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_price_color" x-model="priceColor" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 5. Announcement Bar BG -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Top Announcement Banner Background</label>
-                        <p class="text-[10px] text-slate-400">Flash announcement stripe at very top of website</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="announcementBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_announcement_bg" x-model="announcementBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                        <!-- Sale Badge Color -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Discount / Sale Badge Color *</label>
+                            <p class="text-[10px] text-slate-400">'-25% OFF', flash sale ribbons</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="saleBadgeColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_sale_badge_color" x-model="saleBadgeColor" required class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 6. Announcement Bar Text Color -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Announcement Banner Text Color</label>
-                        <p class="text-[10px] text-slate-400">Font color for text inside top announcement</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="announcementText" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_announcement_text_color" x-model="announcementText" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
-                        </div>
                     </div>
-
-                    <!-- 7. Footer Background -->
-                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Storefront Footer Background Color</label>
-                        <p class="text-[10px] text-slate-400">Deep background for bottom mega footer</p>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="color" x-model="footerBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
-                            <input type="text" name="theme_footer_bg" x-model="footerBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- Group B: Surfaces & Backgrounds -->
+                <div class="space-y-3 pt-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                        <span>B. Surfaces, Canvas & Card Containers</span>
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        
+                        <!-- Body Background -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Storefront Canvas Background</label>
+                            <p class="text-[10px] text-slate-400">Overall page backdrop (e.g. #f8fafc)</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="bodyBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_body_bg" x-model="bodyBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Card Background -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Product Card Container Background</label>
+                            <p class="text-[10px] text-slate-400">Cards, checkout forms, dialog containers</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="cardBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_card_bg" x-model="cardBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Card Border -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Card & Container Border Color</label>
+                            <p class="text-[10px] text-slate-400">Divider lines and product tile outlines</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="cardBorder" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_card_border" x-model="cardBorder" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Group C: Text & Header/Footer Elements -->
+                <div class="space-y-3 pt-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span>C. Typography Tones, Navigation & Footer</span>
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        
+                        <!-- Body Text Color -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Main Body Text Color</label>
+                            <p class="text-[10px] text-slate-400">Paragraphs, specifications, secondary labels</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="textColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_text_color" x-model="textColor" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Heading Text Color -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Headings & Section Titles Color</label>
+                            <p class="text-[10px] text-slate-400">H1, H2, product names, category headlines</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="headingColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_heading_color" x-model="headingColor" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Header Background -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Top Navigation Navy Background</label>
+                            <p class="text-[10px] text-slate-400">Utility strip and header navbar container</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="headerBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_header_bg" x-model="headerBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Announcement Bar BG -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Top Announcement Banner Background</label>
+                            <p class="text-[10px] text-slate-400">Flash announcement stripe at top of storefront</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="announcementBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_announcement_bg" x-model="announcementBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Announcement Bar Text -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Announcement Banner Text Color</label>
+                            <p class="text-[10px] text-slate-400">Font color for text inside announcement bar</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="announcementText" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_announcement_text_color" x-model="announcementText" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Footer Background -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Storefront Footer Background Color</label>
+                            <p class="text-[10px] text-slate-400">Deep background for bottom mega footer</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="footerBg" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_footer_bg" x-model="footerBg" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Footer Text Color -->
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Footer Text Color</label>
+                            <p class="text-[10px] text-slate-400">Copyright, links, and text in mega footer</p>
+                            <div class="flex items-center gap-2 pt-1">
+                                <input type="color" x-model="footerText" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent p-0">
+                                <input type="text" name="theme_footer_text_color" x-model="footerText" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold uppercase outline-none">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Live Interactive Storefront Preview Sandbox -->
+            <!-- 4. LIVE INTERACTIVE STOREFRONT PREVIEW SANDBOX -->
             <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <i data-lucide="eye" class="w-4 h-4 text-emerald-500"></i>
-                            <span>Live Storefront Component Simulation</span>
+                            <span>Live Typography & Color Component Simulation</span>
                         </h3>
-                        <p class="text-xs text-slate-500">Real-time simulation of buttons, badges, announcement bar, and headers using your selected colors.</p>
+                        <p class="text-xs text-slate-500">Real-time simulation rendered using selected Google fonts (<span class="font-bold text-emerald-600" x-text="fontBody"></span> &amp; <span class="font-bold text-emerald-600" x-text="fontHeading"></span>) and custom color palette.</p>
                     </div>
-                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Live Preview</span>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Dynamic Preview</span>
                 </div>
 
                 <!-- Simulation Sandbox View -->
-                <div class="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-md">
+                <div class="rounded-2xl border overflow-hidden shadow-lg transition-all duration-200" :style="{ borderColor: cardBorder }">
                     
                     <!-- Simulated Announcement Bar -->
                     <div :style="{ backgroundColor: announcementBg, color: announcementText }" class="px-4 py-2 text-xs font-semibold flex items-center justify-between transition-colors duration-200">
                         <div class="flex items-center gap-2">
                             <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-                            <span>⚡ Flash Sale Live: Up to 40% OFF All Robotics Components!</span>
+                            <span>⚡ Flash Sale Live: 30% OFF On Robotics &amp; Electronic Hardware!</span>
                         </div>
                         <span class="text-[11px] opacity-80 hidden sm:block">Hotline: +880 1700-112233</span>
                     </div>
 
                     <!-- Simulated Header & Product Card Area -->
-                    <div class="p-6 bg-slate-50 dark:bg-slate-950 space-y-6">
+                    <div class="p-6 space-y-6 transition-colors duration-200" :style="{ backgroundColor: bodyBg, color: textColor }">
                         
                         <!-- Mini Header Preview -->
-                        <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div class="flex items-center justify-between p-4 rounded-xl border transition-colors duration-200" :style="{ backgroundColor: headerBg, borderColor: cardBorder }">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-xs shadow" :style="{ backgroundColor: primaryColor }">
                                     <i data-lucide="cpu" class="w-4 h-4 text-white"></i>
                                 </div>
-                                <div class="font-black text-base text-slate-900 dark:text-white">
+                                <div class="font-black text-base text-white" :style="{ fontFamily: fontHeading }">
                                     DREAMERS <span :style="{ color: primaryColor }">PCB</span>
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-3">
                                 <div class="relative hidden sm:block">
-                                    <input type="text" placeholder="Search components..." readonly class="px-3 py-1.5 text-xs rounded-lg border-2 bg-slate-50 dark:bg-slate-800 w-48 outline-none" :style="{ borderColor: primaryColor }">
+                                    <input type="text" placeholder="Search 5,000+ components..." readonly class="px-3 py-1.5 text-xs rounded-lg border-2 bg-slate-900 text-white w-52 outline-none" :style="{ borderColor: primaryColor, fontFamily: fontBody }">
                                 </div>
-                                <button type="button" class="px-3.5 py-1.5 rounded-xl text-white text-xs font-bold shadow transition" :style="{ backgroundColor: primaryColor }">
+                                <button type="button" class="px-3.5 py-1.5 rounded-xl text-white text-xs font-bold shadow transition" :style="{ backgroundColor: primaryColor, fontFamily: fontBody }">
                                     <span>Cart (2)</span>
                                 </button>
                             </div>
@@ -575,53 +839,60 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             
                             <!-- Card 1: Button State -->
-                            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase">Primary CTA Action</span>
-                                <button type="button" class="w-full py-2.5 rounded-xl text-white font-extrabold text-xs shadow-md transition transform active:scale-95 flex items-center justify-center gap-2" :style="{ backgroundColor: primaryColor }">
+                            <div class="p-4 rounded-xl border space-y-3 transition-colors duration-200" :style="{ backgroundColor: cardBg, borderColor: cardBorder }">
+                                <h4 class="text-sm font-black" :style="{ fontFamily: fontHeading, color: headingColor }">
+                                    ESP32-WROOM-32D IoT Microcontroller
+                                </h4>
+                                <p class="text-xs" :style="{ fontFamily: fontBody, color: textColor }">
+                                    Dual-core 240MHz Wi-Fi and Bluetooth BLE development board with integrated antenna.
+                                </p>
+                                <button type="button" class="w-full py-2.5 rounded-xl text-white font-extrabold text-xs shadow-md transition transform active:scale-95 flex items-center justify-center gap-2" :style="{ backgroundColor: primaryColor, fontFamily: fontBody }">
                                     <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                                    <span>Add to Cart - ৳450</span>
-                                </button>
-                                <button type="button" class="w-full py-2 rounded-xl text-xs font-bold border transition" :style="{ borderColor: primaryColor, color: primaryColor }">
-                                    <span>Quick Order Now</span>
+                                    <span>Add to Cart &bull; Buy Now</span>
                                 </button>
                             </div>
 
-                            <!-- Card 2: Badges & Tags -->
-                            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase">Badges & Accents</span>
+                            <!-- Card 2: Badges & SKU Specs -->
+                            <div class="p-4 rounded-xl border space-y-3 transition-colors duration-200" :style="{ backgroundColor: cardBg, borderColor: cardBorder }">
+                                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded" :style="{ fontFamily: fontMono, backgroundColor: secondaryColor + '20', color: secondaryColor }">
+                                    SKU: ESP32-WRM-32D-BD
+                                </span>
                                 <div class="flex flex-wrap gap-2 pt-1">
-                                    <span class="px-2.5 py-1 rounded-full text-white text-[10px] font-black" :style="{ backgroundColor: primaryColor }">
-                                        -35% OFF
+                                    <span class="px-2.5 py-1 rounded-full text-white text-[10px] font-black" :style="{ backgroundColor: saleBadgeColor, fontFamily: fontBody }">
+                                        -35% FLASH SALE
                                     </span>
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1" :style="{ backgroundColor: secondaryColor + '20', color: secondaryColor }">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1" :style="{ backgroundColor: secondaryColor + '20', color: secondaryColor, fontFamily: fontBody }">
                                         <i data-lucide="check" class="w-3 h-3"></i>
-                                        <span>In Stock (50+)</span>
-                                    </span>
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold text-white" :style="{ backgroundColor: secondaryColor }">
-                                        Genuine PCB
+                                        <span>In Stock (500+ Units)</span>
                                     </span>
                                 </div>
+                                <p class="text-xs" :style="{ fontFamily: fontBody, color: textColor }">
+                                    High-power LDO regulator and Silicon Labs CP2102 USB-to-UART bridge.
+                                </p>
                             </div>
 
                             <!-- Card 3: Price Display -->
-                            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase">Price Highlighting</span>
+                            <div class="p-4 rounded-xl border space-y-2 transition-colors duration-200" :style="{ backgroundColor: cardBg, borderColor: cardBorder }">
+                                <span class="text-[11px] font-bold uppercase" :style="{ color: textColor, opacity: 0.7 }">Real-Time Price Formatting</span>
                                 <div>
-                                    <div class="text-2xl font-black font-mono" :style="{ color: primaryColor }">
-                                        ৳1,250.00
+                                    <div class="text-2xl font-black font-mono" :style="{ color: priceColor, fontFamily: fontMono }">
+                                        ৳450.00
                                     </div>
-                                    <span class="text-xs text-slate-400 line-through">৳1,800.00</span>
+                                    <span class="text-xs line-through" :style="{ color: textColor, opacity: 0.5 }">৳650.00</span>
                                 </div>
+                                <button type="button" class="w-full py-2 rounded-xl text-xs font-bold border transition" :style="{ borderColor: primaryColor, color: primaryColor, fontFamily: fontBody }">
+                                    <span>Quick Order with COD</span>
+                                </button>
                             </div>
 
                         </div>
 
                         <!-- Simulated Mini Footer -->
-                        <div :style="{ backgroundColor: footerBg }" class="p-4 rounded-xl text-slate-400 text-xs flex items-center justify-between transition-colors duration-200">
+                        <div :style="{ backgroundColor: footerBg, color: footerText, fontFamily: fontBody }" class="p-4 rounded-xl text-xs flex items-center justify-between transition-colors duration-200">
                             <div>
-                                <span class="font-bold text-white">DREAMERS PCB</span> &bull; <span>Footer Theme Area</span>
+                                <span class="font-bold text-white" :style="{ fontFamily: fontHeading }">DREAMERS PCB</span> &bull; <span>The Hardware Engineer's Choice</span>
                             </div>
-                            <span class="text-[11px] opacity-75">© 2026 DREAMERS PCB</span>
+                            <span class="text-[11px] opacity-75">© 2026 DREAMERS PCB &bull; All Rights Reserved</span>
                         </div>
 
                     </div>
@@ -629,7 +900,7 @@
                 </div>
             </div>
 
-        </div>
+        </div>   </div>
 
         <!-- ========================================================= -->
         <!-- TAB 3: ORDERS, DELIVERY & E-COMMERCE AUTOMATION           -->

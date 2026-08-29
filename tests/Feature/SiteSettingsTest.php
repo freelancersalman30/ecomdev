@@ -257,4 +257,52 @@ class SiteSettingsTest extends TestCase
         $googleFeed->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
         $googleFeed->assertSee('<channel>', false);
     }
+
+    /**
+     * Test admin can customize full website typography fonts and complete color matrix.
+     */
+    public function test_admin_can_customize_full_website_typography_and_colors(): void
+    {
+        $response = $this->actingAs($this->admin, 'web')->put('/admin/settings/general', [
+            'theme_font_body' => 'Hind Siliguri',
+            'theme_font_heading' => 'Space Grotesk',
+            'theme_font_mono' => 'Fira Code',
+            'theme_font_size_base' => '17px',
+            'theme_primary_color' => '#7c3aed',
+            'theme_primary_hover' => '#6d28d9',
+            'theme_secondary_color' => '#06b6d4',
+            'theme_body_bg' => '#faf5ff',
+            'theme_text_color' => '#3b0764',
+            'theme_heading_color' => '#18181b',
+            'theme_card_bg' => '#ffffff',
+            'theme_card_border' => '#e9d5ff',
+            'theme_price_color' => '#9333ea',
+            'theme_sale_badge_color' => '#f43f5e',
+            'theme_header_bg' => '#18181b',
+            'theme_announcement_bg' => '#27272a',
+            'theme_announcement_text_color' => '#c4b5fd',
+            'theme_footer_bg' => '#09090b',
+            'theme_footer_text_color' => '#a1a1aa',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals('Hind Siliguri', Setting::get('theme_font_body'));
+        $this->assertEquals('Space Grotesk', Setting::get('theme_font_heading'));
+        $this->assertEquals('Fira Code', Setting::get('theme_font_mono'));
+        $this->assertEquals('17px', Setting::get('theme_font_size_base'));
+        $this->assertEquals('#7c3aed', Setting::get('theme_primary_color'));
+        $this->assertEquals('#faf5ff', Setting::get('theme_body_bg'));
+        $this->assertEquals('#3b0764', Setting::get('theme_text_color'));
+
+        // Verify storefront renders dynamic Google Fonts query and theme variables
+        $storefront = $this->get('/');
+        $storefront->assertStatus(200);
+        $storefront->assertSee('Hind+Siliguri');
+        $storefront->assertSee('Space+Grotesk');
+        $storefront->assertSee('Fira+Code');
+        $storefront->assertSee('#7c3aed');
+        $storefront->assertSee('#faf5ff');
+    }
 }
