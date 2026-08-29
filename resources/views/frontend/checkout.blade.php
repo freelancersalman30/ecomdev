@@ -59,7 +59,7 @@
                             <label class="p-3.5 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="shippingArea === 'inside_dhaka' ? 'border-daraz-orange bg-daraz-light text-slate-900' : 'border-slate-200 text-slate-700'">
                                 <div class="flex items-center gap-2">
                                     <input type="radio" name="shipping_area" value="inside_dhaka" :checked="shippingArea === 'inside_dhaka'" @change="shippingArea = 'inside_dhaka'; shippingCharge = {{ $insideDhaka }}" class="text-daraz-orange focus:ring-daraz-orange">
-                                    <span class="text-xs font-bold">Inside Dhaka (1-2 Days)</span>
+                                    <span class="text-xs font-bold">Inside Dhaka ({{ \App\Models\Setting::get('inside_dhaka_estimate', '1-2 Days') }})</span>
                                 </div>
                                 <span class="font-bold code-font text-xs">৳{{ $insideDhaka }}</span>
                             </label>
@@ -67,7 +67,7 @@
                             <label class="p-3.5 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="shippingArea === 'outside_dhaka' ? 'border-daraz-orange bg-daraz-light text-slate-900' : 'border-slate-200 text-slate-700'">
                                 <div class="flex items-center gap-2">
                                     <input type="radio" name="shipping_area" value="outside_dhaka" :checked="shippingArea === 'outside_dhaka'" @change="shippingArea = 'outside_dhaka'; shippingCharge = {{ $outsideDhaka }}" class="text-daraz-orange focus:ring-daraz-orange">
-                                    <span class="text-xs font-bold">Outside Dhaka (2-4 Days)</span>
+                                    <span class="text-xs font-bold">Outside Dhaka ({{ \App\Models\Setting::get('outside_dhaka_estimate', '2-4 Days') }})</span>
                                 </div>
                                 <span class="font-bold code-font text-xs">৳{{ $outsideDhaka }}</span>
                             </label>

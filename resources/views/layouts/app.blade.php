@@ -7,8 +7,11 @@
     
     <!-- Meta SEO -->
     <meta name="description" content="@yield('meta_description', 'DREAMERS PCB is Bangladesh\'s leading electronics & PCB store. Buy Microcontrollers, STM32, ESP32, Arduino, Soldering Tools & DIY Kits.')">
-    <meta name="keywords" content="electronics bangladesh, esp32, arduino, pcb design, soldering rework station, stm32, daraz electronics">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    @if(\App\Models\Setting::get('site_favicon'))
+    <link rel="icon" href="{{ asset(\App\Models\Setting::get('site_favicon')) }}">
+    @endif
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,18 +74,20 @@
         }
     </style>
     @stack('styles')
+    {!! \App\Models\Setting::get('header_scripts') !!}
 </head>
 <body x-data="globalStore()" x-init="initCart()" class="bg-slate-100/70 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-daraz-orange selection:text-white">
 
     <!-- 1. TOP NOTICE & UTILITY BAR (Daraz Style) -->
+    @if(\App\Models\Setting::get('announcement_enabled', '1') === '1')
     <div class="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800 hidden sm:block">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-6">
                 <span class="text-amber-400 font-semibold flex items-center gap-1.5">
                     <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-                    <span>Bangladesh's #1 Electronic Component & PCB Marketplace</span>
+                    <span>{{ \App\Models\Setting::get('announcement_text', "Bangladesh's #1 Electronic Component & PCB Marketplace") }}</span>
                 </span>
-                <span class="text-slate-400">Hotline: <strong class="text-slate-200 font-mono">+880 1700-112233</strong></span>
+                <span class="text-slate-400">Hotline: <strong class="text-slate-200 font-mono">{{ \App\Models\Setting::get('site_phone', \App\Models\Setting::get('phone', '+880 1700-112233')) }}</strong></span>
             </div>
             
             <div class="flex items-center gap-5 text-[11px] font-medium text-slate-400">
@@ -99,6 +104,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- 2. MAIN HEADER (Search Bar, Logo, Cart Drawer) -->
     <header class="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-sm">
@@ -107,15 +113,19 @@
                 
                 <!-- Brand Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-2 flex-shrink-0 group">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-emerald-900 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-md group-hover:scale-105 transition">
-                        <i data-lucide="cpu" class="w-5 h-5 text-emerald-400"></i>
-                    </div>
-                    <div>
-                        <div class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 flex items-center">
-                            DREAMERS<span class="text-daraz-orange ml-1">PCB</span>
+                    @if(\App\Models\Setting::get('site_logo'))
+                        <img src="{{ asset(\App\Models\Setting::get('site_logo')) }}" alt="{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}" class="h-10 max-w-[180px] object-contain">
+                    @else
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-emerald-900 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-md group-hover:scale-105 transition">
+                            <i data-lucide="cpu" class="w-5 h-5 text-emerald-400"></i>
                         </div>
-                        <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold -mt-1 hidden sm:block">Electronics Mega Mart</p>
-                    </div>
+                        <div>
+                            <div class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 flex items-center">
+                                {{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}
+                            </div>
+                            <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold -mt-1 hidden sm:block">{{ \App\Models\Setting::get('site_tagline', 'Electronics Mega Mart') }}</p>
+                        </div>
+                    @endif
                 </a>
 
                 <!-- Daraz-Style Centered Large Search Bar -->
@@ -233,7 +243,7 @@
                 <div class="flex items-center gap-4 text-[11px] text-slate-400">
                     <span class="text-emerald-400 font-semibold flex items-center gap-1">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                        <span>100% Genuine Hardware Guaranteed</span>
+                        <span>{{ \App\Models\Setting::get('guarantee_badge_text', '100% Genuine Hardware Guaranteed') }}</span>
                     </span>
                 </div>
 
@@ -638,5 +648,6 @@
     </script>
 
     @stack('scripts')
+    {!! \App\Models\Setting::get('footer_scripts') !!}
 </body>
 </html>

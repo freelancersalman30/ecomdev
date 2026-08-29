@@ -32,15 +32,21 @@
         
         <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-8 border-b border-slate-200">
-            <div>
-                <h1 class="text-2xl font-black tracking-wider text-slate-900">DREAMERS <span class="text-emerald-600">PCB</span></h1>
-                <p class="text-xs text-slate-500 font-medium mt-0.5">Enterprise Electronics & Gadget Solutions</p>
-                <p class="text-xs text-slate-500 mt-1">Multiplan Center, Elephant Road, Dhaka, Bangladesh</p>
-                <p class="text-xs text-slate-500">Phone: +880 1700-112233 | support@dreamerspcb.com</p>
+            <div class="space-y-1">
+                @if(\App\Models\Setting::get('invoice_logo') || \App\Models\Setting::get('site_logo'))
+                    <img src="{{ asset(\App\Models\Setting::get('invoice_logo') ?: \App\Models\Setting::get('site_logo')) }}" alt="Logo" class="h-10 object-contain mb-2">
+                @endif
+                <h1 class="text-2xl font-black tracking-wider text-slate-900">{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</h1>
+                <p class="text-xs text-slate-500 font-medium">{{ \App\Models\Setting::get('site_tagline', 'Enterprise Electronics & Gadget Solutions') }}</p>
+                <p class="text-xs text-slate-500">{{ \App\Models\Setting::get('site_address', 'Multiplan Center, Elephant Road, Dhaka, Bangladesh') }}</p>
+                <p class="text-xs text-slate-500">Phone: {{ \App\Models\Setting::get('site_phone', '+880 1700-112233') }} | {{ \App\Models\Setting::get('site_email', 'support@dreamerspcb.com') }}</p>
+                @if(\App\Models\Setting::get('invoice_trade_license') || \App\Models\Setting::get('footer_trade_license'))
+                <p class="text-[11px] text-slate-400 font-mono">Trade Lic / BIN: {{ \App\Models\Setting::get('invoice_trade_license') ?: \App\Models\Setting::get('footer_trade_license') }}</p>
+                @endif
             </div>
             <div class="sm:text-right">
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
-                    Official Tax Invoice
+                    {{ \App\Models\Setting::get('invoice_title', 'Official Tax Invoice') }}
                 </span>
                 <div class="text-lg font-black text-slate-900 code-font mt-2">{{ $order->order_no }}</div>
                 <div class="text-xs text-slate-500">Date: {{ $order->created_at->format('d F Y') }}</div>
@@ -142,14 +148,13 @@
 
         <!-- Footer / Signature -->
         <div class="pt-12 border-t border-slate-200 flex justify-between items-end text-xs text-slate-500">
-            <div>
-                <p class="font-bold text-slate-900">Terms & Conditions:</p>
-                <p>1. Warranty replacement valid with this original invoice.</p>
-                <p>2. Physical burn or water damage voids PCB warranty.</p>
+            <div class="max-w-md">
+                <p class="font-bold text-slate-900 mb-0.5">Terms & Conditions:</p>
+                <p class="text-[11px] leading-relaxed text-slate-600 whitespace-pre-line">{{ \App\Models\Setting::get('invoice_terms', "1. Warranty replacement valid with this original invoice.\n2. Physical burn or water damage voids PCB warranty.") }}</p>
             </div>
             <div class="text-center">
                 <div class="w-40 border-b border-slate-400 mb-2"></div>
-                <p class="font-semibold text-slate-700">Authorized Signature</p>
+                <p class="font-semibold text-slate-700">{{ \App\Models\Setting::get('invoice_signatory', 'Authorized Signature') }}</p>
             </div>
         </div>
 

@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin Dashboard') - DREAMERS PCB</title>
+    <title>@yield('title', 'Admin Dashboard') - {{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</title>
+
+    @if(\App\Models\Setting::get('site_favicon'))
+    <link rel="icon" href="{{ asset(\App\Models\Setting::get('site_favicon')) }}">
+    @endif
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -99,7 +102,7 @@
                         <i data-lucide="cpu" class="w-6 h-6 text-slate-950"></i>
                     </div>
                     <div x-show="sidebarOpen" x-transition class="whitespace-nowrap">
-                        <span class="font-extrabold text-lg tracking-wider text-white">DREAMERS <span class="text-emerald-400">PCB</span></span>
+                        <span class="font-extrabold text-base tracking-wider text-white truncate max-w-[150px] block">{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</span>
                         <span class="block text-[10px] tracking-widest text-emerald-400/80 uppercase font-semibold">Enterprise Hub</span>
                     </div>
                 </a>

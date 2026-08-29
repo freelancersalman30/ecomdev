@@ -57,10 +57,13 @@
         
         <!-- Header -->
         <div class="text-center">
-            <h1 class="text-lg font-bold">DREAMERS PCB</h1>
-            <p class="text-sm">Enterprise Electronics & PCB</p>
-            <p class="text-sm">Elephant Road, Dhaka</p>
-            <p class="text-sm">Hotline: +880 1700-112233</p>
+            @if(\App\Models\Setting::get('invoice_logo') || \App\Models\Setting::get('site_logo'))
+                <img src="{{ asset(\App\Models\Setting::get('invoice_logo') ?: \App\Models\Setting::get('site_logo')) }}" alt="Logo" style="max-height: 36px; margin: 0 auto 4px auto;">
+            @endif
+            <h1 class="text-lg font-bold">{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</h1>
+            <p class="text-sm">{{ \App\Models\Setting::get('site_tagline', 'Enterprise Electronics & PCB') }}</p>
+            <p class="text-sm">{{ \App\Models\Setting::get('site_address', 'Elephant Road, Dhaka') }}</p>
+            <p class="text-sm">Hotline: {{ \App\Models\Setting::get('site_phone', '+880 1700-112233') }}</p>
         </div>
 
         <div class="divider"></div>
@@ -143,8 +146,8 @@
 
         <!-- Footer -->
         <div class="text-center text-sm">
-            <p class="font-bold">Thank you for choosing DREAMERS PCB!</p>
-            <p>For warranty support, visit dreamerspcb.com</p>
+            <p class="font-bold">{{ \App\Models\Setting::get('pos_footer_note', 'Thank you for choosing DREAMERS PCB!') }}</p>
+            <p>For warranty support, visit {{ url('/') }}</p>
             <p style="margin-top: 6px;">*** System Generated Receipt ***</p>
         </div>
 
