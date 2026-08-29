@@ -137,11 +137,20 @@
 
         <button 
             type="button" 
+            @click="activeTab = 'tracking'" 
+            :class="activeTab === 'tracking' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
+            <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i>
+            <span class="font-bold">8. Google & Pixel Setup</span>
+        </button>
+
+        <button 
+            type="button" 
             @click="activeTab = 'scripts'" 
             :class="activeTab === 'scripts' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="code" class="w-4 h-4"></i>
-            <span>8. Custom Scripts & SEO</span>
+            <span>9. Custom Scripts & SEO</span>
         </button>
 
     </div>
@@ -905,7 +914,155 @@
         </div>
 
         <!-- ========================================================= -->
-        <!-- TAB 7: CUSTOM SCRIPTS & ANALYTICS                         -->
+        <!-- TAB 8: GOOGLE & PIXEL TRACKING SETUP                      -->
+        <!-- ========================================================= -->
+        <div x-show="activeTab === 'tracking'" x-cloak class="space-y-6">
+            
+            <!-- Google Services Suite -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="globe" class="w-4 h-4 text-sky-500"></i>
+                            <span>Google Services Integration (Analytics, GTM & Webmaster)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Connect Google Analytics 4, Tag Manager, and Search Console site verification.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">Google Ecosystem</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    
+                    <!-- 1. Google Analytics 4 -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="google_analytics_enabled" value="1" {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Analytics 4 (GA4)</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['google_analytics_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Tracks visitor traffic, product pageviews, search queries, and conversions.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">GA4 Measurement ID</label>
+                            <input type="text" name="google_analytics_id" value="{{ $settings['google_analytics_id'] ?? '' }}" placeholder="G-XXXXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-sky-500">
+                        </div>
+                    </div>
+
+                    <!-- 2. Google Tag Manager -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="google_tag_manager_enabled" value="1" {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Tag Manager (GTM)</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['google_tag_manager_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Automatically injects the head container and body noscript fallback tag.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">GTM Container ID</label>
+                            <input type="text" name="google_tag_manager_id" value="{{ $settings['google_tag_manager_id'] ?? '' }}" placeholder="GTM-XXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-sky-500">
+                        </div>
+                    </div>
+
+                    <!-- 3. Google Search Console Verification -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Google Search Console Verification Token</span>
+                            <span class="text-[10px] text-slate-400 font-mono">HTML Meta Tag Verification</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Paste only the verification string or code provided by Google Search Console Webmaster Tools.</p>
+                        <input type="text" name="google_site_verification" value="{{ $settings['google_site_verification'] ?? '' }}" placeholder="e.g. 4vX_randomStringToken_abcdef12345" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Social Pixel Tracking Suite (Meta / Facebook & TikTok) -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="crosshair" class="w-4 h-4 text-emerald-500"></i>
+                            <span>Advertising Pixel Tracking (Meta / Facebook & TikTok)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Track standard e-commerce events: PageView, AddToCart, and Purchases for targeted ad campaigns.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Ad Retargeting</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    
+                    <!-- 1. Meta / Facebook Pixel -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="facebook_pixel_enabled" value="1" {{ ($settings['facebook_pixel_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Meta / Facebook Pixel</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['facebook_pixel_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['facebook_pixel_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Enables standard Meta Pixel base code and triggers automatic PageView events.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Meta Pixel ID (15-16 digits)</label>
+                            <input type="text" name="facebook_pixel_id" value="{{ $settings['facebook_pixel_id'] ?? '' }}" placeholder="e.g. 1234567890123456" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+
+                    <!-- 2. TikTok Pixel -->
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="tiktok_pixel_enabled" value="1" {{ ($settings['tiktok_pixel_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-500 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">TikTok Pixel</span>
+                            </label>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ ($settings['tiktok_pixel_enabled'] ?? '0') === '1' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 dark:bg-slate-800 text-slate-400' }}">
+                                {{ ($settings['tiktok_pixel_enabled'] ?? '0') === '1' ? 'Active' : 'Disabled' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Tracks high-converting TikTok video ad traffic and hardware buyer conversions.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">TikTok Pixel Code / ID</label>
+                            <input type="text" name="tiktok_pixel_id" value="{{ $settings['tiktok_pixel_id'] ?? '' }}" placeholder="e.g. C1234567890ABCDEF" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Pexels Free Stock Photo API -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="camera" class="w-4 h-4 text-teal-500"></i>
+                            <span>Pexels Stock Photography & Media API</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Integrate royalty-free high-resolution photography for banners and catalog imagery.</p>
+                    </div>
+                    <a href="https://www.pexels.com/api/" target="_blank" class="text-[10px] font-bold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1">
+                        <span>Get Free Pexels Key</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Pexels Authorization API Key</label>
+                    <input type="password" name="pexels_api_key" value="{{ $settings['pexels_api_key'] ?? '' }}" placeholder="e.g. 563492ad6f91700001000001..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-teal-500">
+                    <p class="text-[11px] text-slate-400">Used by media tools to search and fetch license-free electronics, robotics, and hardware imagery.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 9: CUSTOM SCRIPTS & ANALYTICS                         -->
         <!-- ========================================================= -->
         <div x-show="activeTab === 'scripts'" x-cloak class="space-y-6">
             <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">

@@ -160,4 +160,46 @@ class SiteSettingsTest extends TestCase
         $storefront->assertStatus(200);
         $storefront->assertSee('#2563eb');
     }
+
+    /**
+     * Test admin can configure Google Analytics, GTM, Search Console, Meta Pixel, and TikTok Pixel.
+     */
+    public function test_admin_can_configure_google_and_pixel_tracking(): void
+    {
+        $response = $this->actingAs($this->admin, 'web')->put('/admin/settings/general', [
+            'google_analytics_enabled' => '1',
+            'google_analytics_id' => 'G-ABC1234567',
+            'google_tag_manager_enabled' => '1',
+            'google_tag_manager_id' => 'GTM-TEST999',
+            'google_site_verification' => 'google-token-verification-code-xyz',
+            'facebook_pixel_enabled' => '1',
+            'facebook_pixel_id' => '987654321012345',
+            'tiktok_pixel_enabled' => '1',
+            'tiktok_pixel_id' => 'CTIKTOKTEST888',
+            'pexels_api_key' => 'pexels-secret-key-12345',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals('1', Setting::get('google_analytics_enabled'));
+        $this->assertEquals('G-ABC1234567', Setting::get('google_analytics_id'));
+        $this->assertEquals('1', Setting::get('google_tag_manager_enabled'));
+        $this->assertEquals('GTM-TEST999', Setting::get('google_tag_manager_id'));
+        $this->assertEquals('google-token-verification-code-xyz', Setting::get('google_site_verification'));
+        $this->assertEquals('1', Setting::get('facebook_pixel_enabled'));
+        $this->assertEquals('987654321012345', Setting::get('facebook_pixel_id'));
+        $this->assertEquals('1', Setting::get('tiktok_pixel_enabled'));
+        $this->assertEquals('CTIKTOKTEST888', Setting::get('tiktok_pixel_id'));
+        $this->assertEquals('pexels-secret-key-12345', Setting::get('pexels_api_key'));
+
+        // Verify storefront renders GA4, GTM, Meta Pixel, and verification tags
+        $storefront = $this->get('/');
+        $storefront->assertStatus(200);
+        $storefront->assertSee('G-ABC1234567');
+        $storefront->assertSee('GTM-TEST999');
+        $storefront->assertSee('google-token-verification-code-xyz');
+        $storefront->assertSee('987654321012345');
+        $storefront->assertSee('CTIKTOKTEST888');
+    }
 }

@@ -66,6 +66,10 @@ class GeneralSettingController extends Controller
             'backorder_enabled',
             'free_shipping_enabled',
             'sticky_header_enabled',
+            'google_analytics_enabled',
+            'google_tag_manager_enabled',
+            'facebook_pixel_enabled',
+            'tiktok_pixel_enabled',
         ];
 
         foreach ($toggleKeys as $toggleKey) {
