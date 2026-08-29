@@ -286,16 +286,24 @@
 
             </div>
 
-            <!-- Sidebar Footer User Status -->
+            <!-- Sidebar Footer User Status & Logout -->
             <div class="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-emerald-400 font-bold border border-slate-600 flex-shrink-0">
-                        A
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-md flex-shrink-0">
+                        {{ strtoupper(substr(Auth::guard('web')->user()->name ?? 'A', 0, 1)) }}
                     </div>
                     <div x-show="sidebarOpen" class="text-xs truncate">
-                        <div class="font-semibold text-white truncate">{{ auth()->user()->name ?? 'Admin User' }}</div>
-                        <div class="text-[10px] text-emerald-400 font-mono">Super Admin</div>
+                        <div class="font-bold text-white truncate">{{ Auth::guard('web')->user()->name ?? 'Admin User' }}</div>
+                        <div class="text-[10px] text-emerald-400 font-mono">{{ Auth::guard('web')->user()->roles->first()->name ?? 'Super Admin' }}</div>
                     </div>
+                </div>
+                <div x-show="sidebarOpen">
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                        <button type="submit" title="Logout from Admin" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </aside>
@@ -345,11 +353,58 @@
                     </button>
 
                     <!-- View Live Store -->
-                    <a href="{{ route('landing.preview', 'esp32-cam-flash-sale') }}" target="_blank" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Preview Flash Landing Page">
+                    <a href="{{ route('home') }}" target="_blank" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Preview Public Storefront">
                         <i data-lucide="external-link" class="w-5 h-5"></i>
                     </a>
 
-                </div>
+                    <!-- User Account Dropdown -->
+                    <div x-data="{ userMenuOpen: false }" class="relative">
+                        <button @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs">
+                            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center text-xs">
+                                {{ strtoupper(substr(Auth::guard('web')->user()->name ?? 'A', 0, 1)) }}
+                            </div>
+                            <div class="text-left hidden md:block leading-tight">
+                                <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">{{ Auth::guard('web')->user()->name ?? 'Admin' }}</div>
+                                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{{ Auth::guard('web')->user()->roles->first()->name ?? 'Super Admin' }}</div>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                        </button>
+
+                        <div 
+                            x-show="userMenuOpen" 
+                            @click.away="userMenuOpen = false" 
+                            x-cloak 
+                            class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 text-xs space-y-1">
+                            <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+                                <p class="font-bold text-slate-900 dark:text-white truncate">{{ Auth::guard('web')->user()->name ?? 'Administrator' }}</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ Auth::guard('web')->user()->email ?? 'admin@dreamerspcb.com' }}</p>
+                            </div>
+
+                            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium">
+                                <i data-lucide="users" class="w-4 h-4 text-emerald-500"></i>
+                                <span>Manage Admin Users</span>
+                            </a>
+                            <a href="{{ route('admin.settings.general') }}" class="flex items-center gap-2 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium">
+                                <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+                                <span>System Settings</span>
+                            </a>
+                            <a href="{{ route('home') }}" target="_blank" class="flex items-center gap-2 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium">
+                                <i data-lucide="store" class="w-4 h-4 text-amber-500"></i>
+                                <span>Visit Online Store</span>
+                            </a>
+
+                            <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
+                                <form method="POST" action="{{ route('admin.logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-bold text-left transition">
+                                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                                        <span>Sign Out</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
             </header>
 
             <!-- Notification Alerts -->

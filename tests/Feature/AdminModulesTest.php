@@ -9,6 +9,17 @@ use Tests\TestCase;
 
 class AdminModulesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $admin = \App\Models\User::firstOrCreate(
+            ['email' => 'admin@dreamerspcb.com'],
+            ['name' => 'Dreamers Admin', 'password' => \Illuminate\Support\Facades\Hash::make('password')]
+        );
+        $this->actingAs($admin, 'web');
+    }
+
     public function test_home_renders_successfully(): void
     {
         $response = $this->get('/');
