@@ -18,6 +18,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     
+    @php
+        $primaryColor = \App\Models\Setting::get('theme_primary_color', '#f85606');
+        $primaryHover = \App\Models\Setting::get('theme_primary_hover', '#d04300');
+        $secondaryColor = \App\Models\Setting::get('theme_secondary_color', '#10b981');
+        $headerBg = \App\Models\Setting::get('theme_header_bg', '#0f172a');
+        $announcementBg = \App\Models\Setting::get('theme_announcement_bg', '#0f172a');
+        $announcementText = \App\Models\Setting::get('theme_announcement_text_color', '#fbbf24');
+        $footerBg = \App\Models\Setting::get('theme_footer_bg', '#020617');
+    @endphp
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -31,18 +41,18 @@
                     },
                     colors: {
                         brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
+                            50: '{{ $secondaryColor }}15',
+                            100: '{{ $secondaryColor }}25',
+                            500: '{{ $secondaryColor }}',
+                            600: '{{ $secondaryColor }}',
+                            700: '{{ $secondaryColor }}',
                             900: '#064e3b'
                         },
                         daraz: {
-                            orange: '#f85606',
-                            orangeHover: '#d04300',
-                            navy: '#0f172a',
-                            light: '#f8560610'
+                            orange: '{{ $primaryColor }}',
+                            orangeHover: '{{ $primaryHover }}',
+                            navy: '{{ $headerBg }}',
+                            light: '{{ $primaryColor }}15'
                         }
                     }
                 }
@@ -57,6 +67,15 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
+        :root {
+            --theme-primary: {{ $primaryColor }};
+            --theme-primary-hover: {{ $primaryHover }};
+            --theme-secondary: {{ $secondaryColor }};
+            --theme-header-bg: {{ $headerBg }};
+            --theme-announcement-bg: {{ $announcementBg }};
+            --theme-announcement-text: {{ $announcementText }};
+            --theme-footer-bg: {{ $footerBg }};
+        }
         .code-font { font-family: 'JetBrains Mono', monospace; }
         [x-cloak] { display: none !important; }
         
@@ -80,10 +99,10 @@
 
     <!-- 1. TOP NOTICE & UTILITY BAR (Daraz Style) -->
     @if(\App\Models\Setting::get('announcement_enabled', '1') === '1')
-    <div class="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800 hidden sm:block">
+    <div style="background-color: {{ $announcementBg }};" class="text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800 hidden sm:block">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-6">
-                <span class="text-amber-400 font-semibold flex items-center gap-1.5">
+                <span style="color: {{ $announcementText }};" class="font-semibold flex items-center gap-1.5">
                     <i data-lucide="zap" class="w-3.5 h-3.5"></i>
                     <span>{{ \App\Models\Setting::get('announcement_text', "Bangladesh's #1 Electronic Component & PCB Marketplace") }}</span>
                 </span>
@@ -384,7 +403,7 @@
     </div>
 
     <!-- 4. MODERN FOOTER (Daraz Style Trust Badges, Payment Icons, Categories) -->
-    <footer class="bg-slate-950 text-slate-400 text-xs mt-16 border-t border-slate-800">
+    <footer style="background-color: {{ $footerBg }};" class="text-slate-400 text-xs mt-16 border-t border-slate-800">
         
         <!-- Trust Guarantee Top Strip -->
         <div class="border-b border-slate-800/80 py-8 bg-slate-900/60">

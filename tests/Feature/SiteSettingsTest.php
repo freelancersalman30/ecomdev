@@ -128,4 +128,36 @@ class SiteSettingsTest extends TestCase
         $this->assertEquals('0', Setting::get('cod_enabled'));
         $this->assertEquals('0', Setting::get('maintenance_mode'));
     }
+
+    /**
+     * Test admin can customize website theme colors and see them reflected on storefront.
+     */
+    public function test_admin_can_update_theme_colors(): void
+    {
+        $response = $this->actingAs($this->admin, 'web')->put('/admin/settings/general', [
+            'theme_primary_color' => '#2563eb',
+            'theme_primary_hover' => '#1d4ed8',
+            'theme_secondary_color' => '#10b981',
+            'theme_header_bg' => '#0f172a',
+            'theme_announcement_bg' => '#1e293b',
+            'theme_announcement_text_color' => '#60a5fa',
+            'theme_footer_bg' => '#0b1120',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals('#2563eb', Setting::get('theme_primary_color'));
+        $this->assertEquals('#1d4ed8', Setting::get('theme_primary_hover'));
+        $this->assertEquals('#10b981', Setting::get('theme_secondary_color'));
+        $this->assertEquals('#0f172a', Setting::get('theme_header_bg'));
+        $this->assertEquals('#1e293b', Setting::get('theme_announcement_bg'));
+        $this->assertEquals('#60a5fa', Setting::get('theme_announcement_text_color'));
+        $this->assertEquals('#0b1120', Setting::get('theme_footer_bg'));
+
+        // Verify storefront renders with injected theme colors
+        $storefront = $this->get('/');
+        $storefront->assertStatus(200);
+        $storefront->assertSee('#2563eb');
+    }
 }
