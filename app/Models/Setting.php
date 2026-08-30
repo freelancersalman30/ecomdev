@@ -16,12 +16,26 @@ class Setting extends Model
         'value',
     ];
 
+    protected static ?array $runtimeCache = null;
+
+    public static function allCached(): array
+    {
+        if (static::$runtimeCache === null) {
+            try {
+                static::$runtimeCache = Cache::remember('settings.all_mapped', 86400, function () {
+                    return self::query()->pluck('value', 'key')->toArray();
+                });
+            } catch (\Throwable $e) {
+                static::$runtimeCache = self::query()->pluck('value', 'key')->toArray();
+            }
+        }
+        return static::$runtimeCache ?? [];
+    }
+
     public static function get(string $key, $default = null)
     {
-        return Cache::rememberForever("setting.{$key}", function () use ($key, $default) {
-            $setting = self::where('key', $key)->first();
-            return $setting ? $setting->value : $default;
-        });
+        $all = static::allCached();
+        return array_key_exists($key, $all) ? $all[$key] : $default;
     }
 
     public static function set(string $key, $value, string $group = 'general'): void
@@ -30,6 +44,8 @@ class Setting extends Model
             ['key' => $key],
             ['value' => $value, 'group' => $group]
         );
+        static::$runtimeCache = null;
+        Cache::forget('settings.all_mapped');
         Cache::forget("setting.{$key}");
     }
 }

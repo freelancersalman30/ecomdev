@@ -84,8 +84,8 @@
         }
     </script>
 
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lucide Icons (Fast Global CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
     
     <!-- Alpine.js Core -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -125,6 +125,9 @@
 
         h1, h2, h3, h4, h5, h6, .heading-font {
             font-family: var(--theme-font-heading);
+        }
+
+        h1:not([class*="text-"]), h2:not([class*="text-"]), h3:not([class*="text-"]), h4:not([class*="text-"]), h5:not([class*="text-"]), h6:not([class*="text-"]) {
             color: var(--theme-heading);
         }
 
@@ -160,7 +163,7 @@
     @endif
 
     <!-- Google Tag Manager -->
-    @if(\App\Models\Setting::get('google_tag_manager_enabled', '0') === '1' && \App\Models\Setting::get('google_tag_manager_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('google_tag_manager_enabled', '0') === '1' && \App\Models\Setting::get('google_tag_manager_id'))
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -169,7 +172,7 @@
     @endif
 
     <!-- Google Analytics 4 (gtag.js) -->
-    @if(\App\Models\Setting::get('google_analytics_enabled', '0') === '1' && \App\Models\Setting::get('google_analytics_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('google_analytics_enabled', '0') === '1' && \App\Models\Setting::get('google_analytics_id'))
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ \App\Models\Setting::get('google_analytics_id') }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -180,7 +183,7 @@
     @endif
 
     <!-- Google Ads Conversion Tag (gtag.js) -->
-    @if(\App\Models\Setting::get('google_ads_enabled', '0') === '1' && \App\Models\Setting::get('google_ads_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('google_ads_enabled', '0') === '1' && \App\Models\Setting::get('google_ads_id'))
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ \App\Models\Setting::get('google_ads_id') }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -191,12 +194,12 @@
     @endif
 
     <!-- Google AdSense Auto Ads -->
-    @if(\App\Models\Setting::get('google_adsense_enabled', '0') === '1' && \App\Models\Setting::get('google_adsense_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('google_adsense_enabled', '0') === '1' && \App\Models\Setting::get('google_adsense_id'))
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ \App\Models\Setting::get('google_adsense_id') }}" crossorigin="anonymous"></script>
     @endif
 
     <!-- Meta / Facebook Pixel -->
-    @if(\App\Models\Setting::get('facebook_pixel_enabled', '0') === '1' && \App\Models\Setting::get('facebook_pixel_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('facebook_pixel_enabled', '0') === '1' && \App\Models\Setting::get('facebook_pixel_id'))
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -215,7 +218,7 @@
     @endif
 
     <!-- TikTok Pixel -->
-    @if(\App\Models\Setting::get('tiktok_pixel_enabled', '0') === '1' && \App\Models\Setting::get('tiktok_pixel_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('tiktok_pixel_enabled', '0') === '1' && \App\Models\Setting::get('tiktok_pixel_id'))
     <script>
     !function (w, d, t) {
       w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
@@ -226,7 +229,7 @@
     @endif
 
     <!-- Microsoft / Bing Ads UET Tag -->
-    @if(\App\Models\Setting::get('bing_ads_enabled', '0') === '1' && \App\Models\Setting::get('bing_ads_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('bing_ads_enabled', '0') === '1' && \App\Models\Setting::get('bing_ads_id'))
     <script>
     (function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"{{ \App\Models\Setting::get('bing_ads_id') }}"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");
     </script>
@@ -237,7 +240,7 @@
 <body x-data="globalStore()" x-init="initCart()" class="bg-slate-100/70 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-daraz-orange selection:text-white">
 
     <!-- Google Tag Manager (noscript) -->
-    @if(\App\Models\Setting::get('google_tag_manager_enabled', '0') === '1' && \App\Models\Setting::get('google_tag_manager_id'))
+    @if((app()->environment('production') || app()->environment('testing')) && \App\Models\Setting::get('google_tag_manager_enabled', '0') === '1' && \App\Models\Setting::get('google_tag_manager_id'))
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ \App\Models\Setting::get('google_tag_manager_id') }}"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
@@ -614,7 +617,7 @@
                 <div class="flex items-center gap-3 pt-2 text-slate-400">
                     @if(\App\Models\Setting::get('footer_facebook_url'))
                     <a href="{{ \App\Models\Setting::get('footer_facebook_url') }}" target="_blank" class="hover:text-blue-400 transition" title="Facebook">
-                        <i data-lucide="facebook" class="w-4 h-4"></i>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     </a>
                     @endif
                     @if(\App\Models\Setting::get('footer_youtube_url'))

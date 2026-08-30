@@ -66,6 +66,20 @@ class FrontendController extends Controller
         // Featured & Top Categories
         $featuredCategories = Category::where('is_active', true)->withCount('products')->take(8)->get();
 
+        // Category-wise products grouping
+        $categoriesWithProducts = Category::where('is_active', true)
+            ->whereHas('products', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->with(['products' => function ($q) {
+                $q->where('is_active', true)
+                    ->with(['category', 'brand', 'variants'])
+                    ->latest();
+            }, 'subCategories'])
+            ->withCount('products')
+            ->orderBy('display_order', 'asc')
+            ->get();
+
         // "Just For You" Recommendation Grid
         $justForYouProducts = Product::where('is_active', true)
             ->with(['category', 'brand', 'variants'])
@@ -79,6 +93,7 @@ class FrontendController extends Controller
             'flashSaleProducts',
             'brands',
             'featuredCategories',
+            'categoriesWithProducts',
             'justForYouProducts'
         ));
     }

@@ -53,6 +53,20 @@
         </form>
     </div>
 
+    <!-- Quick Category Filter Bar -->
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <a href="{{ route('shop.index', request()->except(['category_id', 'page'])) }}" class="px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ !request('category_id') ? 'bg-daraz-orange text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-xs' }}">
+            All Categories
+        </a>
+        @foreach($categories as $cat)
+        <a href="{{ route('shop.index', array_merge(request()->except(['page']), ['category_id' => $cat->id])) }}" class="px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 {{ request('category_id') == $cat->id ? 'bg-daraz-orange text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-xs' }}">
+            <i data-lucide="{{ $cat->icon === 'tool' ? 'wrench' : ($cat->icon ?? 'cpu') }}" class="w-3.5 h-3.5"></i>
+            <span>{{ $cat->name }}</span>
+            <span class="text-[10px] {{ request('category_id') == $cat->id ? 'text-white/80' : 'text-slate-400' }}">({{ $cat->products_count }})</span>
+        </a>
+        @endforeach
+    </div>
+
     <!-- 2 Columns: Left Filter Sidebar + Right Products Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 

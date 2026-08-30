@@ -129,6 +129,27 @@ class Product extends Model
             : $this->selling_price;
     }
 
+    public function getDiscountPercentageAttribute(): int
+    {
+        if ($this->discount_price && $this->selling_price > $this->discount_price && $this->selling_price > 0) {
+            return (int) round((($this->selling_price - $this->discount_price) / $this->selling_price) * 100);
+        }
+        return 0;
+    }
+
+    public function getThumbnailAttribute($value): string
+    {
+        if (empty($value)) {
+            return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        return asset(ltrim($value, '/'));
+    }
+
     public function getTotalStockAttribute()
     {
         if ($this->has_variants) {
