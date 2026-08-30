@@ -11,6 +11,7 @@ class CouponController extends Controller
     public function index()
     {
         $coupons = Coupon::latest()->get();
+
         return view('admin.coupons.index', compact('coupons'));
     }
 
@@ -42,6 +43,7 @@ class CouponController extends Controller
     public function destroy(Coupon $coupon)
     {
         $coupon->delete();
+
         return redirect()->back()->with('success', 'Coupon deleted!');
     }
 }

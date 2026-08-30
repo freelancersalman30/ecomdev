@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 
 class Product extends Model
 {
@@ -115,7 +115,7 @@ class Product extends Model
     {
         return $query->where(function ($q) {
             $q->where('has_variants', false)
-              ->whereColumn('stock_quantity', '<=', 'alert_threshold');
+                ->whereColumn('stock_quantity', '<=', 'alert_threshold');
         })->orWhereHas('variants', function ($q) {
             $q->whereColumn('stock_quantity', '<=', 'alert_threshold');
         });
@@ -134,6 +134,7 @@ class Product extends Model
         if ($this->discount_price && $this->selling_price > $this->discount_price && $this->selling_price > 0) {
             return (int) round((($this->selling_price - $this->discount_price) / $this->selling_price) * 100);
         }
+
         return 0;
     }
 
@@ -155,6 +156,7 @@ class Product extends Model
         if ($this->has_variants) {
             return $this->variants()->sum('stock_quantity');
         }
+
         return $this->stock_quantity;
     }
 }

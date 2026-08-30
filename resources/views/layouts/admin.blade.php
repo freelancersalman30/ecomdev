@@ -209,6 +209,46 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Expenses & Budgeting</span>
                 </a>
 
+                <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Reports & Intelligence</div>
+
+                <!-- Reports Hub Dropdown -->
+                <div x-data="{ open: {{ request()->routeIs('admin.reports.*') ? 'true' : 'false' }} }">
+                    <button @click="if (!sidebarOpen) { sidebarOpen = true; open = true; } else { open = !open; }" 
+                            class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white {{ request()->routeIs('admin.reports.*') ? 'text-emerald-400 font-semibold bg-slate-800/60' : '' }}"
+                            title="Reports (Order, Purchase, Expense, Stock, Profit & Loss)">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap font-medium">Reports</span>
+                        </div>
+                        <div x-show="sidebarOpen" class="flex items-center gap-1.5">
+                            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-bold">5</span>
+                            <i data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform text-slate-400"></i>
+                        </div>
+                    </button>
+                    <div x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <a href="{{ route('admin.reports.orders') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ (request()->routeIs('admin.reports.orders') || (request()->routeIs('admin.reports.index') && request('type', 'sales') === 'sales')) ? 'text-emerald-400 font-semibold bg-slate-800' : 'hover:text-white text-slate-400' }}">
+                            <span>Order Report</span>
+                            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 opacity-60"></i>
+                        </a>
+                        <a href="{{ route('admin.reports.purchases') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ (request()->routeIs('admin.reports.purchases') || request('type') === 'purchases') ? 'text-emerald-400 font-semibold bg-slate-800' : 'hover:text-white text-slate-400' }}">
+                            <span>Purchase Report</span>
+                            <i data-lucide="truck" class="w-3.5 h-3.5 opacity-60"></i>
+                        </a>
+                        <a href="{{ route('admin.reports.expenses') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ (request()->routeIs('admin.reports.expenses') || request('type') === 'expenses') ? 'text-emerald-400 font-semibold bg-slate-800' : 'hover:text-white text-slate-400' }}">
+                            <span>Expense Report</span>
+                            <i data-lucide="receipt" class="w-3.5 h-3.5 opacity-60"></i>
+                        </a>
+                        <a href="{{ route('admin.reports.stock') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ (request()->routeIs('admin.reports.stock') || request('type') === 'stock') ? 'text-emerald-400 font-semibold bg-slate-800' : 'hover:text-white text-slate-400' }}">
+                            <span>Stock Report</span>
+                            <i data-lucide="boxes" class="w-3.5 h-3.5 opacity-60"></i>
+                        </a>
+                        <a href="{{ route('admin.reports.profit_loss') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ (request()->routeIs('admin.reports.profit_loss') || request('type') === 'profit_loss') ? 'text-emerald-400 font-semibold bg-slate-800' : 'hover:text-white text-slate-400' }}">
+                            <span>Profit & Loss</span>
+                            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        </a>
+                    </div>
+                </div>
+
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Administration & Tools</div>
 
                 <!-- Users & RBAC -->
@@ -255,12 +295,6 @@
                 <a href="{{ route('admin.banners.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.banners.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="image" class="w-5 h-5 flex-shrink-0"></i>
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Banners & Advertising</span>
-                </a>
-
-                <!-- Analytics & Reports -->
-                <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.reports.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Analytics & Reports</span>
                 </a>
 
                 <!-- SEO Settings -->
@@ -332,7 +366,51 @@
                 </div>
 
                 <!-- Right Actions -->
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2.5 sm:gap-3">
+
+                    <!-- Quick Reports Menu Dropdown -->
+                    <div x-data="{ reportsDropdown: false }" class="relative">
+                        <button @click="reportsDropdown = !reportsDropdown" @click.away="reportsDropdown = false" 
+                                class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 transition"
+                                title="Reports Menu">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-500"></i>
+                            <span class="hidden xs:inline sm:inline">Reports</span>
+                            <i data-lucide="chevron-down" :class="{ 'rotate-180': reportsDropdown }" class="w-3.5 h-3.5 transition-transform text-slate-400"></i>
+                        </button>
+                        <div x-show="reportsDropdown" 
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 py-1.5 z-50 text-xs">
+                            <div class="px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                <span>Reports Menu</span>
+                                <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-bold text-[9px]">5 Hubs</span>
+                            </div>
+                            <a href="{{ route('admin.reports.orders') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition">
+                                <span class="font-medium">Order Report</span>
+                                <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-emerald-500"></i>
+                            </a>
+                            <a href="{{ route('admin.reports.purchases') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition">
+                                <span class="font-medium">Purchase Report</span>
+                                <i data-lucide="truck" class="w-3.5 h-3.5 text-sky-500"></i>
+                            </a>
+                            <a href="{{ route('admin.reports.expenses') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition">
+                                <span class="font-medium">Expense Report</span>
+                                <i data-lucide="receipt" class="w-3.5 h-3.5 text-rose-500"></i>
+                            </a>
+                            <a href="{{ route('admin.reports.stock') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition">
+                                <span class="font-medium">Stock Report</span>
+                                <i data-lucide="boxes" class="w-3.5 h-3.5 text-amber-500"></i>
+                            </a>
+                            <a href="{{ route('admin.reports.profit_loss') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-emerald-600 dark:text-emerald-400 font-semibold border-t border-slate-100 dark:border-slate-800 transition">
+                                <span>Profit & Loss</span>
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                            </a>
+                        </div>
+                    </div>
 
                     <!-- Quick POS Button -->
                     <a href="{{ route('admin.pos.index') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md shadow-emerald-600/20 transition">

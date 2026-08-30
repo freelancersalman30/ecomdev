@@ -19,7 +19,9 @@ class FraudCheckService
         // Check if phone or IP is blacklisted in fraud_checks
         $blacklisted = FraudCheck::where('phone', $phone)
             ->orWhere(function ($q) use ($ipAddress) {
-                if ($ipAddress) $q->where('ip_address', $ipAddress);
+                if ($ipAddress) {
+                    $q->where('ip_address', $ipAddress);
+                }
             })
             ->where('is_blacklisted', true)
             ->first();

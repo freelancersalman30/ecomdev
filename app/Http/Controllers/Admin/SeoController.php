@@ -14,7 +14,7 @@ class SeoController extends Controller
             'meta_title' => 'DREAMERS PCB - Enterprise Gadgets & PCB Components in Bangladesh',
             'meta_description' => 'Best online shop for Arduino, STM32, ESP32, Robotics, Soldering Stations, DIY Kits, and Electronic Components.',
             'meta_keywords' => 'PCB, Arduino, Electronics, Raspberry Pi, Sensors, Robotics, Bangladesh',
-            'robots_txt' => "User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: " . url('/sitemap.xml'),
+            'robots_txt' => "User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ".url('/sitemap.xml'),
         ]);
 
         return view('admin.settings.seo', compact('seo'));

@@ -40,7 +40,7 @@ class PosController extends Controller
 
         $products = Product::with(['variants.color', 'variants.size', 'category'])
             ->where('is_active', true)
-            ->when($categoryId, fn($q) => $q->where('category_id', $categoryId))
+            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($sub) use ($query) {
                     $sub->where('name', 'like', "%{$query}%")
@@ -48,8 +48,8 @@ class PosController extends Controller
                         ->orWhere('barcode', 'like', "%{$query}%")
                         ->orWhereHas('variants', function ($v) use ($query) {
                             $v->where('sku', 'like', "%{$query}%")
-                              ->orWhere('barcode', 'like', "%{$query}%")
-                              ->orWhere('variant_name', 'like', "%{$query}%");
+                                ->orWhere('barcode', 'like', "%{$query}%")
+                                ->orWhere('variant_name', 'like', "%{$query}%");
                         });
                 });
             })

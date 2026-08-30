@@ -71,7 +71,7 @@ return new class extends Migration
                 'category_header',
                 'promo_popup',
                 'sidebar_ad',
-                'footer_banner'
+                'footer_banner',
             ])->default('hero_slider');
             $table->integer('display_order')->default(0);
             $table->boolean('is_active')->default(true);

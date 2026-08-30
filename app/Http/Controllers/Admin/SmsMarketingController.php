@@ -48,16 +48,16 @@ class SmsMarketingController extends Controller
                     $template,
                     [
                         'customer_name' => $cust->name,
-                        'order_id' => 'PCB-' . rand(1000, 9999),
+                        'order_id' => 'PCB-'.rand(1000, 9999),
                         'tracking_link' => 'https://dreamerspcb.com/track',
                     ]
                 );
                 $count++;
             }
         } else {
-            $numbers = explode(',', str_replace(["\n", "\r", " "], '', $request->custom_numbers));
+            $numbers = explode(',', str_replace(["\n", "\r", ' '], '', $request->custom_numbers));
             foreach ($numbers as $num) {
-                if (!empty($num)) {
+                if (! empty($num)) {
                     $this->smsService->send(
                         $num,
                         $template,

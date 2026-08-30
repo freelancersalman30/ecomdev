@@ -16,7 +16,7 @@ class SystemToolController extends Controller
             'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'PHP CLI / Built-in Server',
             'memory_limit' => ini_get('memory_limit'),
             'upload_max_filesize' => ini_get('upload_max_filesize'),
-            'max_execution_time' => ini_get('max_execution_time') . 's',
+            'max_execution_time' => ini_get('max_execution_time').'s',
             'db_driver' => config('database.default'),
             'queue_driver' => config('queue.default'),
             'cache_driver' => config('cache.default'),

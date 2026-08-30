@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\SmsLog;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SmsService
@@ -17,7 +16,7 @@ class SmsService
         // Replace dynamic tokens
         $message = $template;
         foreach ($data as $key => $val) {
-            $message = str_replace("{{$key}}", (string)$val, $message);
+            $message = str_replace("{{$key}}", (string) $val, $message);
         }
 
         $charCount = mb_strlen($message);
@@ -32,12 +31,13 @@ class SmsService
                 'character_count' => $charCount,
                 'sms_parts' => $smsParts,
                 'status' => 'sent',
-                'response_id' => 'SMS_' . uniqid(),
+                'response_id' => 'SMS_'.uniqid(),
                 'sent_at' => Carbon::now(),
             ]);
+
             return true;
         } catch (\Exception $e) {
-            Log::error('SMS Dispatch Error: ' . $e->getMessage());
+            Log::error('SMS Dispatch Error: '.$e->getMessage());
             SmsLog::create([
                 'gateway' => $gateway,
                 'phone' => $phone,
@@ -48,6 +48,7 @@ class SmsService
                 'error_message' => $e->getMessage(),
                 'sent_at' => Carbon::now(),
             ]);
+
             return false;
         }
     }

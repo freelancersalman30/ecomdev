@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Expense;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Purchase;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,7 @@ class ReportService
         $stockMetrics = $this->inventoryService->getStockValuation();
 
         // Low stock products count
-        $lowStockCount = \App\Models\Product::lowStock()->count();
+        $lowStockCount = Product::lowStock()->count();
 
         return [
             'today_sales' => round($todaySales, 2),
@@ -151,6 +152,7 @@ class ReportService
     public function getStockValuation(): array
     {
         $metrics = $this->inventoryService->getStockValuation();
+
         return [
             'cost_value' => $metrics['total_cost_value'],
             'retail_value' => $metrics['total_retail_value'],
@@ -168,7 +170,7 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return (object) [
-                    'name' => $item->product->name ?? 'Product #' . $item->product_id,
+                    'name' => $item->product->name ?? 'Product #'.$item->product_id,
                     'total_qty_sold' => $item->total_qty_sold,
                     'total_revenue' => $item->total_revenue,
                     'total_profit' => $item->total_profit,

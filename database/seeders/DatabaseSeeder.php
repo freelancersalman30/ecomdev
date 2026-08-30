@@ -16,7 +16,6 @@ use App\Models\ExpenseCategory;
 use App\Models\FraudCheck;
 use App\Models\LandingPage;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Purchase;
@@ -43,7 +42,7 @@ class DatabaseSeeder extends Seeder
             'products.manage', 'products.create', 'products.edit', 'products.delete',
             'purchases.manage', 'suppliers.manage', 'coupons.manage', 'landing_pages.manage',
             'fraud.manage', 'sms.marketing', 'accounts.manage', 'expenses.manage',
-            'users.manage', 'settings.general', 'settings.apis', 'reports.view', 'system.tools'
+            'users.manage', 'settings.general', 'settings.apis', 'reports.view', 'system.tools',
         ];
 
         foreach ($permissions as $perm) {
@@ -630,7 +629,7 @@ class DatabaseSeeder extends Seeder
             ],
             'testimonials' => [
                 ['name' => 'Sabbir Hossain', 'comment' => 'Excellent board! I made an AI security bell in 2 hours using this kit.'],
-                ['name' => 'Fahim Rahman', 'comment' => 'Original AI-Thinker module. High speed delivery by DREAMERS PCB. Highly recommended!']
+                ['name' => 'Fahim Rahman', 'comment' => 'Original AI-Thinker module. High speed delivery by DREAMERS PCB. Highly recommended!'],
             ],
             'theme_color' => '#0ea5e9',
             'fb_pixel_id' => '987654321012345',
@@ -676,7 +675,7 @@ class DatabaseSeeder extends Seeder
             'meta_title' => 'DREAMERS PCB - Enterprise Gadgets, Arduino, ESP32 & PCB Components in Bangladesh',
             'meta_description' => 'Leading supplier for Microcontrollers, Sensors, Robotics kits, Soldering gear, and Electronic DIY components with fast nationwide courier delivery.',
             'meta_keywords' => 'Arduino Bangladesh, ESP32, Robotics, Soldering Stations, Dhaka PCB, Electronic Components BD',
-            'robots_txt' => "User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: " . url('/sitemap.xml'),
+            'robots_txt' => "User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ".url('/sitemap.xml'),
             'sitemap_auto_ping' => true,
             'last_sitemap_generated_at' => Carbon::now(),
         ]);

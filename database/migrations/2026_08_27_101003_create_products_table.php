@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('sub_category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('child_category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
-            
+
             // Tech Specifications (for PCB & Gadgets)
             $table->string('pcb_model')->nullable();
             $table->string('voltage')->nullable(); // e.g. "3.3V - 5V DC"

@@ -37,7 +37,7 @@ class CartController extends Controller
             'items' => array_values($cart),
             'count' => count($cart),
             'summary' => $summary,
-            'coupon' => $coupon
+            'coupon' => $coupon,
         ]);
     }
 
@@ -49,7 +49,7 @@ class CartController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'nullable|exists:product_variants,id',
-            'quantity' => 'nullable|integer|min:1'
+            'quantity' => 'nullable|integer|min:1',
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -151,7 +151,7 @@ class CartController extends Controller
         $code = strtoupper(trim($request->code));
         $coupon = Coupon::where('code', $code)->where('is_active', true)->first();
 
-        if (!$coupon) {
+        if (! $coupon) {
             return response()->json(['success' => false, 'message' => 'Invalid or expired coupon code.'], 422);
         }
 
@@ -160,8 +160,8 @@ class CartController extends Controller
 
         if ($coupon->min_order_amount && $subtotal < $coupon->min_order_amount) {
             return response()->json([
-                'success' => false, 
-                'message' => "Minimum order of ৳{$coupon->min_order_amount} required for this coupon."
+                'success' => false,
+                'message' => "Minimum order of ৳{$coupon->min_order_amount} required for this coupon.",
             ], 422);
         }
 
@@ -179,7 +179,7 @@ class CartController extends Controller
             'code' => $coupon->code,
             'discount_type' => $coupon->discount_type,
             'discount_value' => $coupon->discount_value,
-            'calculated_discount' => round($discount, 2)
+            'calculated_discount' => round($discount, 2),
         ];
 
         session()->put('coupon', $couponData);
@@ -188,7 +188,7 @@ class CartController extends Controller
             'success' => true,
             'message' => "Coupon {$coupon->code} applied successfully!",
             'coupon' => $couponData,
-            'summary' => $this->calculateSummary($cart, $couponData)
+            'summary' => $this->calculateSummary($cart, $couponData),
         ]);
     }
 
@@ -198,6 +198,7 @@ class CartController extends Controller
     public function removeCoupon()
     {
         session()->forget('coupon');
+
         return response()->json(['success' => true, 'message' => 'Coupon removed.']);
     }
 
@@ -218,7 +219,7 @@ class CartController extends Controller
             'subtotal' => round($subtotal, 2),
             'item_count' => $itemCount,
             'discount' => round($discount, 2),
-            'payable' => round($payable, 2)
+            'payable' => round($payable, 2),
         ];
     }
 }

@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
+use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Coupon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class OrderService
 {
     protected InventoryService $inventoryService;
+
     protected FraudCheckService $fraudCheckService;
+
     protected SmsService $smsService;
 
     public function __construct(
@@ -35,7 +35,7 @@ class OrderService
         return DB::transaction(function () use ($data, $items) {
             // Find or create customer
             $customer = null;
-            if (!empty($data['shipping_phone'])) {
+            if (! empty($data['shipping_phone'])) {
                 $customer = Customer::firstOrCreate(
                     ['phone' => $data['shipping_phone']],
                     [
@@ -59,7 +59,7 @@ class OrderService
 
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
-                $variant = !empty($item['variant_id']) ? ProductVariant::find($item['variant_id']) : null;
+                $variant = ! empty($item['variant_id']) ? ProductVariant::find($item['variant_id']) : null;
 
                 $unitCost = $variant ? $variant->purchase_price : $product->purchase_price;
                 $unitPrice = $variant ? $variant->effective_price : $product->effective_price;
@@ -85,13 +85,13 @@ class OrderService
 
             // Calculate coupon discount
             $discount = 0;
-            if (!empty($data['coupon_code'])) {
+            if (! empty($data['coupon_code'])) {
                 $coupon = Coupon::where('code', $data['coupon_code'])->first();
                 if ($coupon) {
                     $discount = $coupon->calculateDiscount($subtotal);
                     $coupon->increment('times_used');
                 }
-            } elseif (!empty($data['discount'])) {
+            } elseif (! empty($data['discount'])) {
                 $discount = (float) $data['discount'];
             }
 
@@ -102,7 +102,7 @@ class OrderService
             $dueAmount = max(0, $grandTotal - $paidAmount);
 
             // Generate sequential order ID
-            $orderNo = 'DPCB-' . date('Ymd') . '-' . str_pad((string)(Order::count() + 1), 4, '0', STR_PAD_LEFT);
+            $orderNo = 'DPCB-'.date('Ymd').'-'.str_pad((string) (Order::count() + 1), 4, '0', STR_PAD_LEFT);
 
             $order = Order::create([
                 'order_no' => $orderNo,
@@ -144,7 +144,7 @@ class OrderService
             $order->statusLogs()->create([
                 'from_status' => null,
                 'to_status' => $order->status,
-                'note' => 'Order created via ' . strtoupper($order->order_type),
+                'note' => 'Order created via '.strtoupper($order->order_type),
                 'changed_by' => auth()->id(),
             ]);
 
@@ -157,7 +157,7 @@ class OrderService
             if ($customer && $order->shipping_phone) {
                 $this->smsService->send(
                     $order->shipping_phone,
-                    "Dear {customer_name}, your order #{order_id} of TK {grand_total} is confirmed! DREAMERS PCB.",
+                    'Dear {customer_name}, your order #{order_id} of TK {grand_total} is confirmed! DREAMERS PCB.',
                     [
                         'customer_name' => $order->shipping_name,
                         'order_id' => $order->order_no,

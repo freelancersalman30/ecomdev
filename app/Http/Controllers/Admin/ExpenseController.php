@@ -63,7 +63,7 @@ class ExpenseController extends Controller
 
         DB::transaction(function () use ($request) {
             $account = Account::lockForUpdate()->find($request->account_id);
-            $amount = (float)$request->amount;
+            $amount = (float) $request->amount;
 
             $expense = Expense::create([
                 'account_id' => $request->account_id,
@@ -90,7 +90,7 @@ class ExpenseController extends Controller
                 'source_type' => 'expense',
                 'source_id' => $expense->id,
                 'reference_no' => $request->reference_no,
-                'note' => 'Expense: ' . $request->title,
+                'note' => 'Expense: '.$request->title,
                 'transaction_date' => $request->expense_date,
                 'created_by' => auth()->id(),
             ]);
@@ -117,6 +117,7 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense)
     {
         $expense->delete();
+
         return redirect()->back()->with('success', 'Expense deleted.');
     }
 }

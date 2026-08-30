@@ -14,6 +14,7 @@ class RoleController extends Controller
         $roles = Role::with('permissions')->get();
         $permissions = Permission::all()->groupBy(function ($perm) {
             $parts = explode('.', $perm->name);
+
             return $parts[0] ?? 'general';
         });
 
@@ -38,6 +39,7 @@ class RoleController extends Controller
     public function updatePermissions(Request $request, Role $role)
     {
         $role->syncPermissions($request->permissions ?? []);
+
         return redirect()->back()->with('success', "Permissions updated for role {$role->name}!");
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -64,6 +65,7 @@ class GeneralSettingController extends Controller
         }
 
         $settings = Setting::all()->pluck('value', 'key');
+
         return view('admin.settings.general', compact('settings'));
     }
 
@@ -87,15 +89,15 @@ class GeneralSettingController extends Controller
         ]);
 
         $uploadDir = public_path('uploads/settings');
-        if (!File::isDirectory($uploadDir)) {
+        if (! File::isDirectory($uploadDir)) {
             File::makeDirectory($uploadDir, 0755, true, true);
         }
 
         // Handle Branding Asset Uploads
         $fileFields = [
-            'site_logo', 
-            'site_logo_dark', 
-            'site_favicon', 
+            'site_logo',
+            'site_logo_dark',
+            'site_favicon',
             'invoice_logo',
             'slider_1_image',
             'slider_2_image',
@@ -105,10 +107,10 @@ class GeneralSettingController extends Controller
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
-                $filename = $field . '_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                $filename = $field.'_'.time().'_'.Str::random(6).'.'.$file->getClientOriginalExtension();
                 $file->move($uploadDir, $filename);
-                Setting::set($field, '/uploads/settings/' . $filename, str_starts_with($field, 'slider_') ? 'slider' : 'branding');
-            } elseif ($request->boolean('remove_' . $field)) {
+                Setting::set($field, '/uploads/settings/'.$filename, str_starts_with($field, 'slider_') ? 'slider' : 'branding');
+            } elseif ($request->boolean('remove_'.$field)) {
                 $current = Setting::get($field);
                 if ($current && File::exists(public_path($current))) {
                     File::delete(public_path($current));
@@ -121,7 +123,7 @@ class GeneralSettingController extends Controller
         for ($i = 1; $i <= 3; $i++) {
             $imgField = "slider_{$i}_image";
             $urlField = "slider_{$i}_image_url";
-            if (!$request->hasFile($imgField) && $request->filled($urlField)) {
+            if (! $request->hasFile($imgField) && $request->filled($urlField)) {
                 Setting::set($imgField, $request->input($urlField), 'slider');
             }
         }
@@ -157,44 +159,44 @@ class GeneralSettingController extends Controller
         $excludedKeys = array_merge(
             ['_token', '_method'],
             $fileFields,
-            array_map(fn($f) => 'remove_' . $f, $fileFields),
+            array_map(fn ($f) => 'remove_'.$f, $fileFields),
             $toggleKeys
         );
 
         foreach ($request->except($excludedKeys) as $key => $value) {
             if ($value !== null) {
-                Setting::set($key, is_array($value) ? json_encode($value) : (string)$value, 'general');
+                Setting::set($key, is_array($value) ? json_encode($value) : (string) $value, 'general');
             }
         }
 
         // Synchronize legacy keys if both were used
         if ($request->filled('site_name')) {
-            Setting::set('company_name', (string)$request->site_name, 'general');
+            Setting::set('company_name', (string) $request->site_name, 'general');
         }
         if ($request->filled('site_phone')) {
-            Setting::set('phone', (string)$request->site_phone, 'general');
-            Setting::set('footer_hotline', (string)$request->site_phone, 'general');
+            Setting::set('phone', (string) $request->site_phone, 'general');
+            Setting::set('footer_hotline', (string) $request->site_phone, 'general');
         }
         if ($request->filled('site_email')) {
-            Setting::set('email', (string)$request->site_email, 'general');
-            Setting::set('footer_email', (string)$request->site_email, 'general');
+            Setting::set('email', (string) $request->site_email, 'general');
+            Setting::set('footer_email', (string) $request->site_email, 'general');
         }
         if ($request->filled('site_address')) {
-            Setting::set('address', (string)$request->site_address, 'general');
-            Setting::set('footer_address_office', (string)$request->site_address, 'general');
+            Setting::set('address', (string) $request->site_address, 'general');
+            Setting::set('footer_address_office', (string) $request->site_address, 'general');
         }
         if ($request->filled('inside_dhaka_shipping')) {
-            Setting::set('inside_dhaka_charge', (string)$request->inside_dhaka_shipping, 'general');
+            Setting::set('inside_dhaka_charge', (string) $request->inside_dhaka_shipping, 'general');
         }
         if ($request->filled('outside_dhaka_shipping')) {
-            Setting::set('outside_dhaka_charge', (string)$request->outside_dhaka_shipping, 'general');
+            Setting::set('outside_dhaka_charge', (string) $request->outside_dhaka_shipping, 'general');
         }
 
         // Synchronize Slider settings to Banner table for seamless compatibility
         for ($i = 1; $i <= 3; $i++) {
             $title = Setting::get("slider_{$i}_title");
-            if (!empty($title)) {
-                \App\Models\Banner::updateOrCreate(
+            if (! empty($title)) {
+                Banner::updateOrCreate(
                     ['placement' => 'hero_slider', 'display_order' => $i],
                     [
                         'title' => $title,

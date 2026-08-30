@@ -7,9 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\Size;
-use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -26,8 +24,8 @@ class ProductController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('pcb_model', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('pcb_model', 'like', "%{$search}%");
             });
         }
 
@@ -71,16 +69,16 @@ class ProductController extends Controller
         // 1. Handle Primary Thumbnail Upload
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            $fileName = 'thumb_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'thumb_'.time().'_'.Str::random(8).'.'.$file->getClientOriginalExtension();
             $file->move(public_path('uploads/products'), $fileName);
-            $thumbnailUrl = '/uploads/products/' . $fileName;
+            $thumbnailUrl = '/uploads/products/'.$fileName;
         } elseif ($request->filled('thumbnail_url')) {
             $thumbnailUrl = $request->thumbnail_url;
         }
 
         $product = Product::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . rand(100, 999),
+            'slug' => Str::slug($request->name).'-'.rand(100, 999),
             'sku' => strtoupper($request->sku),
             'barcode' => $request->barcode ?? strtoupper($request->sku),
             'category_id' => $request->category_id,
@@ -111,11 +109,11 @@ class ProductController extends Controller
         if ($request->hasFile('gallery_images')) {
             foreach ($request->file('gallery_images') as $idx => $gFile) {
                 if ($gFile->isValid()) {
-                    $gFileName = 'gal_' . time() . '_' . Str::random(8) . '.' . $gFile->getClientOriginalExtension();
+                    $gFileName = 'gal_'.time().'_'.Str::random(8).'.'.$gFile->getClientOriginalExtension();
                     $gFile->move(public_path('uploads/products/gallery'), $gFileName);
                     $product->images()->create([
-                        'image_path' => '/uploads/products/gallery/' . $gFileName,
-                        'display_order' => $idx + 1
+                        'image_path' => '/uploads/products/gallery/'.$gFileName,
+                        'display_order' => $idx + 1,
                     ]);
                 }
             }
@@ -124,10 +122,10 @@ class ProductController extends Controller
         // Handle Variants if supplied
         if ($request->has('variants') && is_array($request->variants)) {
             foreach ($request->variants as $variantData) {
-                if (!empty($variantData['variant_name'])) {
+                if (! empty($variantData['variant_name'])) {
                     $product->variants()->create([
                         'variant_name' => $variantData['variant_name'],
-                        'sku' => $variantData['sku'] ?? ($product->sku . '-' . Str::random(4)),
+                        'sku' => $variantData['sku'] ?? ($product->sku.'-'.Str::random(4)),
                         'barcode' => $variantData['barcode'] ?? null,
                         'color_id' => $variantData['color_id'] ?? null,
                         'size_id' => $variantData['size_id'] ?? null,
@@ -160,7 +158,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'sku' => 'required|string|unique:products,sku,' . $product->id,
+            'sku' => 'required|string|unique:products,sku,'.$product->id,
             'purchase_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
         ]);
@@ -194,9 +192,9 @@ class ProductController extends Controller
         // 1. Handle Thumbnail Replacement
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            $fileName = 'thumb_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'thumb_'.time().'_'.Str::random(8).'.'.$file->getClientOriginalExtension();
             $file->move(public_path('uploads/products'), $fileName);
-            $updateData['thumbnail'] = '/uploads/products/' . $fileName;
+            $updateData['thumbnail'] = '/uploads/products/'.$fileName;
         } elseif ($request->filled('thumbnail_url')) {
             $updateData['thumbnail'] = $request->thumbnail_url;
         }
@@ -207,11 +205,11 @@ class ProductController extends Controller
         if ($request->hasFile('gallery_images')) {
             foreach ($request->file('gallery_images') as $idx => $gFile) {
                 if ($gFile->isValid()) {
-                    $gFileName = 'gal_' . time() . '_' . Str::random(8) . '.' . $gFile->getClientOriginalExtension();
+                    $gFileName = 'gal_'.time().'_'.Str::random(8).'.'.$gFile->getClientOriginalExtension();
                     $gFile->move(public_path('uploads/products/gallery'), $gFileName);
                     $product->images()->create([
-                        'image_path' => '/uploads/products/gallery/' . $gFileName,
-                        'display_order' => $product->images()->count() + $idx + 1
+                        'image_path' => '/uploads/products/gallery/'.$gFileName,
+                        'display_order' => $product->images()->count() + $idx + 1,
                     ]);
                 }
             }
@@ -223,6 +221,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
+
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully!');
     }
 }

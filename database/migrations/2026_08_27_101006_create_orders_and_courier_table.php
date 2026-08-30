@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->enum('order_type', ['online', 'pos', 'landing_page'])->default('online');
-            
+
             // Status Pipeline
             $table->enum('status', [
                 'incomplete',
@@ -25,7 +25,7 @@ return new class extends Migration
                 'in_courier',
                 'completed',
                 'cancelled',
-                'returned'
+                'returned',
             ])->default('pending')->index();
 
             // Financials

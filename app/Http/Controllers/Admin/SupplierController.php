@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
-use App\Models\SupplierPayment;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -43,6 +42,7 @@ class SupplierController extends Controller
     public function show(Supplier $supplier)
     {
         $supplier->load(['purchases.items.product', 'payments']);
+
         return view('admin.suppliers.show', compact('supplier'));
     }
 
@@ -65,6 +65,6 @@ class SupplierController extends Controller
 
         $supplier->recalculateDue();
 
-        return redirect()->back()->with('success', 'Payment of TK ' . number_format($request->amount, 2) . ' recorded for ' . $supplier->name);
+        return redirect()->back()->with('success', 'Payment of TK '.number_format($request->amount, 2).' recorded for '.$supplier->name);
     }
 }

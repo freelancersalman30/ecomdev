@@ -11,6 +11,7 @@ class BannerController extends Controller
     public function index()
     {
         $banners = Banner::orderBy('placement')->orderBy('display_order')->get();
+
         return view('admin.banners.index', compact('banners'));
     }
 
@@ -38,6 +39,7 @@ class BannerController extends Controller
     public function destroy(Banner $banner)
     {
         $banner->delete();
+
         return redirect()->back()->with('success', 'Banner deleted!');
     }
 }

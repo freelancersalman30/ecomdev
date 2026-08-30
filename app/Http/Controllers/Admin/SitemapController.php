@@ -8,7 +8,6 @@ use App\Models\LandingPage;
 use App\Models\Product;
 use App\Models\SeoSetting;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
 class SitemapController extends Controller
@@ -37,8 +36,8 @@ class SitemapController extends Controller
 
         // Homepage
         $xml .= '<url>';
-        $xml .= '<loc>' . url('/') . '</loc>';
-        $xml .= '<lastmod>' . Carbon::now()->toIso8601String() . '</lastmod>';
+        $xml .= '<loc>'.url('/').'</loc>';
+        $xml .= '<lastmod>'.Carbon::now()->toIso8601String().'</lastmod>';
         $xml .= '<changefreq>daily</changefreq>';
         $xml .= '<priority>1.0</priority>';
         $xml .= '</url>';
@@ -46,8 +45,8 @@ class SitemapController extends Controller
         // Categories
         foreach ($categories as $cat) {
             $xml .= '<url>';
-            $xml .= '<loc>' . url('/category/' . $cat->slug) . '</loc>';
-            $xml .= '<lastmod>' . $cat->updated_at->toIso8601String() . '</lastmod>';
+            $xml .= '<loc>'.url('/category/'.$cat->slug).'</loc>';
+            $xml .= '<lastmod>'.$cat->updated_at->toIso8601String().'</lastmod>';
             $xml .= '<changefreq>weekly</changefreq>';
             $xml .= '<priority>0.8</priority>';
             $xml .= '</url>';
@@ -56,8 +55,8 @@ class SitemapController extends Controller
         // Products
         foreach ($products as $prod) {
             $xml .= '<url>';
-            $xml .= '<loc>' . url('/product/' . $prod->slug) . '</loc>';
-            $xml .= '<lastmod>' . $prod->updated_at->toIso8601String() . '</lastmod>';
+            $xml .= '<loc>'.url('/product/'.$prod->slug).'</loc>';
+            $xml .= '<lastmod>'.$prod->updated_at->toIso8601String().'</lastmod>';
             $xml .= '<changefreq>daily</changefreq>';
             $xml .= '<priority>0.9</priority>';
             $xml .= '</url>';
@@ -66,8 +65,8 @@ class SitemapController extends Controller
         // Landing Pages
         foreach ($landingPages as $lp) {
             $xml .= '<url>';
-            $xml .= '<loc>' . url('/offer/' . $lp->slug) . '</loc>';
-            $xml .= '<lastmod>' . $lp->updated_at->toIso8601String() . '</lastmod>';
+            $xml .= '<loc>'.url('/offer/'.$lp->slug).'</loc>';
+            $xml .= '<lastmod>'.$lp->updated_at->toIso8601String().'</lastmod>';
             $xml .= '<changefreq>daily</changefreq>';
             $xml .= '<priority>0.95</priority>';
             $xml .= '</url>';

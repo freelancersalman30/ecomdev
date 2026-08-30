@@ -13,8 +13,8 @@ class CourierService
      */
     public function bookConsignment(Order $order, string $courierName = 'Steadfast'): CourierConsignment
     {
-        $trackingCode = strtoupper($courierName[0]) . '-' . strtoupper(Str::random(10));
-        $consignmentId = 'CONS_' . time() . '_' . rand(100, 999);
+        $trackingCode = strtoupper($courierName[0]).'-'.strtoupper(Str::random(10));
+        $consignmentId = 'CONS_'.time().'_'.rand(100, 999);
         $deliveryFee = ($order->shipping_city === 'Dhaka') ? 70.00 : 130.00;
 
         $consignment = CourierConsignment::updateOrCreate(
@@ -31,7 +31,7 @@ class CourierService
                     'consignment_id' => $consignmentId,
                     'tracking_code' => $trackingCode,
                     'created_at' => now()->toDateTimeString(),
-                ]
+                ],
             ]
         );
 

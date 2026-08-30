@@ -29,12 +29,14 @@ class Setting extends Model
                 static::$runtimeCache = self::query()->pluck('value', 'key')->toArray();
             }
         }
+
         return static::$runtimeCache ?? [];
     }
 
     public static function get(string $key, $default = null)
     {
         $all = static::allCached();
+
         return array_key_exists($key, $all) ? $all[$key] : $default;
     }
 

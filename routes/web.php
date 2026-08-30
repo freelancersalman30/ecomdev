@@ -1,40 +1,39 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\PosController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\BrandController;
-use App\Http\Controllers\Admin\AttributeController;
-use App\Http\Controllers\Admin\PurchaseController;
-use App\Http\Controllers\Admin\SupplierController;
-use App\Http\Controllers\Admin\CouponController;
-use App\Http\Controllers\Admin\LandingPageController;
-use App\Http\Controllers\Admin\FraudCheckController;
-use App\Http\Controllers\Admin\SmsMarketingController;
 use App\Http\Controllers\Admin\AccountController;
-use App\Http\Controllers\Admin\ExpenseController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\CustomerController;
-use App\Http\Controllers\Admin\GeneralSettingController;
-use App\Http\Controllers\Admin\EmailSettingController;
 use App\Http\Controllers\Admin\ApiHubController;
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmailSettingController;
+use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\FooterSettingController;
+use App\Http\Controllers\Admin\FraudCheckController;
+use App\Http\Controllers\Admin\GeneralSettingController;
+use App\Http\Controllers\Admin\LandingPageController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PosController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\SitemapController;
+use App\Http\Controllers\Admin\SmsMarketingController;
+use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\SystemToolController;
-use App\Http\Controllers\Admin\FooterSettingController;
-use App\Http\Controllers\Admin\Auth\AdminAuthController;
-
-use App\Http\Controllers\Frontend\FrontendController;
-use App\Http\Controllers\Frontend\ShopController;
-use App\Http\Controllers\Frontend\ProductController as FrontProductController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\FrontendController;
+use App\Http\Controllers\Frontend\ProductController as FrontProductController;
+use App\Http\Controllers\Frontend\ShopController;
+use Illuminate\Support\Facades\Route;
 
 // ==========================================
 // 🛍️ FRONT-END STOREFRONT ROUTES (Daraz-Style)
@@ -137,7 +136,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
 
     // 4. Product & Catalog Management
     Route::resource('products', ProductController::class);
-    
+
     // Categories (3-Tier)
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'storeCategory'])->name('categories.store');
@@ -235,8 +234,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::post('/banners', [BannerController::class, 'store'])->name('banners.store');
     Route::delete('/banners/{banner}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
-    // 19. Analytics & Business Reports
+    // 19. Analytics & Reports Hub
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/orders', [ReportController::class, 'orders'])->name('reports.orders');
+    Route::get('/reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
+    Route::get('/reports/expenses', [ReportController::class, 'expenses'])->name('reports.expenses');
+    Route::get('/reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+    Route::get('/reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit_loss');
 
     // 20. SEO Settings
     Route::get('/settings/seo', [SeoController::class, 'index'])->name('settings.seo');

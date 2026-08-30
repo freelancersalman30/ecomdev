@@ -21,9 +21,9 @@ class CustomerDashboardController extends Controller
 
         // Customer's Recent Orders
         $recentOrders = Order::where(function ($q) use ($customer) {
-                $q->where('customer_id', $customer->id)
-                  ->orWhere('shipping_phone', $customer->phone);
-            })
+            $q->where('customer_id', $customer->id)
+                ->orWhere('shipping_phone', $customer->phone);
+        })
             ->with(['items.product'])
             ->latest()
             ->take(5)
@@ -65,9 +65,9 @@ class CustomerDashboardController extends Controller
         $status = $request->get('status', 'all');
 
         $query = Order::where(function ($q) use ($customer) {
-                $q->where('customer_id', $customer->id)
-                  ->orWhere('shipping_phone', $customer->phone);
-            })
+            $q->where('customer_id', $customer->id)
+                ->orWhere('shipping_phone', $customer->phone);
+        })
             ->with(['items.product', 'consignment']);
 
         if ($status !== 'all') {
@@ -89,7 +89,7 @@ class CustomerDashboardController extends Controller
         $order = Order::where('order_no', $orderNo)
             ->where(function ($q) use ($customer) {
                 $q->where('customer_id', $customer->id)
-                  ->orWhere('shipping_phone', $customer->phone);
+                    ->orWhere('shipping_phone', $customer->phone);
             })
             ->with(['items.product', 'statusLogs', 'consignment'])
             ->firstOrFail();
@@ -103,6 +103,7 @@ class CustomerDashboardController extends Controller
     public function profile()
     {
         $customer = Auth::guard('customer')->user();
+
         return view('customer.profile', compact('customer'));
     }
 
@@ -115,7 +116,7 @@ class CustomerDashboardController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
+            'email' => 'nullable|email|max:255|unique:customers,email,'.$customer->id,
             'address' => 'nullable|string|max:500',
             'city' => 'nullable|string|max:100',
             'postal_code' => 'nullable|string|max:20',
@@ -144,12 +145,12 @@ class CustomerDashboardController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        if ($customer->password && !Hash::check($request->current_password, $customer->password)) {
+        if ($customer->password && ! Hash::check($request->current_password, $customer->password)) {
             return redirect()->back()->withErrors(['current_password' => 'Current password does not match our records.']);
         }
 
         $customer->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()->back()->with('success', 'Password updated successfully.');
@@ -161,7 +162,7 @@ class CustomerDashboardController extends Controller
     public function wishlist()
     {
         $customer = Auth::guard('customer')->user();
-        
+
         // Recommended/Wishlist products
         $wishlistProducts = Product::where('is_active', true)
             ->with(['category', 'brand'])

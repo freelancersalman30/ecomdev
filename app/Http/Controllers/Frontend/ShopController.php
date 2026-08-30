@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\SubCategory;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -22,10 +21,10 @@ class ShopController extends Controller
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('pcb_model', 'like', "%{$search}%")
-                  ->orWhere('chipset', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('pcb_model', 'like', "%{$search}%")
+                    ->orWhere('chipset', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%");
             });
         }
 
@@ -103,6 +102,7 @@ class ShopController extends Controller
     public function category($slug)
     {
         $category = Category::where('slug', $slug)->firstOrFail();
+
         return redirect()->route('shop.index', ['category_id' => $category->id]);
     }
 
@@ -112,6 +112,7 @@ class ShopController extends Controller
     public function brand($slug)
     {
         $brand = Brand::where('slug', $slug)->firstOrFail();
+
         return redirect()->route('shop.index', ['brand_id' => $brand->id]);
     }
 }

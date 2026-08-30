@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -27,16 +28,16 @@ class FrontendController extends Controller
         // Hero Sliders: Load from customizable settings or Banner table
         $heroBanners = collect();
         for ($i = 1; $i <= 3; $i++) {
-            $isActive = \App\Models\Setting::get("slider_{$i}_active", $i <= 2 ? '1' : '0') === '1';
-            $title = \App\Models\Setting::get("slider_{$i}_title");
-            if ($isActive && !empty($title)) {
-                $heroBanners->push((object)[
-                    'badge' => \App\Models\Setting::get("slider_{$i}_badge", 'Verified Electronic Component'),
+            $isActive = Setting::get("slider_{$i}_active", $i <= 2 ? '1' : '0') === '1';
+            $title = Setting::get("slider_{$i}_title");
+            if ($isActive && ! empty($title)) {
+                $heroBanners->push((object) [
+                    'badge' => Setting::get("slider_{$i}_badge", 'Verified Electronic Component'),
                     'title' => $title,
-                    'subtitle' => \App\Models\Setting::get("slider_{$i}_subtitle", ''),
-                    'image' => \App\Models\Setting::get("slider_{$i}_image") ?: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
-                    'link_url' => \App\Models\Setting::get("slider_{$i}_link", '/shop'),
-                    'button_text' => \App\Models\Setting::get("slider_{$i}_button_text", 'Explore Collection'),
+                    'subtitle' => Setting::get("slider_{$i}_subtitle", ''),
+                    'image' => Setting::get("slider_{$i}_image") ?: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
+                    'link_url' => Setting::get("slider_{$i}_link", '/shop'),
+                    'button_text' => Setting::get("slider_{$i}_button_text", 'Explore Collection'),
                 ]);
             }
         }
@@ -48,7 +49,7 @@ class FrontendController extends Controller
                 ->orderBy('display_order')
                 ->get();
             if ($dbBanners->isNotEmpty()) {
-                $heroBanners = $dbBanners->map(fn($b) => (object)[
+                $heroBanners = $dbBanners->map(fn ($b) => (object) [
                     'badge' => 'Verified Electronic Component',
                     'title' => $b->title,
                     'subtitle' => $b->subtitle,
@@ -77,7 +78,7 @@ class FrontendController extends Controller
                     'link_url' => '/shop',
                     'subtitle' => '1000W High Power Digital SMD Rework Master Kit',
                     'button_text' => 'Shop Equipment',
-                ]
+                ],
             ]);
         }
 

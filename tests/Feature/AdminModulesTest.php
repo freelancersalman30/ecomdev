@@ -3,8 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\LandingPage;
+use App\Models\Customer;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
+use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminModulesTest extends TestCase
@@ -13,9 +18,9 @@ class AdminModulesTest extends TestCase
     {
         parent::setUp();
 
-        $admin = \App\Models\User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'admin@dreamerspcb.com'],
-            ['name' => 'Dreamers Admin', 'password' => \Illuminate\Support\Facades\Hash::make('password')]
+            ['name' => 'Dreamers Admin', 'password' => Hash::make('password')]
         );
         $this->actingAs($admin, 'web');
     }
@@ -73,12 +78,12 @@ class AdminModulesTest extends TestCase
 
     public function test_customer_authenticated_dashboard_and_orders(): void
     {
-        $customer = \App\Models\Customer::firstOrCreate(
+        $customer = Customer::firstOrCreate(
             ['phone' => '01711223344'],
             [
                 'name' => 'Salman Chowdhury',
                 'email' => 'salman@dreamerspcb.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'password' => Hash::make('password'),
                 'city' => 'Dhaka',
                 'is_active' => true,
             ]
@@ -105,9 +110,9 @@ class AdminModulesTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Tracking');
 
-        $order = \App\Models\Order::first();
+        $order = Order::first();
         if ($order) {
-            $trackResponse = $this->get('/track-order?order_no=' . $order->order_no);
+            $trackResponse = $this->get('/track-order?order_no='.$order->order_no);
             $trackResponse->assertStatus(200);
             $trackResponse->assertSee($order->order_no);
         }
@@ -120,7 +125,7 @@ class AdminModulesTest extends TestCase
             // 1. Add to cart
             $this->post('/cart/add', [
                 'product_id' => $product->id,
-                'quantity' => 2
+                'quantity' => 2,
             ]);
 
             // 2. Submit checkout
@@ -131,7 +136,7 @@ class AdminModulesTest extends TestCase
                 'shipping_address' => 'House 12, Road 4, Dhanmondi',
                 'shipping_area' => 'inside_dhaka',
                 'payment_method' => 'cash_on_delivery',
-                'notes' => 'Test order placement'
+                'notes' => 'Test order placement',
             ]);
 
             $response->assertRedirect();
@@ -142,7 +147,7 @@ class AdminModulesTest extends TestCase
     {
         $product = Product::first();
         if ($product) {
-            $response = $this->get('/product/' . $product->slug);
+            $response = $this->get('/product/'.$product->slug);
             $response->assertStatus(200);
             $response->assertSee($product->name);
         } else {
@@ -327,7 +332,7 @@ class AdminModulesTest extends TestCase
 
         $product = Product::first();
         if ($product) {
-            $editResponse = $this->get('/admin/products/' . $product->id . '/edit');
+            $editResponse = $this->get('/admin/products/'.$product->id.'/edit');
             $editResponse->assertStatus(200);
         }
     }
@@ -335,10 +340,10 @@ class AdminModulesTest extends TestCase
     public function test_product_store_with_uploaded_images(): void
     {
         $category = Category::first();
-        $thumbnail = \Illuminate\Http\UploadedFile::fake()->image('stm32_thumb.jpg', 600, 600);
-        $galleryImage = \Illuminate\Http\UploadedFile::fake()->image('stm32_gal1.jpg', 800, 800);
+        $thumbnail = UploadedFile::fake()->image('stm32_thumb.jpg', 600, 600);
+        $galleryImage = UploadedFile::fake()->image('stm32_gal1.jpg', 800, 800);
 
-        $sku = 'TEST-PCB-' . rand(1000, 9999);
+        $sku = 'TEST-PCB-'.rand(1000, 9999);
 
         $response = $this->post('/admin/products', [
             'name' => 'ESP32-S3 Dual Core AI Dev Board',
@@ -379,7 +384,46 @@ class AdminModulesTest extends TestCase
         ]);
 
         $response->assertRedirect('/admin/settings/footer');
-        $this->assertEquals($testHotline, \App\Models\Setting::get('footer_hotline'));
-        $this->assertEquals($testBio, \App\Models\Setting::get('footer_about'));
+        $this->assertEquals($testHotline, Setting::get('footer_hotline'));
+        $this->assertEquals($testBio, Setting::get('footer_about'));
+    }
+
+    public function test_dashboard_menu_contains_reports_and_submenus(): void
+    {
+        $response = $this->get('/admin/dashboard');
+        $response->assertStatus(200);
+        $response->assertSee('Reports');
+        $response->assertSee('Order Report');
+        $response->assertSee('Purchase Report');
+        $response->assertSee('Expense Report');
+        $response->assertSee('Stock Report');
+        $response->assertSee('Profit & Loss', false);
+    }
+
+    public function test_reports_routes_render_all_five_reports(): void
+    {
+        $response = $this->get('/admin/reports');
+        $response->assertStatus(200);
+        $response->assertSee('Order Report');
+
+        $ordersResponse = $this->get('/admin/reports/orders');
+        $ordersResponse->assertStatus(200);
+        $ordersResponse->assertSee('Order Report');
+
+        $purchasesResponse = $this->get('/admin/reports/purchases');
+        $purchasesResponse->assertStatus(200);
+        $purchasesResponse->assertSee('Purchase Report');
+
+        $expensesResponse = $this->get('/admin/reports/expenses');
+        $expensesResponse->assertStatus(200);
+        $expensesResponse->assertSee('Expense Report');
+
+        $stockResponse = $this->get('/admin/reports/stock');
+        $stockResponse->assertStatus(200);
+        $stockResponse->assertSee('Stock Report');
+
+        $profitLossResponse = $this->get('/admin/reports/profit-loss');
+        $profitLossResponse->assertStatus(200);
+        $profitLossResponse->assertSee('Profit & Loss', false);
     }
 }

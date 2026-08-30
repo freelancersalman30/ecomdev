@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     protected CourierService $courierService;
+
     protected InventoryService $inventoryService;
 
     public function __construct(CourierService $courierService, InventoryService $inventoryService)
@@ -33,9 +34,9 @@ class OrderController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('order_no', 'like', "%{$search}%")
-                  ->orWhere('shipping_name', 'like', "%{$search}%")
-                  ->orWhere('shipping_phone', 'like', "%{$search}%")
-                  ->orWhere('courier_tracking_id', 'like', "%{$search}%");
+                    ->orWhere('shipping_name', 'like', "%{$search}%")
+                    ->orWhere('shipping_phone', 'like', "%{$search}%")
+                    ->orWhere('courier_tracking_id', 'like', "%{$search}%");
             });
         }
 
@@ -60,6 +61,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load(['customer', 'items.product', 'items.variant', 'statusLogs.changedBy', 'consignment']);
+
         return view('admin.orders.show', compact('order'));
     }
 
@@ -74,7 +76,7 @@ class OrderController extends Controller
         $newStatus = $request->status;
 
         // If transitioning to cancelled/returned, restore inventory
-        if (in_array($newStatus, ['cancelled', 'returned']) && !in_array($oldStatus, ['cancelled', 'returned'])) {
+        if (in_array($newStatus, ['cancelled', 'returned']) && ! in_array($oldStatus, ['cancelled', 'returned'])) {
             foreach ($order->items as $item) {
                 $this->inventoryService->restoreStock($item->product_id, $item->variant_id, $item->quantity);
             }
@@ -93,7 +95,7 @@ class OrderController extends Controller
             $order->customer->recalculateMetrics();
         }
 
-        return redirect()->back()->with('success', "Order status updated to " . ucfirst(str_replace('_', ' ', $newStatus)));
+        return redirect()->back()->with('success', 'Order status updated to '.ucfirst(str_replace('_', ' ', $newStatus)));
     }
 
     public function bulkUpdateStatus(Request $request)
@@ -106,10 +108,10 @@ class OrderController extends Controller
 
         $orders = Order::whereIn('id', $request->order_ids)->get();
         foreach ($orders as $order) {
-            $order->logStatusChange($request->status, 'Bulk status update by ' . auth()->user()->name, auth()->id());
+            $order->logStatusChange($request->status, 'Bulk status update by '.auth()->user()->name, auth()->id());
         }
 
-        return redirect()->back()->with('success', count($orders) . ' orders updated successfully.');
+        return redirect()->back()->with('success', count($orders).' orders updated successfully.');
     }
 
     public function bookCourier(Request $request, Order $order)
@@ -126,12 +128,14 @@ class OrderController extends Controller
     public function invoice(Order $order)
     {
         $order->load(['customer', 'items.product', 'items.variant']);
+
         return view('admin.orders.invoice', compact('order'));
     }
 
     public function packingSlip(Order $order)
     {
         $order->load(['customer', 'items.product', 'items.variant']);
+
         return view('admin.orders.packing_slip', compact('order'));
     }
 }

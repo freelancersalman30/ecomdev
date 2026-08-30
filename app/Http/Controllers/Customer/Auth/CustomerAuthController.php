@@ -18,6 +18,7 @@ class CustomerAuthController extends Controller
         if (Auth::guard('customer')->check()) {
             return redirect()->route('customer.dashboard');
         }
+
         return view('customer.auth.login');
     }
 
@@ -42,7 +43,7 @@ class CustomerAuthController extends Controller
 
         // If customer exists and password is set, verify hash
         if ($customer && $customer->password && Hash::check($password, $customer->password)) {
-            if (!$customer->is_active) {
+            if (! $customer->is_active) {
                 return redirect()->back()->withInput()->with('error', 'Your customer account is currently suspended. Please contact support.');
             }
 
@@ -53,7 +54,7 @@ class CustomerAuthController extends Controller
         }
 
         // Alternative quick fallback for seed/existing customer without password
-        if ($customer && !$customer->password && $password === 'password') {
+        if ($customer && ! $customer->password && $password === 'password') {
             $customer->password = Hash::make('password');
             $customer->save();
 
@@ -74,6 +75,7 @@ class CustomerAuthController extends Controller
         if (Auth::guard('customer')->check()) {
             return redirect()->route('customer.dashboard');
         }
+
         return view('customer.auth.register');
     }
 

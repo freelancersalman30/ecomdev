@@ -86,6 +86,77 @@
 
     </div>
 
+    <!-- Quick Access Business Reports Bar -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-800 text-white shadow-md">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-700/60">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs sm:text-sm font-bold">Reports & Financial Intelligence</h4>
+                    <p class="text-[11px] text-slate-400">Detailed ledgers, procurement audits, inventory valuation, and P&L statements</p>
+                </div>
+            </div>
+            <a href="{{ route('admin.reports.index') }}" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                <span>Open Full Reports Hub</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            <a href="{{ route('admin.reports.orders') }}" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-emerald-500/50 transition flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition flex-shrink-0">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-bold group-hover:text-emerald-400 transition">Order Report</div>
+                    <div class="text-[10px] text-slate-400">Sales & Invoicing</div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.reports.purchases') }}" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-sky-500/50 transition flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center group-hover:scale-110 transition flex-shrink-0">
+                    <i data-lucide="truck" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-bold group-hover:text-sky-400 transition">Purchase Report</div>
+                    <div class="text-[10px] text-slate-400">Procurement & Dues</div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.reports.expenses') }}" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-rose-500/50 transition flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center group-hover:scale-110 transition flex-shrink-0">
+                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-bold group-hover:text-rose-400 transition">Expense Report</div>
+                    <div class="text-[10px] text-slate-400">Overhead Ledgers</div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.reports.stock') }}" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-amber-500/50 transition flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-110 transition flex-shrink-0">
+                    <i data-lucide="boxes" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-bold group-hover:text-amber-400 transition">Stock Report</div>
+                    <div class="text-[10px] text-slate-400">Valuation & Health</div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.reports.profit_loss') }}" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-teal-400 transition flex items-center gap-3 group col-span-2 sm:col-span-1">
+                <div class="w-8 h-8 rounded-lg bg-teal-400/20 text-teal-300 flex items-center justify-center group-hover:scale-110 transition flex-shrink-0">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-bold group-hover:text-teal-300 transition">Profit & Loss</div>
+                    <div class="text-[10px] text-slate-400">P&L Statement</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
     <!-- Charts Section: Revenue vs Purchases & Status Pipeline -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         

@@ -20,12 +20,12 @@ class ProductFeedController extends Controller
 
         $products = Product::where('is_active', true)->with(['category', 'brand'])->get();
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">' . "\n";
-        $xml .= '<channel>' . "\n";
-        $xml .= '  <title>' . htmlspecialchars($siteName) . ' - Meta Product Catalog</title>' . "\n";
-        $xml .= '  <link>' . url('/') . '</link>' . "\n";
-        $xml .= '  <description>' . htmlspecialchars($siteTagline) . '</description>' . "\n";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+        $xml .= '<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">'."\n";
+        $xml .= '<channel>'."\n";
+        $xml .= '  <title>'.htmlspecialchars($siteName).' - Meta Product Catalog</title>'."\n";
+        $xml .= '  <link>'.url('/').'</link>'."\n";
+        $xml .= '  <description>'.htmlspecialchars($siteTagline).'</description>'."\n";
 
         foreach ($products as $product) {
             $price = $product->discount_price ?? $product->selling_price;
@@ -35,21 +35,21 @@ class ProductFeedController extends Controller
             $brandName = $product->brand ? $product->brand->name : $siteName;
             $categoryName = $product->category ? $product->category->name : 'Electronics';
 
-            $xml .= '  <item>' . "\n";
-            $xml .= '    <g:id>' . $product->id . '</g:id>' . "\n";
-            $xml .= '    <g:title><![CDATA[' . $product->name . ']]></g:title>' . "\n";
-            $xml .= '    <g:description><![CDATA[' . strip_tags($product->short_description ?: $product->description ?: $product->name) . ']]></g:description>' . "\n";
-            $xml .= '    <g:link>' . htmlspecialchars($productUrl) . '</g:link>' . "\n";
-            $xml .= '    <g:image_link>' . htmlspecialchars($imageUrl) . '</g:image_link>' . "\n";
-            $xml .= '    <g:brand><![CDATA[' . $brandName . ']]></g:brand>' . "\n";
-            $xml .= '    <g:condition>new</g:condition>' . "\n";
-            $xml .= '    <g:availability>' . $availability . '</g:availability>' . "\n";
-            $xml .= '    <g:price>' . number_format($price, 2, '.', '') . ' ' . $currency . '</g:price>' . "\n";
-            $xml .= '    <g:product_type><![CDATA[' . $categoryName . ']]></g:product_type>' . "\n";
-            $xml .= '  </item>' . "\n";
+            $xml .= '  <item>'."\n";
+            $xml .= '    <g:id>'.$product->id.'</g:id>'."\n";
+            $xml .= '    <g:title><![CDATA['.$product->name.']]></g:title>'."\n";
+            $xml .= '    <g:description><![CDATA['.strip_tags($product->short_description ?: $product->description ?: $product->name).']]></g:description>'."\n";
+            $xml .= '    <g:link>'.htmlspecialchars($productUrl).'</g:link>'."\n";
+            $xml .= '    <g:image_link>'.htmlspecialchars($imageUrl).'</g:image_link>'."\n";
+            $xml .= '    <g:brand><![CDATA['.$brandName.']]></g:brand>'."\n";
+            $xml .= '    <g:condition>new</g:condition>'."\n";
+            $xml .= '    <g:availability>'.$availability.'</g:availability>'."\n";
+            $xml .= '    <g:price>'.number_format($price, 2, '.', '').' '.$currency.'</g:price>'."\n";
+            $xml .= '    <g:product_type><![CDATA['.$categoryName.']]></g:product_type>'."\n";
+            $xml .= '  </item>'."\n";
         }
 
-        $xml .= '</channel>' . "\n";
+        $xml .= '</channel>'."\n";
         $xml .= '</rss>';
 
         return response($xml, 200, [

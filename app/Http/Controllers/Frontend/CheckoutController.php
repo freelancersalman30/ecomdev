@@ -52,7 +52,7 @@ class CheckoutController extends Controller
             'shipping_city' => 'required|string|max:100',
             'shipping_area' => 'required|in:inside_dhaka,outside_dhaka',
             'payment_method' => 'required|in:cash_on_delivery,bkash,nagad,bank_transfer',
-            'notes' => 'nullable|string|max:500'
+            'notes' => 'nullable|string|max:500',
         ]);
 
         $cart = session()->get('cart', []);
@@ -75,7 +75,7 @@ class CheckoutController extends Controller
             $cartItems[] = [
                 'product_id' => $item['product_id'],
                 'variant_id' => $item['variant_id'] ?? null,
-                'quantity' => $item['quantity']
+                'quantity' => $item['quantity'],
             ];
         }
 
@@ -93,7 +93,7 @@ class CheckoutController extends Controller
             'coupon_code' => $coupon ? $coupon['code'] : null,
             'paid_amount' => 0, // COD initially 0
             'order_notes' => $request->notes,
-            'cart' => $cartItems
+            'cart' => $cartItems,
         ];
 
         try {
@@ -105,7 +105,7 @@ class CheckoutController extends Controller
 
             return redirect()->route('checkout.success', $order->order_no);
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Checkout failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Checkout failed: '.$e->getMessage());
         }
     }
 

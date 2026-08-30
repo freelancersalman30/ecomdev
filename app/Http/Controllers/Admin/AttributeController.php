@@ -25,6 +25,7 @@ class AttributeController extends Controller
         ]);
 
         Color::create($request->only('name', 'code'));
+
         return redirect()->back()->with('success', 'Color attribute created!');
     }
 
@@ -36,6 +37,7 @@ class AttributeController extends Controller
         ]);
 
         Size::create($request->only('name', 'code'));
+
         return redirect()->back()->with('success', 'Size/Pinout attribute created!');
     }
 }

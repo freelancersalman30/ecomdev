@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 
 class Order extends Model
 {
@@ -108,14 +108,45 @@ class Order extends Model
     }
 
     // Status Scopes
-    public function scopeIncomplete(Builder $query) { return $query->where('status', 'incomplete'); }
-    public function scopePending(Builder $query) { return $query->where('status', 'pending'); }
-    public function scopeProcessing(Builder $query) { return $query->where('status', 'processing'); }
-    public function scopeOnTheWay(Builder $query) { return $query->where('status', 'on_the_way'); }
-    public function scopeInCourier(Builder $query) { return $query->where('status', 'in_courier'); }
-    public function scopeCompleted(Builder $query) { return $query->where('status', 'completed'); }
-    public function scopeCancelled(Builder $query) { return $query->where('status', 'cancelled'); }
-    public function scopeReturned(Builder $query) { return $query->where('status', 'returned'); }
+    public function scopeIncomplete(Builder $query)
+    {
+        return $query->where('status', 'incomplete');
+    }
+
+    public function scopePending(Builder $query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeProcessing(Builder $query)
+    {
+        return $query->where('status', 'processing');
+    }
+
+    public function scopeOnTheWay(Builder $query)
+    {
+        return $query->where('status', 'on_the_way');
+    }
+
+    public function scopeInCourier(Builder $query)
+    {
+        return $query->where('status', 'in_courier');
+    }
+
+    public function scopeCompleted(Builder $query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopeCancelled(Builder $query)
+    {
+        return $query->where('status', 'cancelled');
+    }
+
+    public function scopeReturned(Builder $query)
+    {
+        return $query->where('status', 'returned');
+    }
 
     // Helpers
     public function logStatusChange(string $toStatus, ?string $note = null, ?int $userId = null): void

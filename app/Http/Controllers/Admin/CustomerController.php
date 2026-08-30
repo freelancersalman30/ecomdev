@@ -15,8 +15,8 @@ class CustomerController extends Controller
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
         }
 
         $customers = $query->paginate(20)->withQueryString();
@@ -27,6 +27,7 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         $customer->load(['orders.items.product']);
+
         return view('admin.customers.show', compact('customer'));
     }
 

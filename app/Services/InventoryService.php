@@ -15,11 +15,13 @@ class InventoryService
     {
         return DB::transaction(function () use ($productId, $variantId, $quantity) {
             $product = Product::lockForUpdate()->find($productId);
-            if (!$product) return false;
+            if (! $product) {
+                return false;
+            }
 
             if ($variantId) {
                 $variant = ProductVariant::lockForUpdate()->find($variantId);
-                if (!$variant || $variant->stock_quantity < $quantity) {
+                if (! $variant || $variant->stock_quantity < $quantity) {
                     return false;
                 }
                 $variant->decrement('stock_quantity', $quantity);
@@ -31,6 +33,7 @@ class InventoryService
             }
 
             $product->increment('sales_count', $quantity);
+
             return true;
         });
     }
@@ -42,7 +45,9 @@ class InventoryService
     {
         DB::transaction(function () use ($productId, $variantId, $quantity) {
             $product = Product::lockForUpdate()->find($productId);
-            if (!$product) return;
+            if (! $product) {
+                return;
+            }
 
             if ($variantId) {
                 $variant = ProductVariant::lockForUpdate()->find($variantId);
@@ -64,7 +69,9 @@ class InventoryService
     {
         DB::transaction(function () use ($productId, $variantId, $quantity, $costPrice) {
             $product = Product::lockForUpdate()->find($productId);
-            if (!$product) return;
+            if (! $product) {
+                return;
+            }
 
             if ($variantId) {
                 $variant = ProductVariant::lockForUpdate()->find($variantId);

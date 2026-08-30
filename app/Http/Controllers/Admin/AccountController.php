@@ -50,7 +50,7 @@ class AccountController extends Controller
             'opening_balance' => 'nullable|numeric|min:0',
         ]);
 
-        $openingBal = (float)($request->opening_balance ?? 0);
+        $openingBal = (float) ($request->opening_balance ?? 0);
 
         $account = Account::create([
             'name' => $request->name,

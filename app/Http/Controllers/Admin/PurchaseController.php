@@ -91,7 +91,7 @@ class PurchaseController extends Controller
                     'quantity' => $item['quantity'],
                     'subtotal' => $itemSubtotal,
                     'batch_no' => $item['batch_no'] ?? null,
-                    'serial_numbers' => !empty($item['serial_numbers']) ? explode(',', $item['serial_numbers']) : null,
+                    'serial_numbers' => ! empty($item['serial_numbers']) ? explode(',', $item['serial_numbers']) : null,
                 ];
 
                 // Increase stock in inventory
@@ -103,14 +103,14 @@ class PurchaseController extends Controller
                 );
             }
 
-            $discount = (float)($request->discount ?? 0);
-            $tax = (float)($request->tax ?? 0);
-            $shipping = (float)($request->shipping_cost ?? 0);
+            $discount = (float) ($request->discount ?? 0);
+            $tax = (float) ($request->tax ?? 0);
+            $shipping = (float) ($request->shipping_cost ?? 0);
             $grandTotal = ($subtotal - $discount) + $tax + $shipping;
-            $paidAmount = (float)($request->paid_amount ?? 0);
+            $paidAmount = (float) ($request->paid_amount ?? 0);
             $dueAmount = max(0, $grandTotal - $paidAmount);
 
-            $purchaseNo = 'PO-' . date('Ymd') . '-' . rand(1000, 9999);
+            $purchaseNo = 'PO-'.date('Ymd').'-'.rand(1000, 9999);
 
             $purchase = Purchase::create([
                 'supplier_id' => $request->supplier_id,
@@ -141,7 +141,7 @@ class PurchaseController extends Controller
                     'payment_date' => $request->purchase_date,
                     'amount' => $paidAmount,
                     'payment_method' => $request->payment_method ?? 'cash',
-                    'notes' => 'Initial payment for ' . $purchaseNo,
+                    'notes' => 'Initial payment for '.$purchaseNo,
                     'created_by' => auth()->id(),
                 ]);
             }
@@ -155,6 +155,7 @@ class PurchaseController extends Controller
     public function show(Purchase $purchase)
     {
         $purchase->load(['supplier', 'items.product', 'items.variant', 'payments', 'createdBy']);
+
         return view('admin.purchases.show', compact('purchase'));
     }
 }
