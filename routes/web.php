@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\SmsMarketingController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\SystemToolController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WarrantyController as AdminWarrantyController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\FrontendController;
@@ -61,6 +62,9 @@ Route::get('/order-success/{order_no}', [CheckoutController::class, 'success'])-
 // Order Live Tracker
 Route::get('/track-order', [FrontendController::class, 'trackOrder'])->name('order.track');
 
+// Public Product Warranty Verification
+Route::get('/warranty/verify', [CustomerWarrantyController::class, 'publicVerify'])->name('warranty.verify');
+
 use App\Http\Controllers\Frontend\ProductFeedController;
 
 // Automated Ad & Shopping Product Feeds (Facebook Catalog & Google Merchant)
@@ -69,6 +73,7 @@ Route::get('/feeds/google-merchant.xml', [ProductFeedController::class, 'googleM
 
 use App\Http\Controllers\Customer\Auth\CustomerAuthController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\Customer\CustomerWarrantyController;
 
 // ==========================================
 // 👤 CUSTOMER AUTHENTICATION & PORTAL ROUTES
@@ -89,6 +94,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
         Route::get('/orders', [CustomerDashboardController::class, 'orders'])->name('orders');
         Route::get('/orders/{order_no}', [CustomerDashboardController::class, 'orderDetail'])->name('orders.show');
+        Route::get('/warranties', [CustomerWarrantyController::class, 'index'])->name('warranties');
         Route::get('/profile', [CustomerDashboardController::class, 'profile'])->name('profile');
         Route::post('/profile/update', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/password', [CustomerDashboardController::class, 'updatePassword'])->name('password.update');
@@ -133,6 +139,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::post('/orders/{order}/book-courier', [OrderController::class, 'bookCourier'])->name('orders.courier.book');
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::get('/orders/{order}/packing-slip', [OrderController::class, 'packingSlip'])->name('orders.packing_slip');
+
+    // 3.5 Product Warranty Verification & Management
+    Route::get('/warranties', [AdminWarrantyController::class, 'index'])->name('warranties.index');
+    Route::post('/warranties', [AdminWarrantyController::class, 'store'])->name('warranties.store');
+    Route::put('/warranties/{warranty}', [AdminWarrantyController::class, 'update'])->name('warranties.update');
+    Route::get('/warranties/verify', [AdminWarrantyController::class, 'verify'])->name('warranties.verify');
+    Route::delete('/warranties/{warranty}', [AdminWarrantyController::class, 'destroy'])->name('warranties.destroy');
 
     // 4. Product & Catalog Management
     Route::resource('products', ProductController::class);

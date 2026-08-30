@@ -17,14 +17,18 @@ class OrderService
 
     protected SmsService $smsService;
 
+    protected WarrantyService $warrantyService;
+
     public function __construct(
         InventoryService $inventoryService,
         FraudCheckService $fraudCheckService,
-        SmsService $smsService
+        SmsService $smsService,
+        WarrantyService $warrantyService
     ) {
         $this->inventoryService = $inventoryService;
         $this->fraudCheckService = $fraudCheckService;
         $this->smsService = $smsService;
+        $this->warrantyService = $warrantyService;
     }
 
     /**
@@ -139,6 +143,9 @@ class OrderService
             foreach ($processedItems as $pItem) {
                 $order->items()->create($pItem);
             }
+
+            // Sync and issue product warranties
+            $this->warrantyService->syncOrderWarranties($order);
 
             // Create initial status log
             $order->statusLogs()->create([

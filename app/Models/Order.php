@@ -92,6 +92,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function warranties()
+    {
+        return $this->hasMany(Warranty::class);
+    }
+
     public function statusLogs()
     {
         return $this->hasMany(OrderStatusLog::class)->latest();

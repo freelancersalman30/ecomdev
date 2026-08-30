@@ -137,6 +137,12 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Orders Management</span>
                 </a>
 
+                <!-- Product Warranty Verification -->
+                <a href="{{ route('admin.warranties.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.warranties.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="shield-check" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Warranty Verification</span>
+                </a>
+
                 <!-- Product & Catalog -->
                 <div x-data="{ open: {{ request()->routeIs('admin.products.*', 'admin.categories.*', 'admin.brands.*', 'admin.attributes.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">

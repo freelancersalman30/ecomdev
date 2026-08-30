@@ -262,6 +262,10 @@
                     <i data-lucide="map-pin" class="w-3 h-3 text-daraz-orange"></i>
                     <span>Track My Order</span>
                 </a>
+                <a href="{{ route('warranty.verify') }}" class="hover:text-emerald-400 transition flex items-center gap-1">
+                    <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i>
+                    <span>Warranty Check</span>
+                </a>
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-emerald-400 transition flex items-center gap-1 font-semibold text-emerald-400">
                     <i data-lucide="layout-dashboard" class="w-3 h-3"></i>
                     <span>Admin Panel</span>
@@ -653,6 +657,7 @@
                 <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">Customer Care & Policies</h4>
                 <ul class="space-y-1.5 text-xs">
                     <li><a href="{{ route('order.track') }}" class="hover:text-daraz-orange transition">Track My Order</a></li>
+                    <li><a href="{{ route('warranty.verify') }}" class="hover:text-daraz-orange transition">Warranty Verification</a></li>
                     <li><a href="{{ route('cart.index') }}" class="hover:text-daraz-orange transition">My Shopping Cart</a></li>
                     <li><a href="{{ route('shop.index') }}" class="hover:text-daraz-orange transition">Special Flash Offers</a></li>
                     <li><a href="{{ route('customer.dashboard') }}" class="hover:text-daraz-orange transition">Customer Portal</a></li>

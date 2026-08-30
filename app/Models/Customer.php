@@ -57,6 +57,11 @@ class Customer extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function warranties()
+    {
+        return $this->hasMany(Warranty::class);
+    }
+
     public function recalculateMetrics(): void
     {
         $orders = $this->orders()->get();

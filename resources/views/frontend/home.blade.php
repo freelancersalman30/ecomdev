@@ -217,89 +217,14 @@
         </div>
     </section>
 
-    <!-- 3. DARAZMALL / OFFICIAL PCB BRANDS SECTION -->
-    <section class="max-w-7xl mx-auto px-4">
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
-                        <i data-lucide="badge-check" class="w-4 h-4"></i>
-                    </span>
-                    <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">Official PCB Brands & IC Vendors</h3>
-                </div>
-                <span class="text-xs text-slate-400 hidden sm:inline">100% Authentic Factory Sealed</span>
-            </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                @foreach($brands as $brand)
-                <a href="{{ route('shop.index', ['brand_id' => $brand->id]) }}" class="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200/80 text-center flex flex-col items-center justify-center space-y-1.5 group transition">
-                    <div class="w-12 h-12 rounded-xl bg-white shadow-sm border flex items-center justify-center font-black text-slate-800 text-sm group-hover:scale-105 transition">
-                        {{ substr($brand->name, 0, 2) }}
-                    </div>
-                    <span class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition truncate max-w-full">{{ $brand->name }}</span>
-                    <span class="text-[10px] text-slate-400 font-mono">{{ $brand->products_count }} Prods</span>
-                </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. TOP CATEGORIES BROWSE GRID -->
-    <section class="max-w-7xl mx-auto px-4">
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">Browse Electronic Categories</h3>
-                <a href="{{ route('shop.index') }}" class="text-xs font-bold text-daraz-orange hover:underline">All Categories &rarr;</a>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                @foreach($featuredCategories as $cat)
-                <a href="{{ route('shop.index', ['category_id' => $cat->id]) }}" class="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200/60 text-center flex flex-col items-center justify-center space-y-2 group transition">
-                    <div class="w-12 h-12 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center group-hover:bg-daraz-orange group-hover:text-white transition">
-                        <i data-lucide="{{ $cat->icon ?? 'cpu' }}" class="w-5 h-5"></i>
-                    </div>
-                    <span class="text-xs font-bold text-slate-800 group-hover:text-daraz-orange transition line-clamp-1">{{ $cat->name }}</span>
-                </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
 
     <!-- 5. CATEGORY-WISE PRODUCTS SHOWCASE SECTION -->
-    <div x-data="{ selectedCategoryTab: 'all' }" class="space-y-10">
-
-        <!-- Category Sticky Filter Tab Bar -->
-        <section class="max-w-7xl mx-auto px-4">
-            <div class="bg-white rounded-2xl p-2.5 sm:p-3 border border-slate-200 shadow-sm flex items-center gap-2 overflow-x-auto no-scrollbar">
-                <button 
-                    @click="selectedCategoryTab = 'all'" 
-                    :class="selectedCategoryTab === 'all' ? 'bg-daraz-orange text-white shadow-md shadow-daraz-orange/20 font-bold' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium'"
-                    class="px-4 py-2 rounded-xl text-xs whitespace-nowrap transition flex items-center gap-1.5 shrink-0">
-                    <i data-lucide="layers" class="w-4 h-4"></i>
-                    <span>All Categories</span>
-                </button>
-                @foreach($categoriesWithProducts as $cwp)
-                <button 
-                    @click="selectedCategoryTab = 'cat-{{ $cwp->id }}'" 
-                    :class="selectedCategoryTab === 'cat-{{ $cwp->id }}' ? 'bg-daraz-orange text-white shadow-md shadow-daraz-orange/20 font-bold' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium'"
-                    class="px-4 py-2 rounded-xl text-xs whitespace-nowrap transition flex items-center gap-1.5 shrink-0">
-                    <i data-lucide="{{ $cwp->icon === 'tool' ? 'wrench' : ($cwp->icon ?? 'cpu') }}" class="w-4 h-4"></i>
-                    <span>{{ $cwp->name }}</span>
-                    <span class="px-1.5 py-0.5 rounded-full text-[10px]" :class="selectedCategoryTab === 'cat-{{ $cwp->id }}' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'">{{ $cwp->products_count }}</span>
-                </button>
-                @endforeach
-            </div>
-        </section>
+    <div class="space-y-10">
 
         <!-- Each Category's Dedicated Product Showcase Block -->
         @foreach($categoriesWithProducts as $catGroup)
-        <section 
-            x-show="selectedCategoryTab === 'all' || selectedCategoryTab === 'cat-{{ $catGroup->id }}'" 
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 translate-y-2"
-            x-transition:enter-end="opacity-100 translate-y-0"
-            id="cat-section-{{ $catGroup->id }}" 
-            class="max-w-7xl mx-auto px-4">
+        <section id="cat-section-{{ $catGroup->id }}" class="max-w-7xl mx-auto px-4">
             
             <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 daraz-shadow space-y-5">
                 

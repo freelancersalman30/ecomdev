@@ -95,6 +95,57 @@
         @endif
     </div>
 
+    <!-- Active Product Warranties Section with Remaining Days -->
+    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b pb-3">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+                <span>Active Product Warranties</span>
+            </h3>
+            <a href="{{ route('customer.warranties') }}" class="text-xs font-bold text-daraz-orange hover:underline">
+                View All Warranties &rarr;
+            </a>
+        </div>
+
+        @if(isset($activeWarranties) && $activeWarranties->count() > 0)
+        <div class="divide-y divide-slate-100 text-xs">
+            @foreach($activeWarranties as $warranty)
+            @php $rem = $warranty->remaining_days; @endphp
+            <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <img src="{{ $warranty->product->thumbnail }}" alt="{{ $warranty->product->name }}" class="w-10 h-10 object-cover rounded-xl border border-slate-200">
+                    <div class="space-y-0.5">
+                        <div class="font-bold text-slate-900 line-clamp-1">{{ $warranty->product->name }}</div>
+                        <div class="text-slate-400 font-mono text-[10px]">Code: {{ $warranty->warranty_code }} &bull; {{ $warranty->warranty_period }}</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 self-end sm:self-auto">
+                    <!-- Remaining Days Badge -->
+                    <div class="text-right">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black {{ $rem > 30 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                            <i data-lucide="clock" class="w-3 h-3"></i>
+                            <span>{{ $rem }} Days Remaining</span>
+                        </span>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Expires {{ $warranty->end_date->format('d M Y') }}</div>
+                    </div>
+
+                    <a href="{{ route('customer.warranties', ['lookup_code' => $warranty->warranty_code]) }}" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+                        Verify
+                    </a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @else
+        <div class="py-6 text-center text-slate-400 space-y-1.5">
+            <i data-lucide="shield" class="w-8 h-8 mx-auto text-slate-300"></i>
+            <p class="text-xs font-semibold">No active warranties found</p>
+            <p class="text-[11px] text-slate-400">Purchased hardware covered under warranty will appear here with dynamic days tracking.</p>
+        </div>
+        @endif
+    </div>
+
     <!-- Maker Perks & Loyalty Banner -->
     <div class="p-6 rounded-3xl bg-gradient-to-r from-emerald-950 to-slate-900 text-white border border-emerald-800/40 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="space-y-1 text-center sm:text-left">

@@ -95,6 +95,11 @@ class Product extends Model
         return $this->hasMany(LandingPage::class);
     }
 
+    public function warranties()
+    {
+        return $this->hasMany(Warranty::class);
+    }
+
     // Scopes
     public function scopeActive(Builder $query)
     {

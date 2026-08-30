@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Warranty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -46,13 +47,28 @@ class CustomerDashboardController extends Controller
             $q->where('customer_id', $customer->id)->orWhere('shipping_phone', $customer->phone);
         })->where('payment_status', 'paid')->sum('grand_total');
 
+        // Active Warranties for Customer
+        $activeWarranties = Warranty::where(function ($q) use ($customer) {
+            $q->where('customer_id', $customer->id);
+            if ($customer->phone) {
+                $q->orWhere('customer_phone', $customer->phone);
+            }
+        })
+            ->where('status', 'active')
+            ->where('end_date', '>=', now()->toDateString())
+            ->with('product')
+            ->latest()
+            ->take(3)
+            ->get();
+
         return view('customer.dashboard', compact(
             'customer',
             'recentOrders',
             'totalOrders',
             'inTransitOrders',
             'deliveredOrders',
-            'totalSpent'
+            'totalSpent',
+            'activeWarranties'
         ));
     }
 

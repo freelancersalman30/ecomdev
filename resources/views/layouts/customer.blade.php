@@ -58,6 +58,11 @@
                 <span>My Orders History</span>
             </a>
 
+            <a href="{{ route('customer.warranties') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('customer.warranties*') ? 'bg-daraz-orange text-white shadow-md' : 'text-slate-700 hover:bg-slate-50' }}">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Warranty Verification</span>
+            </a>
+
             <a href="{{ route('customer.wishlist') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('customer.wishlist') ? 'bg-daraz-orange text-white shadow-md' : 'text-slate-700 hover:bg-slate-50' }}">
                 <i data-lucide="heart" class="w-4 h-4"></i>
                 <span>My Wishlist & Saved</span>
