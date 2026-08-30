@@ -13,8 +13,56 @@ class GeneralSettingController extends Controller
     /**
      * Display the Enterprise Site Settings Control Hub.
      */
+    /**
+     * Display the Enterprise Site Settings Control Hub.
+     */
     public function index()
     {
+        // Pre-fill slider defaults if not yet set
+        $sliderDefaults = [
+            'slider_1_active' => '1',
+            'slider_1_badge' => 'Verified Electronic Component',
+            'slider_1_title' => 'STM32 & ESP32-S3 IoT Development Boards',
+            'slider_1_subtitle' => 'Official Enterprise Electronics Distribution in Bangladesh',
+            'slider_1_image' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
+            'slider_1_button_text' => 'Explore Collection',
+            'slider_1_link' => '/shop',
+
+            'slider_2_active' => '1',
+            'slider_2_badge' => 'Premium Hardware',
+            'slider_2_title' => 'Professional Quick 861DW Soldering Rework Stations',
+            'slider_2_subtitle' => '1000W High Power Digital SMD Rework Master Kit',
+            'slider_2_image' => 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80',
+            'slider_2_button_text' => 'Shop Equipment',
+            'slider_2_link' => '/shop',
+
+            'slider_3_active' => '0',
+            'slider_3_badge' => 'New Arrival',
+            'slider_3_title' => 'Raspberry Pi 4 Model B & High-Speed Sensors',
+            'slider_3_subtitle' => 'Industrial Grade Single Board Computers & Robotics Kits',
+            'slider_3_image' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80',
+            'slider_3_button_text' => 'View Deals',
+            'slider_3_link' => '/shop',
+
+            'slider_autoplay_interval' => '5000',
+
+            'promo_strip_1_tag' => 'IoT Dev Boards',
+            'promo_strip_1_title' => 'ESP32-S3 AI Vision Modules',
+            'promo_strip_1_offer' => 'From ৳650 Only',
+            'promo_strip_1_link' => '/shop?search=ESP32',
+
+            'promo_strip_2_tag' => 'Soldering Equipment',
+            'promo_strip_2_title' => 'Quick 861DW 1000W Rework',
+            'promo_strip_2_offer' => 'Official 1-Year Warranty',
+            'promo_strip_2_link' => '/shop?search=Quick',
+        ];
+
+        foreach ($sliderDefaults as $k => $v) {
+            if (Setting::get($k) === null) {
+                Setting::set($k, $v, 'slider');
+            }
+        }
+
         $settings = Setting::all()->pluck('value', 'key');
         return view('admin.settings.general', compact('settings'));
     }
@@ -33,6 +81,9 @@ class GeneralSettingController extends Controller
             'site_logo_dark' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3072',
             'site_favicon' => 'nullable|mimes:jpeg,png,jpg,gif,svg,ico,webp|max:1024',
             'invoice_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3072',
+            'slider_1_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'slider_2_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'slider_3_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
         ]);
 
         $uploadDir = public_path('uploads/settings');
@@ -41,19 +92,37 @@ class GeneralSettingController extends Controller
         }
 
         // Handle Branding Asset Uploads
-        $fileFields = ['site_logo', 'site_logo_dark', 'site_favicon', 'invoice_logo'];
+        $fileFields = [
+            'site_logo', 
+            'site_logo_dark', 
+            'site_favicon', 
+            'invoice_logo',
+            'slider_1_image',
+            'slider_2_image',
+            'slider_3_image',
+        ];
+
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $filename = $field . '_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
                 $file->move($uploadDir, $filename);
-                Setting::set($field, '/uploads/settings/' . $filename, 'branding');
+                Setting::set($field, '/uploads/settings/' . $filename, str_starts_with($field, 'slider_') ? 'slider' : 'branding');
             } elseif ($request->boolean('remove_' . $field)) {
                 $current = Setting::get($field);
                 if ($current && File::exists(public_path($current))) {
                     File::delete(public_path($current));
                 }
-                Setting::set($field, '', 'branding');
+                Setting::set($field, '', str_starts_with($field, 'slider_') ? 'slider' : 'branding');
+            }
+        }
+
+        // Handle direct Slider image URLs if no file was uploaded
+        for ($i = 1; $i <= 3; $i++) {
+            $imgField = "slider_{$i}_image";
+            $urlField = "slider_{$i}_image_url";
+            if (!$request->hasFile($imgField) && $request->filled($urlField)) {
+                Setting::set($imgField, $request->input($urlField), 'slider');
             }
         }
 
@@ -74,6 +143,9 @@ class GeneralSettingController extends Controller
             'google_adsense_enabled',
             'bing_ads_enabled',
             'facebook_capi_enabled',
+            'slider_1_active',
+            'slider_2_active',
+            'slider_3_active',
         ];
 
         foreach ($toggleKeys as $toggleKey) {
@@ -116,6 +188,23 @@ class GeneralSettingController extends Controller
         }
         if ($request->filled('outside_dhaka_shipping')) {
             Setting::set('outside_dhaka_charge', (string)$request->outside_dhaka_shipping, 'general');
+        }
+
+        // Synchronize Slider settings to Banner table for seamless compatibility
+        for ($i = 1; $i <= 3; $i++) {
+            $title = Setting::get("slider_{$i}_title");
+            if (!empty($title)) {
+                \App\Models\Banner::updateOrCreate(
+                    ['placement' => 'hero_slider', 'display_order' => $i],
+                    [
+                        'title' => $title,
+                        'subtitle' => Setting::get("slider_{$i}_subtitle", ''),
+                        'image' => Setting::get("slider_{$i}_image") ?: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
+                        'link' => Setting::get("slider_{$i}_link", '/shop'),
+                        'is_active' => Setting::get("slider_{$i}_active", '1') === '1',
+                    ]
+                );
+            }
         }
 
         return redirect()->back()->with('success', 'Site settings updated successfully! All configurations are now live.');

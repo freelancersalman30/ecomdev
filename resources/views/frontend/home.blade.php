@@ -56,7 +56,7 @@
 
             <!-- Right Hero Main Slider -->
             <div class="lg:col-span-9 space-y-4">
-                <div x-data="{ activeSlide: 0, slidesCount: {{ count($heroBanners) }} }" x-init="setInterval(() => { activeSlide = (activeSlide + 1) % slidesCount }, 5000)" class="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-slate-900 group">
+                <div x-data="{ activeSlide: 0, slidesCount: {{ count($heroBanners) }} }" x-init="setInterval(() => { if (slidesCount > 1) { activeSlide = (activeSlide + 1) % slidesCount } }, {{ (int)\App\Models\Setting::get('slider_autoplay_interval', '5000') }})" class="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-slate-900 group">
                     
                     @foreach($heroBanners as $idx => $banner)
                     <div 
@@ -73,7 +73,7 @@
                         
                         <div class="absolute inset-y-0 left-0 p-6 sm:p-10 flex flex-col justify-center max-w-lg text-white space-y-3">
                             <span class="inline-block px-3 py-1 rounded-full bg-daraz-orange text-white text-[10px] font-black uppercase tracking-wider w-max shadow-sm">
-                                Verified Electronic Component
+                                {{ $banner->badge ?? 'Verified Electronic Component' }}
                             </span>
                             <h2 class="text-xl sm:text-3xl font-black leading-tight tracking-tight drop-shadow-sm text-white !text-white">
                                 {{ $banner->title }}
@@ -83,7 +83,7 @@
                             </p>
                             <div class="pt-2">
                                 <a href="{{ $banner->link_url ?? route('shop.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-daraz-orange to-amber-500 hover:from-daraz-orangeHover hover:to-amber-600 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-daraz-orange/30 transition transform active:scale-95">
-                                    <span>Explore Collection</span>
+                                    <span>{{ $banner->button_text ?? 'Explore Collection' }}</span>
                                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                 </a>
                             </div>
@@ -92,29 +92,31 @@
                     @endforeach
 
                     <!-- Slider Nav Dots -->
+                    @if(count($heroBanners) > 1)
                     <div class="absolute bottom-3 right-4 flex items-center gap-1.5 z-10">
                         @foreach($heroBanners as $idx => $banner)
                         <button @click="activeSlide = {{ $idx }}" class="h-2 rounded-full transition-all duration-300" :class="activeSlide === {{ $idx }} ? 'w-6 bg-daraz-orange' : 'w-2 bg-white/60'"></button>
                         @endforeach
                     </div>
+                    @endif
                 </div>
 
                 <!-- Promo Mini Strip -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <a href="{{ route('shop.index', ['search' => 'ESP32']) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-900 to-slate-900 text-white border border-sky-800/40 flex items-center justify-between hover:scale-[1.01] transition shadow-sm">
+                    <a href="{{ \App\Models\Setting::get('promo_strip_1_link', route('shop.index', ['search' => 'ESP32'])) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-900 to-slate-900 text-white border border-sky-800/40 flex items-center justify-between hover:scale-[1.01] transition shadow-sm">
                         <div class="space-y-0.5">
-                            <span class="text-[10px] uppercase font-bold text-sky-300">IoT Dev Boards</span>
-                            <h4 class="font-bold text-xs text-white">ESP32-S3 AI Vision Modules</h4>
-                            <span class="text-[11px] text-emerald-400 font-bold">From ৳650 Only</span>
+                            <span class="text-[10px] uppercase font-bold text-sky-300">{{ \App\Models\Setting::get('promo_strip_1_tag', 'IoT Dev Boards') }}</span>
+                            <h4 class="font-bold text-xs text-white">{{ \App\Models\Setting::get('promo_strip_1_title', 'ESP32-S3 AI Vision Modules') }}</h4>
+                            <span class="text-[11px] text-emerald-400 font-bold">{{ \App\Models\Setting::get('promo_strip_1_offer', 'From ৳650 Only') }}</span>
                         </div>
                         <i data-lucide="cpu" class="w-8 h-8 text-sky-400 opacity-80"></i>
                     </a>
 
-                    <a href="{{ route('shop.index', ['search' => 'Quick']) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-rose-950 to-slate-900 text-white border border-rose-900/40 flex items-center justify-between hover:scale-[1.01] transition shadow-sm">
+                    <a href="{{ \App\Models\Setting::get('promo_strip_2_link', route('shop.index', ['search' => 'Quick'])) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-rose-950 to-slate-900 text-white border border-rose-900/40 flex items-center justify-between hover:scale-[1.01] transition shadow-sm">
                         <div class="space-y-0.5">
-                            <span class="text-[10px] uppercase font-bold text-rose-300">Soldering Equipment</span>
-                            <h4 class="font-bold text-xs text-white">Quick 861DW 1000W Rework</h4>
-                            <span class="text-[11px] text-amber-400 font-bold">Official 1-Year Warranty</span>
+                            <span class="text-[10px] uppercase font-bold text-rose-300">{{ \App\Models\Setting::get('promo_strip_2_tag', 'Soldering Equipment') }}</span>
+                            <h4 class="font-bold text-xs text-white">{{ \App\Models\Setting::get('promo_strip_2_title', 'Quick 861DW 1000W Rework') }}</h4>
+                            <span class="text-[11px] text-amber-400 font-bold">{{ \App\Models\Setting::get('promo_strip_2_offer', 'Official 1-Year Warranty') }}</span>
                         </div>
                         <i data-lucide="flame" class="w-8 h-8 text-rose-400 opacity-80"></i>
                     </a>

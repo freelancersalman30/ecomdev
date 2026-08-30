@@ -211,6 +211,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
 
     // 14. General Settings & Integrations
+    Route::get('/settings', fn () => redirect()->route('admin.settings.general'));
     Route::get('/settings/general', [GeneralSettingController::class, 'index'])->name('settings.general');
     Route::match(['post', 'put'], '/settings/general', [GeneralSettingController::class, 'update'])->name('settings.general.update');
 

@@ -112,11 +112,20 @@
 
         <button 
             type="button" 
+            @click="activeTab = 'slider'" 
+            :class="activeTab === 'slider' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
+            <i data-lucide="sliders" class="w-4 h-4 text-daraz-orange"></i>
+            <span class="font-bold">3. Slider & Hero Banners</span>
+        </button>
+
+        <button 
+            type="button" 
             @click="activeTab = 'shipping'" 
             :class="activeTab === 'shipping' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="truck" class="w-4 h-4"></i>
-            <span>3. Orders & Shipping</span>
+            <span>4. Orders & Shipping</span>
         </button>
 
         <button 
@@ -125,7 +134,7 @@
             :class="activeTab === 'currency' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="coins" class="w-4 h-4"></i>
-            <span>4. Currency & Region</span>
+            <span>5. Currency & Region</span>
         </button>
 
         <button 
@@ -134,7 +143,7 @@
             :class="activeTab === 'invoice' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="file-text" class="w-4 h-4"></i>
-            <span>5. Invoices & Receipts</span>
+            <span>6. Invoices & Receipts</span>
         </button>
 
         <button 
@@ -143,7 +152,7 @@
             :class="activeTab === 'notices' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="megaphone" class="w-4 h-4"></i>
-            <span>6. Notices & Maintenance</span>
+            <span>7. Notices & Maintenance</span>
         </button>
 
         <button 
@@ -152,7 +161,7 @@
             :class="activeTab === 'social' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="share-2" class="w-4 h-4"></i>
-            <span>7. Social & Contact</span>
+            <span>8. Social & Contact</span>
         </button>
 
         <button 
@@ -161,7 +170,7 @@
             :class="activeTab === 'tracking' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="crosshair" class="w-4 h-4 text-sky-400"></i>
-            <span class="font-bold">8. Ad Setup & Connect (Google, Facebook, Etc)</span>
+            <span class="font-bold">9. Ad Setup & Connect</span>
         </button>
 
         <button 
@@ -170,7 +179,7 @@
             :class="activeTab === 'scripts' ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
             class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition">
             <i data-lucide="code" class="w-4 h-4"></i>
-            <span>9. Custom Scripts & SEO</span>
+            <span>10. Custom Scripts & SEO</span>
         </button>
 
     </div>
@@ -900,10 +909,338 @@
                 </div>
             </div>
 
-        </div>   </div>
+        </div>
 
         <!-- ========================================================= -->
-        <!-- TAB 3: ORDERS, DELIVERY & E-COMMERCE AUTOMATION           -->
+        <!-- TAB 3: HOMEPAGE SLIDER & HERO BANNERS                     -->
+        <!-- ========================================================= -->
+        <div x-show="activeTab === 'slider'" x-cloak class="space-y-6">
+
+            <!-- General Slider Timing & Behaviour -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-4 h-4 text-daraz-orange"></i>
+                            <span>Homepage Slider Behaviour & Autoplay</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Configure slide rotation speeds and active slide cards.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-daraz-orange/10 text-daraz-orange">Hero Main Slider</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Autoplay Rotation Interval (Milliseconds)</label>
+                        <p class="text-[10px] text-slate-400">Duration each slide is shown (default: 5000ms = 5 seconds)</p>
+                        <input type="number" name="slider_autoplay_interval" value="{{ $settings['slider_autoplay_interval'] ?? '5000' }}" min="2000" max="20000" step="500" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                    </div>
+
+                    <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 flex items-center gap-3">
+                        <i data-lucide="info" class="w-8 h-8 text-emerald-500 shrink-0"></i>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            <strong>Tip:</strong> For best visual quality on modern high-DPI displays, use <strong>21:9 or 16:9</strong> widescreen landscape images (recommended: 1920x820px or 1200x520px). You can either upload an image file from your device or provide a direct web image URL.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 1 Configuration Card -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-daraz-orange text-white text-xs font-black flex items-center justify-center">1</span>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Hero Slide 1</h3>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="slider_1_active" value="1" {{ ($settings['slider_1_active'] ?? '1') === '1' ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Slide Active</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <!-- Left: Form Inputs -->
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Badge Tag</label>
+                                <input type="text" name="slider_1_badge" value="{{ $settings['slider_1_badge'] ?? 'Verified Electronic Component' }}" placeholder="e.g. Verified Electronic Component" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Button Text</label>
+                                <input type="text" name="slider_1_button_text" value="{{ $settings['slider_1_button_text'] ?? 'Explore Collection' }}" placeholder="e.g. Explore Collection" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Slide Heading Title *</label>
+                            <input type="text" name="slider_1_title" value="{{ $settings['slider_1_title'] ?? 'STM32 & ESP32-S3 IoT Development Boards' }}" placeholder="e.g. STM32 & ESP32-S3 IoT Development Boards" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Subtitle / Description</label>
+                            <textarea name="slider_1_subtitle" rows="2" placeholder="Brief promotional description..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500/20">{{ $settings['slider_1_subtitle'] ?? 'Official Enterprise Electronics Distribution in Bangladesh' }}</textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Target Link URL</label>
+                                <input type="text" name="slider_1_link" value="{{ $settings['slider_1_link'] ?? '/shop' }}" placeholder="/shop or https://..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Or Image Direct URL</label>
+                                <input type="url" name="slider_1_image_url" placeholder="https://images.unsplash.com/..." value="{{ filter_var($settings['slider_1_image'] ?? '', FILTER_VALIDATE_URL) ? $settings['slider_1_image'] : '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Upload New Slide Image File</label>
+                            <input type="file" name="slider_1_image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                        </div>
+                    </div>
+
+                    <!-- Right: Image Preview Box -->
+                    <div class="lg:col-span-4 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Live Preview</label>
+                        <div class="aspect-[21/9] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 relative shadow-inner">
+                            @php $img1 = $settings['slider_1_image'] ?? 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80'; @endphp
+                            <img src="{{ Str::startsWith($img1, 'http') ? $img1 : asset($img1) }}" alt="Slide 1 Preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent p-3 flex flex-col justify-end text-white">
+                                <span class="text-[9px] font-black uppercase text-daraz-orange">{{ $settings['slider_1_badge'] ?? 'Verified' }}</span>
+                                <h5 class="text-xs font-black line-clamp-1">{{ $settings['slider_1_title'] ?? 'Slide 1 Title' }}</h5>
+                            </div>
+                        </div>
+                        @if(!empty($settings['slider_1_image']))
+                        <label class="flex items-center gap-1.5 text-[10px] text-rose-500 cursor-pointer pt-1">
+                            <input type="checkbox" name="remove_slider_1_image" value="1" class="rounded">
+                            <span>Reset Slide 1 image to default</span>
+                        </label>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2 Configuration Card -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">2</span>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Hero Slide 2</h3>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="slider_2_active" value="1" {{ ($settings['slider_2_active'] ?? '1') === '1' ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Slide Active</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Badge Tag</label>
+                                <input type="text" name="slider_2_badge" value="{{ $settings['slider_2_badge'] ?? 'Premium Hardware' }}" placeholder="e.g. Premium Hardware" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Button Text</label>
+                                <input type="text" name="slider_2_button_text" value="{{ $settings['slider_2_button_text'] ?? 'Shop Equipment' }}" placeholder="e.g. Shop Equipment" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Slide Heading Title *</label>
+                            <input type="text" name="slider_2_title" value="{{ $settings['slider_2_title'] ?? 'Professional Quick 861DW Soldering Rework Stations' }}" placeholder="e.g. Professional Quick 861DW Soldering Rework Stations" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Subtitle / Description</label>
+                            <textarea name="slider_2_subtitle" rows="2" placeholder="Brief promotional description..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500/20">{{ $settings['slider_2_subtitle'] ?? '1000W High Power Digital SMD Rework Master Kit' }}</textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Target Link URL</label>
+                                <input type="text" name="slider_2_link" value="{{ $settings['slider_2_link'] ?? '/shop' }}" placeholder="/shop or https://..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Or Image Direct URL</label>
+                                <input type="url" name="slider_2_image_url" placeholder="https://images.unsplash.com/..." value="{{ filter_var($settings['slider_2_image'] ?? '', FILTER_VALIDATE_URL) ? $settings['slider_2_image'] : '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Upload New Slide Image File</label>
+                            <input type="file" name="slider_2_image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Live Preview</label>
+                        <div class="aspect-[21/9] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 relative shadow-inner">
+                            @php $img2 = $settings['slider_2_image'] ?? 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80'; @endphp
+                            <img src="{{ Str::startsWith($img2, 'http') ? $img2 : asset($img2) }}" alt="Slide 2 Preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent p-3 flex flex-col justify-end text-white">
+                                <span class="text-[9px] font-black uppercase text-emerald-400">{{ $settings['slider_2_badge'] ?? 'Hardware' }}</span>
+                                <h5 class="text-xs font-black line-clamp-1">{{ $settings['slider_2_title'] ?? 'Slide 2 Title' }}</h5>
+                            </div>
+                        </div>
+                        @if(!empty($settings['slider_2_image']))
+                        <label class="flex items-center gap-1.5 text-[10px] text-rose-500 cursor-pointer pt-1">
+                            <input type="checkbox" name="remove_slider_2_image" value="1" class="rounded">
+                            <span>Reset Slide 2 image to default</span>
+                        </label>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 Configuration Card -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-sky-600 text-white text-xs font-black flex items-center justify-center">3</span>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Hero Slide 3</h3>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="slider_3_active" value="1" {{ ($settings['slider_3_active'] ?? '0') === '1' ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Slide Active</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Badge Tag</label>
+                                <input type="text" name="slider_3_badge" value="{{ $settings['slider_3_badge'] ?? 'New Arrival' }}" placeholder="e.g. New Arrival" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Button Text</label>
+                                <input type="text" name="slider_3_button_text" value="{{ $settings['slider_3_button_text'] ?? 'View Deals' }}" placeholder="e.g. View Deals" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Slide Heading Title *</label>
+                            <input type="text" name="slider_3_title" value="{{ $settings['slider_3_title'] ?? 'Raspberry Pi 4 Model B & High-Speed Sensors' }}" placeholder="e.g. Raspberry Pi 4 Model B & High-Speed Sensors" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Subtitle / Description</label>
+                            <textarea name="slider_3_subtitle" rows="2" placeholder="Brief promotional description..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500/20">{{ $settings['slider_3_subtitle'] ?? 'Industrial Grade Single Board Computers & Robotics Kits' }}</textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Target Link URL</label>
+                                <input type="text" name="slider_3_link" value="{{ $settings['slider_3_link'] ?? '/shop' }}" placeholder="/shop or https://..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Or Image Direct URL</label>
+                                <input type="url" name="slider_3_image_url" placeholder="https://images.unsplash.com/..." value="{{ filter_var($settings['slider_3_image'] ?? '', FILTER_VALIDATE_URL) ? $settings['slider_3_image'] : '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Upload New Slide Image File</label>
+                            <input type="file" name="slider_3_image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Live Preview</label>
+                        <div class="aspect-[21/9] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 relative shadow-inner">
+                            @php $img3 = $settings['slider_3_image'] ?? 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80'; @endphp
+                            <img src="{{ Str::startsWith($img3, 'http') ? $img3 : asset($img3) }}" alt="Slide 3 Preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent p-3 flex flex-col justify-end text-white">
+                                <span class="text-[9px] font-black uppercase text-sky-400">{{ $settings['slider_3_badge'] ?? 'Robotics' }}</span>
+                                <h5 class="text-xs font-black line-clamp-1">{{ $settings['slider_3_title'] ?? 'Slide 3 Title' }}</h5>
+                            </div>
+                        </div>
+                        @if(!empty($settings['slider_3_image']))
+                        <label class="flex items-center gap-1.5 text-[10px] text-rose-500 cursor-pointer pt-1">
+                            <input type="checkbox" name="remove_slider_3_image" value="1" class="rounded">
+                            <span>Reset Slide 3 image to default</span>
+                        </label>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promo Mini Strips Configuration -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="tag" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Promo Mini Strips (Beneath Main Slider)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">The two promotional callout strips directly below the homepage slider.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    
+                    <!-- Strip 1 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-sky-500 text-white text-[10px] font-black flex items-center justify-center">1</span>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Left Promo Strip</h4>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Small Tag / Category</label>
+                            <input type="text" name="promo_strip_1_tag" value="{{ $settings['promo_strip_1_tag'] ?? 'IoT Dev Boards' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Main Headline</label>
+                            <input type="text" name="promo_strip_1_title" value="{{ $settings['promo_strip_1_title'] ?? 'ESP32-S3 AI Vision Modules' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Offer / Highlight Text</label>
+                            <input type="text" name="promo_strip_1_offer" value="{{ $settings['promo_strip_1_offer'] ?? 'From ৳650 Only' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-emerald-600 font-bold outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Link URL</label>
+                            <input type="text" name="promo_strip_1_link" value="{{ $settings['promo_strip_1_link'] ?? '/shop?search=ESP32' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Strip 2 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center">2</span>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Right Promo Strip</h4>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Small Tag / Category</label>
+                            <input type="text" name="promo_strip_2_tag" value="{{ $settings['promo_strip_2_tag'] ?? 'Soldering Equipment' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Main Headline</label>
+                            <input type="text" name="promo_strip_2_title" value="{{ $settings['promo_strip_2_title'] ?? 'Quick 861DW 1000W Rework' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Offer / Highlight Text</label>
+                            <input type="text" name="promo_strip_2_offer" value="{{ $settings['promo_strip_2_offer'] ?? 'Official 1-Year Warranty' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-amber-600 font-bold outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Link URL</label>
+                            <input type="text" name="promo_strip_2_link" value="{{ $settings['promo_strip_2_link'] ?? '/shop?search=Quick' }}" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: ORDERS, DELIVERY & E-COMMERCE AUTOMATION           -->
         <!-- ========================================================= -->
         <div x-show="activeTab === 'shipping'" x-cloak class="space-y-6">
             <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">

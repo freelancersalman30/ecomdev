@@ -24,21 +24,59 @@ class FrontendController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        // Hero Sliders & Promo Banners
-        $heroBanners = Banner::where('placement', 'main_slider')->where('is_active', true)->latest()->get();
+        // Hero Sliders: Load from customizable settings or Banner table
+        $heroBanners = collect();
+        for ($i = 1; $i <= 3; $i++) {
+            $isActive = \App\Models\Setting::get("slider_{$i}_active", $i <= 2 ? '1' : '0') === '1';
+            $title = \App\Models\Setting::get("slider_{$i}_title");
+            if ($isActive && !empty($title)) {
+                $heroBanners->push((object)[
+                    'badge' => \App\Models\Setting::get("slider_{$i}_badge", 'Verified Electronic Component'),
+                    'title' => $title,
+                    'subtitle' => \App\Models\Setting::get("slider_{$i}_subtitle", ''),
+                    'image' => \App\Models\Setting::get("slider_{$i}_image") ?: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
+                    'link_url' => \App\Models\Setting::get("slider_{$i}_link", '/shop'),
+                    'button_text' => \App\Models\Setting::get("slider_{$i}_button_text", 'Explore Collection'),
+                ]);
+            }
+        }
+
+        // Fallback to Banner table if no settings configured yet
+        if ($heroBanners->isEmpty()) {
+            $dbBanners = Banner::whereIn('placement', ['hero_slider', 'main_slider'])
+                ->where('is_active', true)
+                ->orderBy('display_order')
+                ->get();
+            if ($dbBanners->isNotEmpty()) {
+                $heroBanners = $dbBanners->map(fn($b) => (object)[
+                    'badge' => 'Verified Electronic Component',
+                    'title' => $b->title,
+                    'subtitle' => $b->subtitle,
+                    'image' => $b->image,
+                    'link_url' => $b->link ?? '/shop',
+                    'button_text' => 'Explore Collection',
+                ]);
+            }
+        }
+
+        // Ultimate fallback if still empty
         if ($heroBanners->isEmpty()) {
             $heroBanners = collect([
                 (object) [
+                    'badge' => 'Verified Electronic Component',
                     'title' => 'STM32 & ESP32-S3 IoT Development Boards',
                     'image' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
                     'link_url' => '/shop',
-                    'subtitle' => 'Official Enterprise Electronics Distribution in Bangladesh'
+                    'subtitle' => 'Official Enterprise Electronics Distribution in Bangladesh',
+                    'button_text' => 'Explore Collection',
                 ],
                 (object) [
+                    'badge' => 'Premium Hardware',
                     'title' => 'Professional Quick 861DW Soldering Rework Stations',
                     'image' => 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80',
                     'link_url' => '/shop',
-                    'subtitle' => '1000W High Power Digital SMD Rework Master Kit'
+                    'subtitle' => '1000W High Power Digital SMD Rework Master Kit',
+                    'button_text' => 'Shop Equipment',
                 ]
             ]);
         }
