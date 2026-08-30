@@ -225,6 +225,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     // 17. Third-Party API Hub
     Route::get('/settings/api-hub', [ApiHubController::class, 'index'])->name('settings.api_hub');
     Route::get('/settings/api_hub', [ApiHubController::class, 'index'])->name('settings.api-hub');
+    Route::get('/settings/api-hub/save', fn () => redirect()->route('admin.settings.api_hub'));
     Route::match(['post', 'put'], '/settings/api-hub', [ApiHubController::class, 'update'])->name('settings.api_hub.update');
     Route::match(['post', 'put'], '/settings/api-hub/save', [ApiHubController::class, 'update'])->name('settings.api-hub.update');
 

@@ -85,7 +85,7 @@
 
     <div class="flex h-screen overflow-hidden">
 
-        <!-- ================= SIDEBAR (22 MODULES) ================= -->
+        <!-- ================= SIDEBAR NAVIGATION ================= -->
         <aside 
             :class="{
                 'w-64': sidebarOpen,
@@ -111,38 +111,38 @@
                 </button>
             </div>
 
-            <!-- Navigation Links (Exact 22 Modules) -->
+            <!-- Navigation Links -->
             <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
 
                 <div x-show="sidebarOpen" class="px-3 pt-1 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Core Operations</div>
 
-                <!-- 1. Dashboard -->
+                <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">1. Dashboard Overview</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Dashboard Overview</span>
                 </a>
 
-                <!-- 2. POS System -->
+                <!-- POS System -->
                 <a href="{{ route('admin.pos.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.pos.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white text-emerald-400' }}">
                     <i data-lucide="scan-barcode" class="w-5 h-5 flex-shrink-0"></i>
                     <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>2. POS System</span>
+                        <span>POS System</span>
                         <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-bold">Counter</span>
                     </span>
                 </a>
 
-                <!-- 3. Orders Management -->
+                <!-- Orders Management -->
                 <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.orders.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shopping-bag" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">3. Orders Management</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Orders Management</span>
                 </a>
 
-                <!-- 4. Product & Catalog -->
+                <!-- Product & Catalog -->
                 <div x-data="{ open: {{ request()->routeIs('admin.products.*', 'admin.categories.*', 'admin.brands.*', 'admin.attributes.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
                         <div class="flex items-center gap-3">
                             <i data-lucide="package-search" class="w-5 h-5 flex-shrink-0"></i>
-                            <span x-show="sidebarOpen" class="whitespace-nowrap">4. Products & Catalog</span>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap">Products & Catalog</span>
                         </div>
                         <i x-show="sidebarOpen" data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform"></i>
                     </button>
@@ -157,66 +157,66 @@
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Procurement & Vendors</div>
 
-                <!-- 5. Purchases & Supplier Due -->
+                <!-- Purchases & Supplier Due -->
                 <a href="{{ route('admin.purchases.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.purchases.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="truck" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">5. Purchases & Supplier Due</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Purchases & Supplier Due</span>
                 </a>
 
-                <!-- 6. Supplier Management -->
+                <!-- Supplier Management -->
                 <a href="{{ route('admin.suppliers.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.suppliers.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="contact" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">6. Supplier Management</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Supplier Management</span>
                 </a>
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Marketing & Growth</div>
 
-                <!-- 7. Coupon Engine -->
+                <!-- Coupon Engine -->
                 <a href="{{ route('admin.coupons.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.coupons.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="ticket-percent" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">7. Coupon & Discounts</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Coupon & Discounts</span>
                 </a>
 
-                <!-- 8. Landing Page Builder -->
+                <!-- Landing Page Builder -->
                 <a href="{{ route('admin.landing-pages.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.landing-pages.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="sparkles" class="w-5 h-5 flex-shrink-0 text-amber-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">8. Landing Page Builder</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Landing Page Builder</span>
                 </a>
 
-                <!-- 9. Fraud & Risk Check -->
+                <!-- Fraud & Risk Check -->
                 <a href="{{ route('admin.fraud.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.fraud.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-alert" class="w-5 h-5 flex-shrink-0 text-red-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">9. Fraud & Risk Check</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Fraud & Risk Check</span>
                 </a>
 
-                <!-- 10. SMS Marketing -->
+                <!-- SMS Marketing -->
                 <a href="{{ route('admin.sms.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.sms.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="message-square" class="w-5 h-5 flex-shrink-0 text-sky-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">10. Custom SMS Marketing</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Custom SMS Marketing</span>
                 </a>
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Finance & Ledgers</div>
 
-                <!-- 11. Accounts & Funds -->
+                <!-- Accounts & Funds -->
                 <a href="{{ route('admin.accounts.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.accounts.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="wallet" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">11. Accounts & Funds</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Accounts & Funds</span>
                 </a>
 
-                <!-- 12. Expenses & Budgeting -->
+                <!-- Expenses & Budgeting -->
                 <a href="{{ route('admin.expenses.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.expenses.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="receipt" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">12. Expenses & Budgeting</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Expenses & Budgeting</span>
                 </a>
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Administration & Tools</div>
 
-                <!-- 13. Users & RBAC -->
+                <!-- Users & RBAC -->
                 <div x-data="{ open: {{ request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.customers.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
                         <div class="flex items-center gap-3">
                             <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
-                            <span x-show="sidebarOpen" class="whitespace-nowrap">13. Users, Roles & CRM</span>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap">Users, Roles & CRM</span>
                         </div>
                         <i x-show="sidebarOpen" data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform"></i>
                     </button>
@@ -227,64 +227,64 @@
                     </div>
                 </div>
 
-                <!-- 14. General Settings -->
+                <!-- General Settings -->
                 <a href="{{ route('admin.settings.general') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.general') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="sliders" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">14. General Settings</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">General Settings</span>
                 </a>
 
-                <!-- 15. Email Configuration -->
+                <!-- Email Configuration -->
                 <a href="{{ route('admin.settings.email') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.email') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="mail" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">15. Email Configuration</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Email Configuration</span>
                 </a>
 
-                <!-- 16. Fraud API Manager -->
+                <!-- Fraud API Manager -->
                 <a href="{{ route('admin.settings.fraud') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.fraud') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-check" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">16. Fraud API Manager</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Fraud API Manager</span>
                 </a>
 
-                <!-- 17. Third-Party API Hub -->
+                <!-- Third-Party API Hub -->
                 <a href="{{ route('admin.settings.api_hub') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.api_hub') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="plug-zap" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">17. Third-Party API Hub</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Third-Party API Hub</span>
                 </a>
 
-                <!-- 18. Banners & Advertising -->
+                <!-- Banners & Advertising -->
                 <a href="{{ route('admin.banners.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.banners.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="image" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">18. Banners & Advertising</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Banners & Advertising</span>
                 </a>
 
-                <!-- 19. Analytics & Reports -->
+                <!-- Analytics & Reports -->
                 <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.reports.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">19. Analytics & Reports</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Analytics & Reports</span>
                 </a>
 
-                <!-- 20. SEO Settings -->
+                <!-- SEO Settings -->
                 <a href="{{ route('admin.settings.seo') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.seo') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="globe" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">20. SEO Settings</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">SEO Settings</span>
                 </a>
 
-                <!-- 21. Sitemap Settings -->
+                <!-- Sitemap Settings -->
                 <a href="{{ route('admin.settings.sitemap') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.sitemap') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="network" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">21. Sitemap Settings</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Sitemap Settings</span>
                 </a>
 
-                <!-- 22. System Tools & Cache -->
+                <!-- System Tools & Cache -->
                 <a href="{{ route('admin.system.tools') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.system.tools') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="wrench" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">22. System Tools & Cache</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">System Tools & Cache</span>
                 </a>
 
-                <!-- 23. Footer & CMS Info -->
+                <!-- Footer & CMS Info -->
                 <a href="{{ route('admin.settings.footer') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.footer*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="layout" class="w-5 h-5 flex-shrink-0 text-amber-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">23. Footer Info & CMS</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap">Footer Info & CMS</span>
                 </a>
 
             </div>
