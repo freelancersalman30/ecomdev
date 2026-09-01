@@ -29,10 +29,14 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\SystemToolController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarrantyController as AdminWarrantyController;
+use App\Http\Controllers\Customer\Auth\CustomerAuthController;
+use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\Customer\CustomerWarrantyController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\FrontendController;
 use App\Http\Controllers\Frontend\ProductController as FrontProductController;
+use App\Http\Controllers\Frontend\ProductFeedController;
 use App\Http\Controllers\Frontend\ShopController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,15 +69,9 @@ Route::get('/track-order', [FrontendController::class, 'trackOrder'])->name('ord
 // Public Product Warranty Verification
 Route::get('/warranty/verify', [CustomerWarrantyController::class, 'publicVerify'])->name('warranty.verify');
 
-use App\Http\Controllers\Frontend\ProductFeedController;
-
 // Automated Ad & Shopping Product Feeds (Facebook Catalog & Google Merchant)
 Route::get('/feeds/facebook-catalog.xml', [ProductFeedController::class, 'facebookCatalog'])->name('feed.facebook');
 Route::get('/feeds/google-merchant.xml', [ProductFeedController::class, 'googleMerchant'])->name('feed.google');
-
-use App\Http\Controllers\Customer\Auth\CustomerAuthController;
-use App\Http\Controllers\Customer\CustomerDashboardController;
-use App\Http\Controllers\Customer\CustomerWarrantyController;
 
 // ==========================================
 // 👤 CUSTOMER AUTHENTICATION & PORTAL ROUTES
