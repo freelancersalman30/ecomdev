@@ -175,36 +175,47 @@
             </div>
         </div>
 
-        <!-- 4. Descriptions -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Descriptions</h3>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Short Description</label>
-                <textarea name="short_description" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">{{ $product->short_description }}</textarea>
+        <!-- 4. Short Description (Marketing Summary) -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3" x-data="{ shortDesc: @js(old('short_description', $product->short_description ?? '')) }">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="align-left" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Short Marketing Summary</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Brief overview displayed on product cards, search listings & social cards.</p>
+                </div>
+                <div class="text-[11px] font-mono font-semibold" :class="shortDesc.length > 250 ? 'text-amber-500' : 'text-slate-400'">
+                    <span x-text="shortDesc.length"></span> / 250 chars
+                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Detailed Technical Description</label>
-                <textarea name="description" rows="5" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none">{{ $product->description }}</textarea>
-            </div>
+            <textarea 
+                name="short_description" 
+                x-model="shortDesc"
+                rows="2" 
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500 transition resize-none"></textarea>
+        </div>
 
-            <div class="flex flex-wrap items-center gap-6 pt-2">
-                <label class="flex items-center gap-2 cursor-pointer text-xs">
-                    <input type="checkbox" name="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
-                    <span class="font-bold text-slate-700 dark:text-slate-300">Featured Component</span>
-                </label>
+        <!-- 5. Detailed Technical Description & Gemini AI Documentation -->
+        @include('admin.products.partials.description_editor', ['description' => old('description', $product->description)])
 
-                <label class="flex items-center gap-2 cursor-pointer text-xs">
-                    <input type="checkbox" name="is_flash_sale" value="1" {{ $product->is_flash_sale ? 'checked' : '' }} class="rounded text-amber-500 focus:ring-amber-500">
-                    <span class="font-bold text-slate-700 dark:text-slate-300">Flash Sale</span>
-                </label>
+        <!-- 6. Flags & Visibility Status -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-6">
+            <label class="flex items-center gap-2 cursor-pointer text-xs">
+                <input type="checkbox" name="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Featured Component</span>
+            </label>
 
-                <label class="flex items-center gap-2 cursor-pointer text-xs">
-                    <input type="checkbox" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
-                    <span class="font-bold text-slate-700 dark:text-slate-300">Active</span>
-                </label>
-            </div>
+            <label class="flex items-center gap-2 cursor-pointer text-xs">
+                <input type="checkbox" name="is_flash_sale" value="1" {{ $product->is_flash_sale ? 'checked' : '' }} class="rounded text-amber-500 focus:ring-amber-500 w-4 h-4">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Flash Sale</span>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer text-xs">
+                <input type="checkbox" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Active (Visible in Storefront)</span>
+            </label>
         </div>
 
         <div class="flex items-center justify-end gap-3">

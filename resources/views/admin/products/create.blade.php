@@ -274,31 +274,43 @@
             </div>
         </div>
 
-        <!-- 5. Description -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Descriptions & Marketing</h3>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Short Description (Key Highlights)</label>
-                <textarea name="short_description" rows="2" placeholder="Brief 1-2 sentence overview for product card..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none"></textarea>
+        <!-- 5. Short Description (Marketing Summary) -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3" x-data="{ shortDesc: @js(old('short_description', '')) }">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="align-left" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Short Marketing Summary</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Brief overview displayed on product cards, search listings & social cards.</p>
+                </div>
+                <div class="text-[11px] font-mono font-semibold" :class="shortDesc.length > 250 ? 'text-amber-500' : 'text-slate-400'">
+                    <span x-text="shortDesc.length"></span> / 250 chars
+                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Full Technical Description & Pinout Notes</label>
-                <textarea name="description" rows="5" placeholder="Detailed pin definitions, peripheral documentation, operating conditions..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none"></textarea>
-            </div>
+            <textarea 
+                name="short_description" 
+                x-model="shortDesc"
+                rows="2" 
+                placeholder="e.g. Ultra-compact STM32 development board with 72MHz ARM Cortex-M3 core, 64KB Flash, and breadboard-friendly 2.54mm pitch headers." 
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500 transition resize-none"></textarea>
+        </div>
 
-            <div class="flex flex-wrap items-center gap-6 pt-2">
-                <label class="flex items-center gap-2 cursor-pointer text-xs">
-                    <input type="checkbox" name="is_featured" value="1" class="rounded text-emerald-600 focus:ring-emerald-500">
-                    <span class="font-bold text-slate-700 dark:text-slate-300">Featured Component (Homepage Grid)</span>
-                </label>
+        <!-- 6. Detailed Technical Description & Gemini AI Documentation -->
+        @include('admin.products.partials.description_editor', ['description' => old('description')])
 
-                <label class="flex items-center gap-2 cursor-pointer text-xs">
-                    <input type="checkbox" name="is_flash_sale" value="1" class="rounded text-amber-500 focus:ring-amber-500">
-                    <span class="font-bold text-slate-700 dark:text-slate-300">Include in Flash Sale</span>
-                </label>
-            </div>
+        <!-- 7. Flags & Placement -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-6">
+            <label class="flex items-center gap-2 cursor-pointer text-xs">
+                <input type="checkbox" name="is_featured" value="1" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Featured Component (Homepage Grid)</span>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer text-xs">
+                <input type="checkbox" name="is_flash_sale" value="1" class="rounded text-amber-500 focus:ring-amber-500 w-4 h-4">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Include in Flash Sale</span>
+            </label>
         </div>
 
         <!-- Submit Toolbar -->

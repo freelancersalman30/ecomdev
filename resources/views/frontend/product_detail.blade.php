@@ -209,12 +209,121 @@
         </div>
 
         @if($product->description)
-        <div class="pt-4 border-t border-slate-100 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
-            <h3 class="font-bold text-slate-900 text-sm">Detailed Overview & Pinout Guide:</h3>
-            <div class="whitespace-pre-line">{{ $product->description }}</div>
+        <div class="pt-6 border-t border-slate-100 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-emerald-500"></i>
+                    <span>Detailed Technical Overview & Specifications</span>
+                </h3>
+                <span class="text-[11px] font-bold text-slate-400 font-mono">Hardware Guide</span>
+            </div>
+
+            <div class="gemini-content text-xs sm:text-sm text-slate-700 leading-relaxed">
+                {!! \Illuminate\Support\Str::markdown($product->description, [
+                    'html_input' => 'strip',
+                    'allow_unsafe_links' => false,
+                ]) !!}
+            </div>
         </div>
         @endif
     </div>
+
+    @push('styles')
+    <style>
+    .gemini-content h1, .gemini-content h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #0f172a;
+    }
+    .gemini-content h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-top: 1.25rem;
+        margin-bottom: 0.35rem;
+        color: #047857;
+    }
+    .gemini-content p {
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+    }
+    .gemini-content ul {
+        list-style-type: disc;
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    .gemini-content ol {
+        list-style-type: decimal;
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    .gemini-content li {
+        margin-bottom: 0.25rem;
+    }
+    .gemini-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.25rem 0;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        font-size: 0.78rem;
+    }
+    .gemini-content th {
+        background: #f8fafc;
+        padding: 0.6rem 0.85rem;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid #cbd5e1;
+        color: #0f172a;
+    }
+    .gemini-content td {
+        padding: 0.6rem 0.85rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .gemini-content tr:last-child td {
+        border-bottom: none;
+    }
+    .gemini-content tr:hover {
+        background: #f8fafc;
+    }
+    .gemini-content blockquote {
+        border-left: 4px solid #10b981;
+        background: #f0fdf4;
+        padding: 0.75rem 1rem;
+        border-radius: 0 0.75rem 0.75rem 0;
+        margin: 1rem 0;
+        font-style: italic;
+        font-size: 0.8rem;
+        color: #065f46;
+    }
+    .gemini-content code {
+        background: #f1f5f9;
+        color: #059669;
+        padding: 0.15rem 0.35rem;
+        border-radius: 0.25rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+    }
+    .gemini-content pre {
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        margin: 1rem 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+    }
+    .gemini-content strong {
+        font-weight: 700;
+        color: #0f172a;
+    }
+    </style>
+    @endpush
 
     <!-- Related Components Carousel -->
     @if($relatedProducts->count() > 0)
