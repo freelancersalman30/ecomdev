@@ -306,7 +306,10 @@
         <!-- 6. Detailed Technical Description & Gemini AI Documentation -->
         @include('admin.products.partials.description_editor', ['description' => old('description')])
 
-        <!-- 7. Flags & Placement -->
+        <!-- 7. Search Engine Optimization (SEO) & Google SERP Preview -->
+        @include('admin.products.partials.seo_meta_card')
+
+        <!-- 8. Flags & Placement -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-6">
             <label class="flex items-center gap-2 cursor-pointer text-xs">
                 <input type="checkbox" name="is_featured" value="1" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - DREAMERS PCB')
+@section('title', $product->meta_title ?: $product->name . ' - ' . \App\Models\Setting::get('site_name', 'DREAMERS PCB'))
+@section('meta_description', $product->meta_description ?: ($product->short_description ?: \Illuminate\Support\Str::limit(strip_tags($product->description), 155)))
+@section('meta_keywords', $product->meta_keywords ?: $product->name)
 
 @section('content')
 <div x-data="productDetailApp()" class="max-w-7xl mx-auto px-4 py-6 space-y-8">

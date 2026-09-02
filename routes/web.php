@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\EmailSettingController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\FooterSettingController;
 use App\Http\Controllers\Admin\FraudCheckController;
+use App\Http\Controllers\Admin\GeminiSettingController;
 use App\Http\Controllers\Admin\GeneralSettingController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\NotificationController;
@@ -249,6 +250,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/settings/api-hub/save', fn () => redirect()->route('admin.settings.api_hub'));
     Route::match(['post', 'put'], '/settings/api-hub', [ApiHubController::class, 'update'])->name('settings.api_hub.update');
     Route::match(['post', 'put'], '/settings/api-hub/save', [ApiHubController::class, 'update'])->name('settings.api-hub.update');
+
+    // 17.5 Google Gemini AI Settings
+    Route::get('/settings/gemini', [GeminiSettingController::class, 'index'])->name('settings.gemini');
+    Route::match(['post', 'put'], '/settings/gemini', [GeminiSettingController::class, 'update'])->name('settings.gemini.update');
+    Route::post('/settings/gemini/test', [GeminiSettingController::class, 'testConnection'])->name('settings.gemini.test');
 
     // 18. Banners & Advertising
     Route::get('/banners', [BannerController::class, 'index'])->name('banners.index');

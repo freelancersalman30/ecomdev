@@ -7,6 +7,10 @@
     
     <!-- Meta SEO -->
     <meta name="description" content="@yield('meta_description', 'DREAMERS PCB is Bangladesh\'s leading electronics & PCB store. Buy Microcontrollers, STM32, ESP32, Arduino, Soldering Tools & DIY Kits.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'electronics, components, arduino, esp32, pcb, bangladesh, sensors, robotics')">
+    <meta property="og:title" content="@yield('title', 'DREAMERS PCB | Electronic Components Store')">
+    <meta property="og:description" content="@yield('meta_description', 'Bangladesh\'s premier electronic components and PCB store.')">
+    <meta property="og:type" content="website">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @if(\App\Models\Setting::get('site_favicon'))

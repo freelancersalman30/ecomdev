@@ -1017,6 +1017,9 @@ function geminiDescriptionEditor(config = {}) {
                         shortDescTextarea.dispatchEvent(new Event('input', { bubbles: true }));
                     }
 
+                    // Dispatch event so SEO card populates automatically
+                    window.dispatchEvent(new CustomEvent('ai-seo-generated', { detail: data }));
+
                     // Switch to visual mode to show immediate rich layout
                     this.viewMode = 'visual';
 

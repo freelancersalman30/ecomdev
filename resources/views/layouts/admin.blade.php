@@ -324,6 +324,15 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Third-Party API Hub</span>
                 </a>
 
+                <!-- Gemini AI Engine -->
+                <a href="{{ route('admin.settings.gemini') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.gemini*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="sparkles" class="w-5 h-5 flex-shrink-0 text-yellow-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
+                        <span>Gemini AI Engine</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">AI</span>
+                    </span>
+                </a>
+
                 <!-- Banners & Advertising -->
                 <a href="{{ route('admin.banners.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.banners.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="image" class="w-5 h-5 flex-shrink-0"></i>

@@ -206,7 +206,10 @@
         <!-- 5. Detailed Technical Description & Gemini AI Documentation -->
         @include('admin.products.partials.description_editor', ['description' => old('description', $product->description)])
 
-        <!-- 6. Flags & Visibility Status -->
+        <!-- 6. Search Engine Optimization (SEO) & Google SERP Preview -->
+        @include('admin.products.partials.seo_meta_card')
+
+        <!-- 7. Flags & Visibility Status -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-6">
             <label class="flex items-center gap-2 cursor-pointer text-xs">
                 <input type="checkbox" name="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
