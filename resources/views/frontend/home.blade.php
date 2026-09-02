@@ -157,21 +157,8 @@
                 </a>
             </div>
 
-            @php
-                $flashLayout = $productLayout['home_flash_sale_layout'] ?? 'carousel';
-                $carouselInterval = (int) ($productLayout['carousel_interval'] ?? 3200);
-                $carouselAutoplay = ($productLayout['carousel_autoplay'] ?? '1') === '1';
-                $carouselPauseHover = ($productLayout['carousel_pause_hover'] ?? '1') === '1';
-                $showDiscountBadge = ($productLayout['show_discount_badge'] ?? '1') === '1';
-                $showOldPrice = ($productLayout['show_old_price'] ?? '1') === '1';
-                $showQuickAdd = ($productLayout['show_quick_add'] ?? '1') === '1';
-                $showTechSpecs = ($productLayout['show_tech_specs'] ?? '1') === '1';
-                $showRatings = ($productLayout['show_ratings'] ?? '1') === '1';
-            @endphp
-
-            @if($flashLayout === 'carousel')
             <!-- Flash Sale Auto-Sliding Product Carousel -->
-            <div x-data="productCarousel({ interval: {{ $carouselInterval }}, autoplay: {{ $carouselAutoplay ? 'true' : 'false' }}, pauseOnHover: {{ $carouselPauseHover ? 'true' : 'false' }} })" 
+            <div x-data="productCarousel({ interval: 3200 })" 
                  @mouseenter="pause()" 
                  @mouseleave="resume()" 
                  class="relative group/carousel">
@@ -185,10 +172,14 @@
                     <i data-lucide="chevron-left" class="w-5 h-5"></i>
                 </button>
 
-                <!-- Carousel Track (Auto-Slides One-by-One) -->
-                <div x-ref="track" class="flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1">
+                <!-- Carousel Track (Auto-Slides One-by-One with Smooth Touch & Mouse Drag) -->
+                <div x-ref="track" 
+                     @mousedown="onMouseDown($event)"
+                     @mousemove="onMouseMove($event)"
+                     @mouseup="onMouseUp()"
+                     class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                     @foreach($flashSaleProducts as $prod)
-                    <div class="w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0 bg-white rounded-2xl border border-slate-100 hover:border-daraz-orange/40 daraz-shadow p-2.5 flex flex-col justify-between group transition duration-300">
+                    <div class="carousel-card w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0 bg-white rounded-2xl border border-slate-100 hover:border-daraz-orange/40 daraz-shadow p-2.5 flex flex-col justify-between group transition duration-300">
                         <div>
                             <!-- Thumbnail + Discount Badge -->
                             <div class="relative aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2">
@@ -196,13 +187,13 @@
                                     <img src="{{ $prod->thumbnail }}" alt="{{ $prod->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                 </a>
                                 
-                                @if($showDiscountBadge && $prod->discount_percentage > 0)
+                                @if($prod->discount_percentage > 0)
                                 <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
                                     -{{ $prod->discount_percentage }}%
                                 </div>
                                 @endif
 
-                                @if($showTechSpecs && $prod->pcb_model)
+                                @if($prod->pcb_model)
                                 <div class="absolute bottom-1.5 left-1.5 right-1.5 px-1.5 py-0.5 rounded bg-slate-950/70 backdrop-blur-sm text-[9px] font-mono text-emerald-300 truncate">
                                     {{ $prod->pcb_model }}
                                 </div>
@@ -222,7 +213,7 @@
                                     <span class="text-sm font-black text-daraz-orange code-font">
                                         ৳{{ number_format($prod->effective_price, 2) }}
                                     </span>
-                                    @if($showOldPrice && ($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price)))
+                                    @if($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price))
                                     <span class="text-[11px] text-slate-400 line-through code-font">
                                         ৳{{ number_format($prod->selling_price, 2) }}
                                     </span>
@@ -232,7 +223,6 @@
                         </div>
 
                         <!-- Instant Quick Add Button -->
-                        @if($showQuickAdd)
                         <div class="pt-2">
                             <button 
                                 @click="addToCart({{ $prod->id }})" 
@@ -241,7 +231,6 @@
                                 <span>Add</span>
                             </button>
                         </div>
-                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -255,60 +244,133 @@
                     <i data-lucide="chevron-right" class="w-5 h-5"></i>
                 </button>
             </div>
-            @else
-            <!-- Flash Sale Grid Mode -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 py-2">
-                @foreach($flashSaleProducts as $prod)
-                <div class="bg-white rounded-2xl border border-slate-100 hover:border-daraz-orange/40 daraz-shadow p-2.5 flex flex-col justify-between group transition duration-300">
-                    <div>
-                        <div class="relative aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2">
-                            <a href="{{ route('product.show', $prod->slug) }}">
-                                <img src="{{ $prod->thumbnail }}" alt="{{ $prod->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                            </a>
-                            @if($showDiscountBadge && $prod->discount_percentage > 0)
-                            <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
-                                -{{ $prod->discount_percentage }}%
-                            </div>
-                            @endif
-                            @if($showTechSpecs && $prod->pcb_model)
-                            <div class="absolute bottom-1.5 left-1.5 right-1.5 px-1.5 py-0.5 rounded bg-slate-950/70 backdrop-blur-sm text-[9px] font-mono text-emerald-300 truncate">
-                                {{ $prod->pcb_model }}
-                            </div>
-                            @endif
-                        </div>
-                        <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 group-hover:text-daraz-orange transition min-h-[2rem]">
-                            <a href="{{ route('product.show', $prod->slug) }}">{{ $prod->name }}</a>
-                        </h4>
-                        <div class="mt-2 space-y-0.5">
-                            <div class="flex items-baseline gap-1.5 flex-wrap">
-                                <span class="text-sm font-black text-daraz-orange code-font">
-                                    ৳{{ number_format($prod->effective_price, 2) }}
-                                </span>
-                                @if($showOldPrice && ($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price)))
-                                <span class="text-[11px] text-slate-400 line-through code-font">
-                                    ৳{{ number_format($prod->selling_price, 2) }}
-                                </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    @if($showQuickAdd)
-                    <div class="pt-2">
-                        <button @click="addToCart({{ $prod->id }})" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-[11px] flex items-center justify-center gap-1 transition shadow-sm active:scale-95">
-                            <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-                            <span>Add</span>
-                        </button>
-                    </div>
-                    @endif
-                </div>
-                @endforeach
-            </div>
-            @endif
 
         </div>
     </section>
 
+    <!-- 3. ALL PRODUCTS & TOP PICKS SHOWCASE CAROUSEL -->
+    @if(isset($justForYouProducts) && $justForYouProducts->isNotEmpty())
+    <section class="max-w-7xl mx-auto px-4">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 daraz-shadow space-y-4">
+            
+            <!-- Header Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-daraz-orange to-amber-500 text-white flex items-center justify-center font-bold shadow-md shadow-daraz-orange/20 shrink-0">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 uppercase tracking-tight">
+                            Explore All Products & Top Picks
+                        </h3>
+                        <p class="text-xs text-slate-400">Discover all genuine electronic components, modules, and lab gear</p>
+                    </div>
+                </div>
 
+                <a href="{{ route('shop.index') }}" class="text-xs font-bold text-daraz-orange hover:text-daraz-orangeHover flex items-center gap-1 shrink-0">
+                    <span>VIEW COMPLETE CATALOG ({{ $justForYouProducts->count() }}+)</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- Auto-Sliding Smooth Product Carousel -->
+            <div x-data="productCarousel({ interval: 3500 })" 
+                 @mouseenter="pause()" 
+                 @mouseleave="resume()" 
+                 class="relative group/carousel">
+
+                <!-- Left Nav Arrow Button -->
+                <button 
+                    type="button" 
+                    @click="prev()" 
+                    class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                    aria-label="Previous Products">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+
+                <!-- Carousel Track -->
+                <div x-ref="track" 
+                     @mousedown="onMouseDown($event)"
+                     @mousemove="onMouseMove($event)"
+                     @mouseup="onMouseUp()"
+                     class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
+                    @foreach($justForYouProducts as $prod)
+                    <div class="carousel-card w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0 bg-slate-50/60 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-daraz-orange/40 hover:shadow-lg p-3 flex flex-col justify-between group transition duration-300">
+                        <div>
+                            <!-- Thumbnail -->
+                            <div class="relative aspect-square rounded-xl overflow-hidden bg-white mb-2 shadow-inner">
+                                <a href="{{ route('product.show', $prod->slug) }}">
+                                    <img src="{{ $prod->thumbnail }}" alt="{{ $prod->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                </a>
+                                
+                                @if($prod->discount_percentage > 0)
+                                <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
+                                    -{{ $prod->discount_percentage }}%
+                                </div>
+                                @endif
+
+                                @if($prod->pcb_model)
+                                <div class="absolute bottom-1.5 left-1.5 right-1.5 px-1.5 py-0.5 rounded bg-slate-950/70 backdrop-blur-sm text-[9px] font-mono text-emerald-300 truncate">
+                                    {{ $prod->pcb_model }}
+                                </div>
+                                @endif
+                            </div>
+
+                            <!-- Category & Title -->
+                            <div class="text-[10px] text-slate-400 font-semibold uppercase truncate">{{ $prod->category->name ?? 'Hardware' }}</div>
+                            <h4 class="text-xs font-semibold text-slate-900 line-clamp-2 group-hover:text-daraz-orange transition mt-0.5 min-h-[2rem]">
+                                <a href="{{ route('product.show', $prod->slug) }}">
+                                    {{ $prod->name }}
+                                </a>
+                            </h4>
+
+                            <!-- Ratings Stars -->
+                            <div class="flex items-center gap-1 mt-1 text-[10px] text-amber-500 font-bold">
+                                <span>★★★★★</span>
+                                <span class="text-slate-400 text-[9px]">({{ rand(5, 65) }})</span>
+                            </div>
+
+                            <!-- Price Tag -->
+                            <div class="mt-2 space-y-0.5">
+                                <div class="flex items-baseline gap-1.5 flex-wrap">
+                                    <span class="text-sm sm:text-base font-black text-daraz-orange code-font">
+                                        ৳{{ number_format($prod->effective_price, 2) }}
+                                    </span>
+                                    @if($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price))
+                                    <span class="text-[11px] text-slate-400 line-through code-font">
+                                        ৳{{ number_format($prod->selling_price, 2) }}
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Direct Fast Action Button -->
+                        <div class="pt-3">
+                            <button 
+                                @click="addToCart({{ $prod->id }})" 
+                                class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-xs flex items-center justify-center gap-1 transition shadow-sm active:scale-95">
+                                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+                                <span>Add to Cart</span>
+                            </button>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- Right Nav Arrow Button -->
+                <button 
+                    type="button" 
+                    @click="next()" 
+                    class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                    aria-label="Next Products">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+        </div>
+    </section>
+    @endif
 
     <!-- 5. CATEGORY-WISE PRODUCTS SHOWCASE SECTION -->
     <div class="space-y-10">
@@ -357,13 +419,10 @@
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition"></i>
                         </a>
                     </div>
-                              @php
-                    $categoryLayout = $productLayout['home_category_layout'] ?? 'carousel';
-                @endphp
+                </div>
 
-                @if($categoryLayout === 'carousel')
                 <!-- Category Products Auto-Sliding Carousel -->
-                <div x-data="productCarousel({ interval: {{ $carouselInterval }}, autoplay: {{ $carouselAutoplay ? 'true' : 'false' }}, pauseOnHover: {{ $carouselPauseHover ? 'true' : 'false' }} })" 
+                <div x-data="productCarousel({ interval: 3600 })" 
                      @mouseenter="pause()" 
                      @mouseleave="resume()" 
                      class="relative group/carousel">
@@ -378,9 +437,13 @@
                     </button>
 
                     <!-- Carousel Track -->
-                    <div x-ref="track" class="flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1">
+                    <div x-ref="track" 
+                         @mousedown="onMouseDown($event)"
+                         @mousemove="onMouseMove($event)"
+                         @mouseup="onMouseUp()"
+                         class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                         @foreach($catGroup->products as $prod)
-                        <div class="w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0 bg-slate-50/60 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-daraz-orange/40 hover:shadow-lg p-3 flex flex-col justify-between group transition duration-300">
+                        <div class="carousel-card w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0 bg-slate-50/60 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-daraz-orange/40 hover:shadow-lg p-3 flex flex-col justify-between group transition duration-300">
                             <div>
                                 <!-- Thumbnail -->
                                 <div class="relative aspect-square rounded-xl overflow-hidden bg-white mb-2 shadow-inner">
@@ -388,13 +451,13 @@
                                         <img src="{{ $prod->thumbnail }}" alt="{{ $prod->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                     </a>
                                     
-                                    @if($showDiscountBadge && $prod->discount_percentage > 0)
+                                    @if($prod->discount_percentage > 0)
                                     <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
                                         -{{ $prod->discount_percentage }}%
                                     </div>
                                     @endif
 
-                                    @if($showTechSpecs && $prod->pcb_model)
+                                    @if($prod->pcb_model)
                                     <div class="absolute bottom-1.5 left-1.5 right-1.5 px-1.5 py-0.5 rounded bg-slate-950/70 backdrop-blur-sm text-[9px] font-mono text-emerald-300 truncate">
                                         {{ $prod->pcb_model }}
                                     </div>
@@ -410,19 +473,17 @@
                                 </h4>
 
                                 <!-- PCB Spec Chipset Pill -->
-                                @if($showTechSpecs && ($prod->chipset || $prod->voltage))
+                                @if($prod->chipset || $prod->voltage)
                                 <div class="mt-1 flex items-center gap-1 text-[9px] text-slate-500 font-mono">
                                     <span class="truncate">{{ $prod->chipset ?? $prod->voltage }}</span>
                                 </div>
                                 @endif
 
                                 <!-- Ratings Stars -->
-                                @if($showRatings)
                                 <div class="flex items-center gap-1 mt-1 text-[10px] text-amber-500 font-bold">
                                     <span>★★★★★</span>
                                     <span class="text-slate-400 text-[9px]">({{ rand(8, 75) }})</span>
                                 </div>
-                                @endif
 
                                 <!-- Price Tag -->
                                 <div class="mt-2 space-y-0.5">
@@ -430,7 +491,7 @@
                                         <span class="text-sm sm:text-base font-black text-daraz-orange code-font">
                                             ৳{{ number_format($prod->effective_price, 2) }}
                                         </span>
-                                        @if($showOldPrice && ($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price)))
+                                        @if($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price))
                                         <span class="text-[11px] text-slate-400 line-through code-font">
                                             ৳{{ number_format($prod->selling_price, 2) }}
                                         </span>
@@ -440,16 +501,14 @@
                             </div>
 
                             <!-- Direct Fast Action Button -->
-                            @if($showQuickAdd)
                             <div class="pt-3">
                                 <button 
                                     @click="addToCart({{ $prod->id }})" 
-                                    class="w-full py-2 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95">
+                                    class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-xs flex items-center justify-center gap-1 transition shadow-sm active:scale-95">
                                     <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
                                     <span>Add to Cart</span>
                                 </button>
                             </div>
-                            @endif
                         </div>
                         @endforeach
                     </div>
@@ -463,72 +522,6 @@
                         <i data-lucide="chevron-right" class="w-5 h-5"></i>
                     </button>
                 </div>
-                @else
-                <!-- Category Products Grid Mode -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 py-2">
-                    @foreach($catGroup->products as $prod)
-                    <div class="bg-slate-50/60 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-daraz-orange/40 hover:shadow-lg p-3 flex flex-col justify-between group transition duration-300">
-                        <div>
-                            <div class="relative aspect-square rounded-xl overflow-hidden bg-white mb-2 shadow-inner">
-                                <a href="{{ route('product.show', $prod->slug) }}">
-                                    <img src="{{ $prod->thumbnail }}" alt="{{ $prod->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                </a>
-                                @if($showDiscountBadge && $prod->discount_percentage > 0)
-                                <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
-                                    -{{ $prod->discount_percentage }}%
-                                </div>
-                                @endif
-                                @if($showTechSpecs && $prod->pcb_model)
-                                <div class="absolute bottom-1.5 left-1.5 right-1.5 px-1.5 py-0.5 rounded bg-slate-950/70 backdrop-blur-sm text-[9px] font-mono text-emerald-300 truncate">
-                                    {{ $prod->pcb_model }}
-                                </div>
-                                @endif
-                            </div>
-
-                            <div class="text-[10px] text-slate-400 font-semibold uppercase">{{ $catGroup->name }}</div>
-                            <h4 class="text-xs font-semibold text-slate-900 line-clamp-2 group-hover:text-daraz-orange transition mt-0.5 min-h-[2rem]">
-                                <a href="{{ route('product.show', $prod->slug) }}">{{ $prod->name }}</a>
-                            </h4>
-
-                            @if($showTechSpecs && ($prod->chipset || $prod->voltage))
-                            <div class="mt-1 flex items-center gap-1 text-[9px] text-slate-500 font-mono">
-                                <span class="truncate">{{ $prod->chipset ?? $prod->voltage }}</span>
-                            </div>
-                            @endif
-
-                            @if($showRatings)
-                            <div class="flex items-center gap-1 mt-1 text-[10px] text-amber-500 font-bold">
-                                <span>★★★★★</span>
-                                <span class="text-slate-400 text-[9px]">({{ rand(8, 75) }})</span>
-                            </div>
-                            @endif
-
-                            <div class="mt-2 space-y-0.5">
-                                <div class="flex items-baseline gap-1.5 flex-wrap">
-                                    <span class="text-sm sm:text-base font-black text-daraz-orange code-font">
-                                        ৳{{ number_format($prod->effective_price, 2) }}
-                                    </span>
-                                    @if($showOldPrice && ($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price)))
-                                    <span class="text-[11px] text-slate-400 line-through code-font">
-                                        ৳{{ number_format($prod->selling_price, 2) }}
-                                    </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        @if($showQuickAdd)
-                        <div class="pt-3">
-                            <button @click="addToCart({{ $prod->id }})" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95">
-                                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-                                <span>Add to Cart</span>
-                            </button>
-                        </div>
-                        @endif
-                    </div>
-                    @endforeach
-                </div>
-                @endif
 
             </div>
         </section>

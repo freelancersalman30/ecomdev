@@ -91,12 +91,12 @@ class FrontendController extends Controller
             })
             ->with(['category', 'brand', 'variants'])
             ->latest()
-            ->take(6)
+            ->take(12)
             ->get();
 
         // If less than 4, grab any active products to showcase flash sale
         if ($flashSaleProducts->count() < 4) {
-            $flashSaleProducts = Product::where('is_active', true)->with(['category', 'brand'])->latest()->take(6)->get();
+            $flashSaleProducts = Product::where('is_active', true)->with(['category', 'brand', 'variants'])->latest()->take(12)->get();
         }
 
         // Official PCB Brands (DarazMall Style)
@@ -119,11 +119,12 @@ class FrontendController extends Controller
             ->orderBy('display_order', 'asc')
             ->get();
 
-        // "Just For You" Recommendation Grid
+        // All / Featured Products Showcase Collection
         $justForYouProducts = Product::where('is_active', true)
             ->with(['category', 'brand', 'variants'])
             ->latest()
-            ->paginate(12);
+            ->take(24)
+            ->get();
 
         return view('frontend.home', compact(
             'categories',

@@ -162,6 +162,15 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        .carousel-track {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+        }
+        .carousel-card {
+            scroll-snap-align: start;
+            scroll-snap-stop: normal;
+        }
     </style>
     @stack('styles')
 
@@ -831,7 +840,7 @@
             };
         }
 
-        // Global Auto-Sliding Product Carousel System
+        // Global Auto-Sliding Smooth Product Carousel System
         function productCarousel(options = {}) {
             return {
                 interval: options.interval || 3200,
@@ -839,6 +848,9 @@
                 pauseOnHover: options.pauseOnHover !== undefined ? options.pauseOnHover : true,
                 isPaused: false,
                 timer: null,
+                isDragging: false,
+                startX: 0,
+                scrollStart: 0,
 
                 init() {
                     if (this.autoplay) {
@@ -850,7 +862,7 @@
                     if (this.timer) clearInterval(this.timer);
                     if (!this.autoplay) return;
                     this.timer = setInterval(() => {
-                        if (!this.isPaused) {
+                        if (!this.isPaused && !this.isDragging) {
                             this.next();
                         }
                     }, this.interval);
@@ -868,12 +880,19 @@
                     }
                 },
 
+                getCardStep() {
+                    const track = this.$refs.track;
+                    if (!track) return 220;
+                    const card = track.querySelector(':scope > div');
+                    return card ? (card.offsetWidth + 16) : 220;
+                },
+
                 next() {
                     const track = this.$refs.track;
                     if (!track) return;
-                    const firstCard = track.firstElementChild;
-                    const step = firstCard ? (firstCard.offsetWidth + 16) : 210;
+                    const step = this.getCardStep();
                     const maxScroll = track.scrollWidth - track.clientWidth;
+                    if (maxScroll <= 5) return;
                     if (track.scrollLeft >= maxScroll - 15) {
                         track.scrollTo({ left: 0, behavior: 'smooth' });
                     } else {
@@ -884,12 +903,39 @@
                 prev() {
                     const track = this.$refs.track;
                     if (!track) return;
-                    const firstCard = track.firstElementChild;
-                    const step = firstCard ? (firstCard.offsetWidth + 16) : 210;
+                    const step = this.getCardStep();
+                    const maxScroll = track.scrollWidth - track.clientWidth;
+                    if (maxScroll <= 5) return;
                     if (track.scrollLeft <= 15) {
-                        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+                        track.scrollTo({ left: maxScroll, behavior: 'smooth' });
                     } else {
                         track.scrollBy({ left: -step, behavior: 'smooth' });
+                    }
+                },
+
+                onMouseDown(e) {
+                    const track = this.$refs.track;
+                    if (!track) return;
+                    this.isDragging = true;
+                    this.startX = e.pageX - track.offsetLeft;
+                    this.scrollStart = track.scrollLeft;
+                    this.pause();
+                },
+
+                onMouseMove(e) {
+                    if (!this.isDragging) return;
+                    const track = this.$refs.track;
+                    if (!track) return;
+                    e.preventDefault();
+                    const x = e.pageX - track.offsetLeft;
+                    const walk = (x - this.startX) * 1.3;
+                    track.scrollLeft = this.scrollStart - walk;
+                },
+
+                onMouseUp() {
+                    if (this.isDragging) {
+                        this.isDragging = false;
+                        this.resume();
                     }
                 }
             };

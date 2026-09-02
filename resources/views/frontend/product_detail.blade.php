@@ -26,7 +26,7 @@
             <div class="relative aspect-square rounded-2xl overflow-hidden bg-slate-50 border border-slate-200">
                 <img :src="activeImage" alt="{{ $product->name }}" class="w-full h-full object-cover">
                 
-                @if((($productLayout['show_discount_badge'] ?? '1') === '1') && $product->discount_percentage > 0)
+                @if($product->discount_percentage > 0)
                 <div class="absolute top-3 left-3 px-2 py-1 rounded-lg bg-daraz-orange text-white text-xs font-black uppercase shadow-md">
                     -{{ $product->discount_percentage }}%
                 </div>
@@ -75,7 +75,7 @@
                     <div class="text-2xl sm:text-3xl font-black text-daraz-orange code-font">
                         ৳<span x-text="currentPrice.toFixed(2)"></span>
                     </div>
-                    @if((($productLayout['show_old_price'] ?? '1') === '1') && ($product->discount_percentage > 0 || ($product->discount_price && $product->discount_price < $product->selling_price)))
+                    @if($product->discount_percentage > 0 || ($product->discount_price && $product->discount_price < $product->selling_price))
                     <div class="text-sm sm:text-base text-slate-400 line-through code-font">
                         ৳{{ number_format($product->selling_price, 2) }}
                     </div>
@@ -327,28 +327,18 @@
     </style>
     @endpush
 
-    <!-- Related Components Auto-Sliding Carousel / Grid -->
+    <!-- Related Components Auto-Sliding Carousel -->
     @if($relatedProducts->count() > 0)
-    @php
-        $relatedLayout = $productLayout['product_related_layout'] ?? 'carousel';
-        $carouselInterval = (int) ($productLayout['carousel_interval'] ?? 3400);
-        $carouselAutoplay = ($productLayout['carousel_autoplay'] ?? '1') === '1';
-        $carouselPauseHover = ($productLayout['carousel_pause_hover'] ?? '1') === '1';
-        $showDiscountBadge = ($productLayout['show_discount_badge'] ?? '1') === '1';
-        $showOldPrice = ($productLayout['show_old_price'] ?? '1') === '1';
-        $showQuickAdd = ($productLayout['show_quick_add'] ?? '1') === '1';
-    @endphp
     <div class="space-y-4">
         <div class="flex items-center justify-between">
             <h3 class="text-base font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
                 <i data-lucide="sparkles" class="w-4 h-4 text-daraz-orange"></i>
                 <span>People Also Bought</span>
             </h3>
-            <span class="text-xs text-slate-400 font-medium">Recommended for you</span>
+            <span class="text-xs text-slate-400 font-medium">Auto-sliding recommendations</span>
         </div>
 
-        @if($relatedLayout === 'carousel')
-        <div x-data="productCarousel({ interval: {{ $carouselInterval }}, autoplay: {{ $carouselAutoplay ? 'true' : 'false' }}, pauseOnHover: {{ $carouselPauseHover ? 'true' : 'false' }} })" 
+        <div x-data="productCarousel({ interval: 3400 })" 
              @mouseenter="pause()" 
              @mouseleave="resume()" 
              class="relative group/carousel">
@@ -363,15 +353,19 @@
             </button>
 
             <!-- Carousel Track -->
-            <div x-ref="track" class="flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1">
+            <div x-ref="track" 
+                 @mousedown="onMouseDown($event)"
+                 @mousemove="onMouseMove($event)"
+                 @mouseup="onMouseUp()"
+                 class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                 @foreach($relatedProducts as $rel)
-                <div class="w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0 bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
+                <div class="carousel-card w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0 bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
                     <div>
                         <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2 relative">
                             <a href="{{ route('product.show', $rel->slug) }}">
                                 <img src="{{ $rel->thumbnail }}" alt="{{ $rel->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition">
                             </a>
-                            @if($showDiscountBadge && $rel->discount_percentage > 0)
+                            @if($rel->discount_percentage > 0)
                             <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
                                 -{{ $rel->discount_percentage }}%
                             </div>
@@ -385,7 +379,7 @@
                                 <span class="text-sm font-black text-daraz-orange code-font">
                                     ৳{{ number_format($rel->effective_price, 2) }}
                                 </span>
-                                @if($showOldPrice && ($rel->discount_percentage > 0 || ($rel->discount_price && $rel->discount_price < $rel->selling_price)))
+                                @if($rel->discount_percentage > 0 || ($rel->discount_price && $rel->discount_price < $rel->selling_price))
                                 <span class="text-[10px] text-slate-400 line-through code-font">
                                     ৳{{ number_format($rel->selling_price, 2) }}
                                 </span>
@@ -395,7 +389,6 @@
                     </div>
 
                     <!-- Instant Quick Add Button -->
-                    @if($showQuickAdd)
                     <div class="pt-2">
                         <button 
                             @click="addToCart({{ $rel->id }})" 
@@ -404,7 +397,6 @@
                             <span>Add</span>
                         </button>
                     </div>
-                    @endif
                 </div>
                 @endforeach
             </div>
@@ -418,53 +410,6 @@
                 <i data-lucide="chevron-right" class="w-5 h-5"></i>
             </button>
         </div>
-        @else
-        <!-- Related Products Grid Mode -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 py-1">
-            @foreach($relatedProducts as $rel)
-            <div class="bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
-                <div>
-                    <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2 relative">
-                        <a href="{{ route('product.show', $rel->slug) }}">
-                            <img src="{{ $rel->thumbnail }}" alt="{{ $rel->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition">
-                        </a>
-                        @if($showDiscountBadge && $rel->discount_percentage > 0)
-                        <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
-                            -{{ $rel->discount_percentage }}%
-                        </div>
-                        @endif
-                    </div>
-                    <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 group-hover:text-daraz-orange transition min-h-[2rem]">
-                        <a href="{{ route('product.show', $rel->slug) }}">{{ $rel->name }}</a>
-                    </h4>
-                    <div class="mt-1.5 space-y-0.5">
-                        <div class="flex items-baseline gap-1.5 flex-wrap">
-                            <span class="text-sm font-black text-daraz-orange code-font">
-                                ৳{{ number_format($rel->effective_price, 2) }}
-                            </span>
-                            @if($showOldPrice && ($rel->discount_percentage > 0 || ($rel->discount_price && $rel->discount_price < $rel->selling_price)))
-                            <span class="text-[10px] text-slate-400 line-through code-font">
-                                ৳{{ number_format($rel->selling_price, 2) }}
-                            </span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                @if($showQuickAdd)
-                <div class="pt-2">
-                    <button 
-                        @click="addToCart({{ $rel->id }})" 
-                        class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-[11px] flex items-center justify-center gap-1 transition shadow-sm active:scale-95">
-                        <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-                        <span>Add</span>
-                    </button>
-                </div>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
     </div>
     @endif
 
