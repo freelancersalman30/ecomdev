@@ -327,27 +327,68 @@
     </style>
     @endpush
 
-    <!-- Related Components Carousel -->
+    <!-- Related Components Auto-Sliding Carousel -->
     @if($relatedProducts->count() > 0)
     <div class="space-y-4">
-        <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">People Also Bought</h3>
+        <div class="flex items-center justify-between">
+            <h3 class="text-base font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4 text-daraz-orange"></i>
+                <span>People Also Bought</span>
+            </h3>
+            <span class="text-xs text-slate-400 font-medium">Auto-sliding recommendations</span>
+        </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
-            @foreach($relatedProducts as $rel)
-            <div class="bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
-                <div>
-                    <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2">
-                        <a href="{{ route('product.show', $rel->slug) }}">
-                            <img src="{{ $rel->thumbnail }}" alt="{{ $rel->name }}" class="w-full h-full object-cover group-hover:scale-105 transition">
-                        </a>
+        <div x-data="productCarousel({ interval: 3400 })" 
+             @mouseenter="pause()" 
+             @mouseleave="resume()" 
+             class="relative group/carousel">
+
+            <!-- Left Nav Arrow Button -->
+            <button 
+                type="button" 
+                @click="prev()" 
+                class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                aria-label="Previous Products">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Carousel Track -->
+            <div x-ref="track" class="flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1">
+                @foreach($relatedProducts as $rel)
+                <div class="w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0 bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
+                    <div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2">
+                            <a href="{{ route('product.show', $rel->slug) }}">
+                                <img src="{{ $rel->thumbnail }}" alt="{{ $rel->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition">
+                            </a>
+                        </div>
+                        <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 group-hover:text-daraz-orange transition min-h-[2rem]">
+                            <a href="{{ route('product.show', $rel->slug) }}">{{ $rel->name }}</a>
+                        </h4>
+                        <div class="text-sm font-black text-daraz-orange code-font mt-1.5">৳{{ number_format($rel->effective_price, 2) }}</div>
                     </div>
-                    <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 group-hover:text-daraz-orange transition">
-                        <a href="{{ route('product.show', $rel->slug) }}">{{ $rel->name }}</a>
-                    </h4>
-                    <div class="text-xs font-black text-daraz-orange code-font mt-1.5">৳{{ number_format($rel->effective_price, 2) }}</div>
+
+                    <!-- Instant Quick Add Button -->
+                    <div class="pt-2">
+                        <button 
+                            @click="addToCart({{ $rel->id }})" 
+                            class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-[11px] flex items-center justify-center gap-1 transition shadow-sm active:scale-95">
+                            <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
+
+            <!-- Right Nav Arrow Button -->
+            <button 
+                type="button" 
+                @click="next()" 
+                class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                aria-label="Next Products">
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
         </div>
     </div>
     @endif

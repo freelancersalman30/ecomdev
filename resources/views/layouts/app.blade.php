@@ -153,6 +153,15 @@
         .mega-menu-shadow {
             box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
         }
+
+        /* Auto-sliding product carousel smooth styles */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
     @stack('styles')
 
@@ -817,6 +826,61 @@
                         }
                     } catch (e) {
                         console.error(e);
+                    }
+                }
+            };
+        }
+
+        // Global Auto-Sliding Product Carousel System
+        function productCarousel(options = {}) {
+            return {
+                interval: options.interval || 3200,
+                isPaused: false,
+                timer: null,
+
+                init() {
+                    this.start();
+                },
+
+                start() {
+                    if (this.timer) clearInterval(this.timer);
+                    this.timer = setInterval(() => {
+                        if (!this.isPaused) {
+                            this.next();
+                        }
+                    }, this.interval);
+                },
+
+                pause() {
+                    this.isPaused = true;
+                },
+
+                resume() {
+                    this.isPaused = false;
+                },
+
+                next() {
+                    const track = this.$refs.track;
+                    if (!track) return;
+                    const firstCard = track.firstElementChild;
+                    const step = firstCard ? (firstCard.offsetWidth + 16) : 210;
+                    const maxScroll = track.scrollWidth - track.clientWidth;
+                    if (track.scrollLeft >= maxScroll - 15) {
+                        track.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        track.scrollBy({ left: step, behavior: 'smooth' });
+                    }
+                },
+
+                prev() {
+                    const track = this.$refs.track;
+                    if (!track) return;
+                    const firstCard = track.firstElementChild;
+                    const step = firstCard ? (firstCard.offsetWidth + 16) : 210;
+                    if (track.scrollLeft <= 15) {
+                        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+                    } else {
+                        track.scrollBy({ left: -step, behavior: 'smooth' });
                     }
                 }
             };
