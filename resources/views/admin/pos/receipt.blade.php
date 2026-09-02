@@ -74,7 +74,13 @@
             <div><strong>Date:</strong> {{ $order->created_at->format('d/m/Y h:i A') }}</div>
             <div><strong>Customer:</strong> {{ $order->shipping_name }}</div>
             <div><strong>Phone:</strong> {{ $order->shipping_phone }}</div>
-            <div><strong>Cashier:</strong> Admin (Terminal 01)</div>
+            @if($order->shipping_address && $order->shipping_address !== 'Store Counter - DREAMERS PCB')
+            <div><strong>Address:</strong> {{ $order->shipping_address }}{{ $order->shipping_city && $order->shipping_city !== 'Store POS' ? ', ' . $order->shipping_city : '' }}</div>
+            @endif
+            @if($order->customer_note)
+            <div><strong>Note:</strong> {{ $order->customer_note }}</div>
+            @endif
+            <div><strong>Cashier:</strong> {{ auth()->user()->name ?? 'Admin' }} (Terminal 01)</div>
         </div>
 
         <div class="divider"></div>
