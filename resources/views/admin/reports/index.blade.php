@@ -649,26 +649,26 @@
                                 {{ $product->category?->name ?? 'Uncategorized' }}
                             </td>
                             <td class="p-3 text-right font-semibold code-font text-slate-700 dark:text-slate-300">
-                                ৳{{ number_format($product->cost_price, 2) }}
+                                ৳{{ number_format($product->purchase_price ?? 0, 2) }}
                             </td>
                             <td class="p-3 text-right font-bold code-font text-emerald-600 dark:text-emerald-400">
-                                ৳{{ number_format($product->selling_price, 2) }}
+                                ৳{{ number_format($product->selling_price ?? 0, 2) }}
                             </td>
                             <td class="p-3 text-center">
-                                <span class="font-black code-font text-sm {{ $product->stock_qty <= 0 ? 'text-rose-500' : ($product->stock_qty <= 10 ? 'text-amber-500' : 'text-slate-900 dark:text-white') }}">
-                                    {{ $product->stock_qty }}
+                                <span class="font-black code-font text-sm {{ ($product->stock_quantity ?? 0) <= 0 ? 'text-rose-500' : (($product->stock_quantity ?? 0) <= 10 ? 'text-amber-500' : 'text-slate-900 dark:text-white') }}">
+                                    {{ $product->stock_quantity ?? 0 }}
                                 </span>
                             </td>
                             <td class="p-3 text-right font-bold code-font text-slate-900 dark:text-white">
-                                ৳{{ number_format($product->cost_price * $product->stock_qty, 2) }}
+                                ৳{{ number_format(($product->purchase_price ?? 0) * ($product->stock_quantity ?? 0), 2) }}
                             </td>
                             <td class="p-3 text-right font-bold code-font text-emerald-600 dark:text-emerald-400">
-                                ৳{{ number_format($product->selling_price * $product->stock_qty, 2) }}
+                                ৳{{ number_format(($product->selling_price ?? 0) * ($product->stock_quantity ?? 0), 2) }}
                             </td>
                             <td class="p-3 text-center">
-                                @if($product->stock_qty <= 0)
+                                @if(($product->stock_quantity ?? 0) <= 0)
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-100 dark:bg-rose-950/50 text-rose-600">Out of Stock</span>
-                                @elseif($product->stock_qty <= 10)
+                                @elseif(($product->stock_quantity ?? 0) <= 10)
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 dark:bg-amber-950/50 text-amber-600">Low Stock</span>
                                 @else
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600">In Stock</span>

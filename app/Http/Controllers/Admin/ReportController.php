@@ -110,23 +110,23 @@ class ReportController extends Controller
 
             if ($request->filled('stock_status')) {
                 if ($request->stock_status === 'out_of_stock') {
-                    $query->where('stock_qty', '<=', 0);
+                    $query->where('stock_quantity', '<=', 0);
                 } elseif ($request->stock_status === 'low_stock') {
-                    $query->where('stock_qty', '>', 0)->where('stock_qty', '<=', 10);
+                    $query->where('stock_quantity', '>', 0)->where('stock_quantity', '<=', 10);
                 } elseif ($request->stock_status === 'in_stock') {
-                    $query->where('stock_qty', '>', 10);
+                    $query->where('stock_quantity', '>', 10);
                 }
             }
 
-            $data = $query->orderBy('stock_qty', 'asc')->get();
+            $data = $query->orderBy('stock_quantity', 'asc')->get();
 
             $summary = [
                 'total_products' => $data->count(),
-                'total_units' => $data->sum('stock_qty'),
-                'cost_value' => $data->sum(fn ($p) => $p->cost_price * $p->stock_qty),
-                'retail_value' => $data->sum(fn ($p) => $p->selling_price * $p->stock_qty),
-                'low_stock_count' => $data->where('stock_qty', '>', 0)->where('stock_qty', '<=', 10)->count(),
-                'out_of_stock_count' => $data->where('stock_qty', '<=', 0)->count(),
+                'total_units' => $data->sum('stock_quantity'),
+                'cost_value' => $data->sum(fn ($p) => ($p->purchase_price ?? 0) * ($p->stock_quantity ?? 0)),
+                'retail_value' => $data->sum(fn ($p) => ($p->selling_price ?? 0) * ($p->stock_quantity ?? 0)),
+                'low_stock_count' => $data->where('stock_quantity', '>', 0)->where('stock_quantity', '<=', 10)->count(),
+                'out_of_stock_count' => $data->where('stock_quantity', '<=', 0)->count(),
             ];
         } elseif ($reportType === 'profit_loss') {
             $salesTotal = Order::whereDate('created_at', '>=', $startDate)

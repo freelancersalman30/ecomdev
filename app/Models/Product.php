@@ -164,4 +164,14 @@ class Product extends Model
 
         return $this->stock_quantity;
     }
+
+    public function getStockQtyAttribute()
+    {
+        return $this->stock_quantity;
+    }
+
+    public function getCostPriceAttribute()
+    {
+        return $this->purchase_price;
+    }
 }
