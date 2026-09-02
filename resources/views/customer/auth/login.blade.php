@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-md mx-auto px-4 py-12 space-y-6">
 
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6" x-data="{ loginVal: '{{ old('login', '') }}', passwordVal: '' }">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
         
         <div class="text-center space-y-2">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-daraz-orange text-white flex items-center justify-center mx-auto shadow-md">
@@ -35,7 +35,7 @@
                 <input 
                     type="text" 
                     name="login" 
-                    x-model="loginVal"
+                    value="{{ old('login') }}"
                     required 
                     placeholder="e.g. 01711223344 or customer@gmail.com" 
                     class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold outline-none focus:ring-2 focus:ring-daraz-orange/20">
@@ -49,7 +49,6 @@
                 <input 
                     type="password" 
                     name="password" 
-                    x-model="passwordVal"
                     required 
                     placeholder="••••••••" 
                     class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none focus:ring-2 focus:ring-daraz-orange/20">
@@ -66,20 +65,6 @@
                 Sign In to Account
             </button>
         </form>
-
-        <!-- Quick Demo Customer Shortcut -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1.5">
-            <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-slate-400 uppercase">Demo Customer Credentials</span>
-                <button 
-                    type="button" 
-                    @click="loginVal = '01711223344'; passwordVal = 'password';" 
-                    class="px-2 py-0.5 rounded-md bg-amber-100 hover:bg-amber-200 text-amber-900 text-[10px] font-bold transition">
-                    Quick Fill
-                </button>
-            </div>
-            <p class="text-xs font-mono text-slate-700">Phone: <strong>01711223344</strong> &bull; Pass: <strong>password</strong></p>
-        </div>
 
         <!-- Register Link -->
         <div class="pt-2 border-t border-slate-100 text-center text-xs text-slate-500">

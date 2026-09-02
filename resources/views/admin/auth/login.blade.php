@@ -76,7 +76,7 @@
         </div>
 
         <!-- Main Card -->
-        <div class="mt-8 bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/80 space-y-6" x-data="{ showPassword: false, email: '{{ old('email', '') }}', password: '' }">
+        <div class="mt-8 bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/80 space-y-6" x-data="{ showPassword: false }">
             
             <div class="border-b border-slate-800/80 pb-4">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -132,8 +132,8 @@
                             type="email" 
                             autocomplete="email" 
                             required 
-                            x-model="email"
-                            placeholder="admin@dreamerspcb.com"
+                            value="{{ old('email') }}"
+                            placeholder="staff@example.com"
                             class="block w-full pl-10 pr-4 py-2.5 text-xs font-medium rounded-xl bg-slate-950/70 border border-slate-700 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition font-mono">
                     </div>
                 </div>
@@ -156,7 +156,6 @@
                             :type="showPassword ? 'text' : 'password'" 
                             autocomplete="current-password" 
                             required 
-                            x-model="password"
                             placeholder="••••••••••••"
                             class="block w-full pl-10 pr-10 py-2.5 text-xs font-medium rounded-xl bg-slate-950/70 border border-slate-700 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition font-mono">
                         <button 
@@ -188,26 +187,6 @@
                     <span>Authenticate & Access Dashboard</span>
                 </button>
             </form>
-
-            <!-- Quick Demo Credentials Box with 1-Click Auto Fill -->
-            <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/20 text-xs space-y-2">
-                <div class="flex items-center justify-between text-[11px]">
-                    <span class="font-bold text-emerald-400 flex items-center gap-1.5">
-                        <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
-                        <span>Default Super Admin Credentials</span>
-                    </span>
-                    <button 
-                        type="button" 
-                        @click="email = 'admin@dreamerspcb.com'; password = 'password'; $nextTick(() => lucide.createIcons());"
-                        class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] font-bold font-mono transition">
-                        Quick Fill
-                    </button>
-                </div>
-                <div class="font-mono text-[11px] text-slate-400 space-y-0.5 bg-slate-900/60 p-2 rounded-xl border border-slate-800">
-                    <p>Email: <span class="text-white font-semibold">admin@dreamerspcb.com</span></p>
-                    <p>Pass: <span class="text-white font-semibold">password</span></p>
-                </div>
-            </div>
 
             <!-- Footer Links -->
             <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
