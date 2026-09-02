@@ -317,6 +317,71 @@
 
     </div>
 
+    <!-- Live Operational Updates & Notifications Feed -->
+    @php
+        $latestNotifications = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('notifications')) {
+                $latestNotifications = Auth::guard('web')->user()?->notifications()->take(6)->get() ?? collect();
+            }
+        } catch (\Throwable $e) {}
+    @endphp
+    @if($latestNotifications->isNotEmpty())
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
+                    <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Live Activity & Operational Updates</h2>
+                    <p class="text-xs text-slate-500">Real-time alerts for incoming orders, courier dispatches, and delivery completions</p>
+                </div>
+            </div>
+            <a href="{{ route('admin.notifications.index') }}" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                <span>Notification Hub</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-800">
+            @foreach($latestNotifications->take(3) as $notif)
+            @php
+                $nData = $notif->data;
+                $nType = $nData['type'] ?? 'general';
+                $nIcon = $nData['icon'] ?? 'bell';
+                $badgeColors = [
+                    'new_order' => 'bg-emerald-500/10 text-emerald-500',
+                    'courier_assigned' => 'bg-sky-500/10 text-sky-500',
+                    'in_courier' => 'bg-sky-500/10 text-sky-500',
+                    'delivery_done' => 'bg-teal-500/10 text-teal-400',
+                    'order_cancelled' => 'bg-rose-500/10 text-rose-500',
+                    'order_returned' => 'bg-amber-500/10 text-amber-500',
+                ];
+                $bColor = $badgeColors[$nType] ?? 'bg-slate-500/10 text-slate-500';
+            @endphp
+            <div class="p-4 flex items-start gap-3 hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition">
+                <div class="w-9 h-9 rounded-xl {{ $bColor }} flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i data-lucide="{{ $nIcon }}" class="w-4 h-4"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                        <h4 class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ $nData['title'] ?? 'Update' }}</h4>
+                        <span class="text-[10px] text-slate-400">{{ $notif->created_at->diffForHumans() }}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">{{ $nData['message'] ?? '' }}</p>
+                    @if(!empty($nData['action_url']))
+                    <a href="{{ $nData['action_url'] }}" class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline mt-1.5">
+                        <span>View Order</span>
+                        <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 @endsection
 

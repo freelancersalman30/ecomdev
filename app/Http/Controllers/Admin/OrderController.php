@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\AdminNotificationService;
 use App\Services\CourierService;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
@@ -14,10 +15,16 @@ class OrderController extends Controller
 
     protected InventoryService $inventoryService;
 
-    public function __construct(CourierService $courierService, InventoryService $inventoryService)
-    {
+    protected AdminNotificationService $adminNotificationService;
+
+    public function __construct(
+        CourierService $courierService,
+        InventoryService $inventoryService,
+        AdminNotificationService $adminNotificationService
+    ) {
         $this->courierService = $courierService;
         $this->inventoryService = $inventoryService;
+        $this->adminNotificationService = $adminNotificationService;
     }
 
     public function index(Request $request)
@@ -90,6 +97,7 @@ class OrderController extends Controller
         }
 
         $order->logStatusChange($newStatus, $request->note, auth()->id());
+        $this->adminNotificationService->notifyStatusChange($order, $newStatus, $request->note);
 
         if ($order->customer) {
             $order->customer->recalculateMetrics();
@@ -109,6 +117,7 @@ class OrderController extends Controller
         $orders = Order::whereIn('id', $request->order_ids)->get();
         foreach ($orders as $order) {
             $order->logStatusChange($request->status, 'Bulk status update by '.auth()->user()->name, auth()->id());
+            $this->adminNotificationService->notifyStatusChange($order, $request->status, 'Bulk status update');
         }
 
         return redirect()->back()->with('success', count($orders).' orders updated successfully.');

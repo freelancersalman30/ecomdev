@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\FooterSettingController;
 use App\Http\Controllers\Admin\FraudCheckController;
 use App\Http\Controllers\Admin\GeneralSettingController;
 use App\Http\Controllers\Admin\LandingPageController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\ProductController;
@@ -137,6 +138,14 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::post('/orders/{order}/book-courier', [OrderController::class, 'bookCourier'])->name('orders.courier.book');
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::get('/orders/{order}/packing-slip', [OrderController::class, 'packingSlip'])->name('orders.packing_slip');
+
+    // 3.1 Admin Notifications Center & Live Polling
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/latest', [NotificationController::class, 'latest'])->name('notifications.latest');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark_all_read');
+    Route::post('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clear_all');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // 3.5 Product Warranty Verification & Management
     Route::get('/warranties', [AdminWarrantyController::class, 'index'])->name('warranties.index');

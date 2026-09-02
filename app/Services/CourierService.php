@@ -8,6 +8,10 @@ use Illuminate\Support\Str;
 
 class CourierService
 {
+    public function __construct(
+        protected AdminNotificationService $adminNotificationService
+    ) {}
+
     /**
      * Send order consignment to Courier API (Steadfast, Pathao, RedX)
      */
@@ -40,6 +44,8 @@ class CourierService
         $order->courier_tracking_id = $trackingCode;
         $order->courier_status = 'In Transit';
         $order->logStatusChange('in_courier', "Handed over to {$courierName} courier. Tracking: {$trackingCode}");
+
+        $this->adminNotificationService->notifyCourierAssigned($order, $courierName, $trackingCode);
 
         return $consignment;
     }

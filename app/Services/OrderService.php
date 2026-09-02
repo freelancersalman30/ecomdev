@@ -19,16 +19,20 @@ class OrderService
 
     protected WarrantyService $warrantyService;
 
+    protected AdminNotificationService $adminNotificationService;
+
     public function __construct(
         InventoryService $inventoryService,
         FraudCheckService $fraudCheckService,
         SmsService $smsService,
-        WarrantyService $warrantyService
+        WarrantyService $warrantyService,
+        AdminNotificationService $adminNotificationService
     ) {
         $this->inventoryService = $inventoryService;
         $this->fraudCheckService = $fraudCheckService;
         $this->smsService = $smsService;
         $this->warrantyService = $warrantyService;
+        $this->adminNotificationService = $adminNotificationService;
     }
 
     /**
@@ -172,6 +176,9 @@ class OrderService
                     ]
                 );
             }
+
+            // Dispatch Admin Dashboard Notification
+            $this->adminNotificationService->notifyNewOrder($order);
 
             return $order;
         });

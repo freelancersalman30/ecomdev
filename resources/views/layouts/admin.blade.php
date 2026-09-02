@@ -143,6 +143,25 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Warranty Verification</span>
                 </a>
 
+                <!-- Notifications & Activity Hub -->
+                <a href="{{ route('admin.notifications.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.notifications.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="bell" class="w-5 h-5 flex-shrink-0 text-amber-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
+                        <span>Notifications</span>
+                        @php
+                            $unreadSidebarCount = 0;
+                            try {
+                                if (\Illuminate\Support\Facades\Schema::hasTable('notifications')) {
+                                    $unreadSidebarCount = Auth::guard('web')->user()?->unreadNotifications()->count() ?? 0;
+                                }
+                            } catch (\Throwable $e) {}
+                        @endphp
+                        @if($unreadSidebarCount > 0)
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold">{{ $unreadSidebarCount }}</span>
+                        @endif
+                    </span>
+                </a>
+
                 <!-- Product & Catalog -->
                 <div x-data="{ open: {{ request()->routeIs('admin.products.*', 'admin.categories.*', 'admin.brands.*', 'admin.attributes.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
@@ -444,6 +463,111 @@
                         <i data-lucide="external-link" class="w-5 h-5"></i>
                     </a>
 
+                    <!-- Notification Bell Dropdown -->
+                    <div x-data="adminNotificationDropdown()" x-init="init()" class="relative">
+                        <button 
+                            @click="toggleDropdown()" 
+                            class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" 
+                            title="Notifications & Live Updates">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <template x-if="unreadCount > 0">
+                                <span class="absolute top-1 right-1 flex h-4 min-w-[16px] px-1 items-center justify-center pointer-events-none">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-4 min-w-[16px] px-1 bg-rose-500 text-white text-[10px] font-black items-center justify-center" x-text="unreadCount > 99 ? '99+' : unreadCount"></span>
+                                </span>
+                            </template>
+                        </button>
+
+                        <!-- Dropdown Panel -->
+                        <div 
+                            x-show="open" 
+                            @click.away="open = false" 
+                            x-cloak
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs overflow-hidden">
+                            
+                            <!-- Header -->
+                            <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-white text-sm">Notifications</span>
+                                    <template x-if="unreadCount > 0">
+                                        <span class="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 font-bold text-[10px]" x-text="unreadCount + ' new'"></span>
+                                    </template>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <template x-if="unreadCount > 0">
+                                        <button @click="markAllAsRead()" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                                            Mark all read
+                                        </button>
+                                    </template>
+                                    <button @click="fetchLatest()" title="Refresh" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Notifications Feed List -->
+                            <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
+                                <template x-if="loading && items.length === 0">
+                                    <div class="py-8 text-center text-slate-400">
+                                        <i data-lucide="loader-2" class="w-5 h-5 mx-auto animate-spin mb-1"></i>
+                                        <span>Loading updates...</span>
+                                    </div>
+                                </template>
+
+                                <template x-if="!loading && items.length === 0">
+                                    <div class="py-8 text-center text-slate-400 px-4">
+                                        <i data-lucide="bell-off" class="w-7 h-7 mx-auto mb-1.5 opacity-40"></i>
+                                        <div class="font-medium text-slate-600 dark:text-slate-300">No new notifications</div>
+                                        <div class="text-[11px] text-slate-400 mt-0.5">New orders, courier handovers, and delivery updates will appear here</div>
+                                    </div>
+                                </template>
+
+                                <template x-for="item in items" :key="item.id">
+                                    <div 
+                                        @click="handleItemClick(item)" 
+                                        :class="{ 'bg-emerald-50/40 dark:bg-emerald-950/20': !item.read }"
+                                        class="p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer flex items-start gap-3 relative group">
+                                        
+                                        <!-- Icon -->
+                                        <div 
+                                            :class="getIconBgClass(item.type)"
+                                            class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i :data-lucide="item.icon || 'bell'" class="w-4 h-4"></i>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="flex-1 min-w-0 pr-2">
+                                            <div class="flex items-center justify-between gap-1 mb-0.5">
+                                                <div class="font-bold text-slate-900 dark:text-white truncate text-xs" x-text="item.title"></div>
+                                                <span class="text-[10px] text-slate-400 whitespace-nowrap" x-text="item.time_ago"></span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed" x-text="item.message"></p>
+                                        </div>
+
+                                        <!-- Unread Dot -->
+                                        <template x-if="!item.read">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-500 self-center flex-shrink-0"></span>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-center">
+                                <a href="{{ route('admin.notifications.index') }}" class="block py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 transition">
+                                    View All Notifications & Activity Log &rarr;
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <!-- User Account Dropdown -->
                     <div x-data="{ userMenuOpen: false }" class="relative">
                         <button @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs">
@@ -528,6 +652,143 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
+
+        function adminNotificationDropdown() {
+            return {
+                open: false,
+                unreadCount: {{ (function() {
+                    try {
+                        return \Illuminate\Support\Facades\Schema::hasTable('notifications') ? (Auth::guard('web')->user()?->unreadNotifications()->count() ?? 0) : 0;
+                    } catch (\Throwable $e) {
+                        return 0;
+                    }
+                })() }},
+                items: [],
+                loading: false,
+                pollTimer: null,
+                csrfToken: '{{ csrf_token() }}',
+
+                init() {
+                    this.fetchLatest();
+                    // Live polling every 30 seconds
+                    this.pollTimer = setInterval(() => {
+                        this.fetchLatest(true);
+                    }, 30000);
+                },
+
+                toggleDropdown() {
+                    this.open = !this.open;
+                    if (this.open) {
+                        this.fetchLatest();
+                    }
+                },
+
+                async fetchLatest(silent = false) {
+                    if (!silent) this.loading = true;
+                    try {
+                        const res = await fetch('{{ route('admin.notifications.latest') }}', {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.success) {
+                                const prevCount = this.unreadCount;
+                                this.unreadCount = data.unread_count;
+                                this.items = data.notifications;
+                                this.$nextTick(() => {
+                                    if (window.lucide) {
+                                        lucide.createIcons();
+                                    }
+                                });
+                                if (silent && data.unread_count > prevCount) {
+                                    this.playChime();
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Notification sync error:', e);
+                    } finally {
+                        if (!silent) this.loading = false;
+                    }
+                },
+
+                async markAllAsRead() {
+                    try {
+                        const res = await fetch('{{ route('admin.notifications.mark_all_read') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        if (res.ok) {
+                            this.unreadCount = 0;
+                            this.items.forEach(i => i.read = true);
+                        }
+                    } catch (e) {
+                        console.error('Mark all read error:', e);
+                    }
+                },
+
+                async handleItemClick(item) {
+                    if (!item.read) {
+                        fetch(`{{ url('admin/notifications') }}/${item.id}/read`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        }).catch(() => {});
+                        item.read = true;
+                        if (this.unreadCount > 0) this.unreadCount--;
+                    }
+                    if (item.action_url) {
+                        window.location.href = item.action_url;
+                    }
+                },
+
+                getIconBgClass(type) {
+                    switch (type) {
+                        case 'new_order':
+                            return 'bg-emerald-500/15 text-emerald-500';
+                        case 'courier_assigned':
+                        case 'in_courier':
+                            return 'bg-sky-500/15 text-sky-500';
+                        case 'delivery_done':
+                            return 'bg-teal-500/15 text-teal-400';
+                        case 'order_cancelled':
+                            return 'bg-rose-500/15 text-rose-500';
+                        case 'order_returned':
+                            return 'bg-amber-500/15 text-amber-500';
+                        default:
+                            return 'bg-emerald-500/15 text-emerald-500';
+                    }
+                },
+
+                playChime() {
+                    try {
+                        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+                        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.3);
+                    } catch (e) {
+                        // Audio unavailable
+                    }
+                }
+            };
+        }
     </script>
     @stack('scripts')
 </body>
