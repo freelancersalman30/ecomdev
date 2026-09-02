@@ -84,7 +84,7 @@ class ProductCarouselTest extends TestCase
         $response->assertSee('productCarousel');
         $response->assertSee('People Also Bought');
         // Verify discount badge and old regular price on product detail
-        $response->assertSee('-20% OFF');
+        $response->assertSee('-20%');
         $response->assertSee('250.00');
     }
 }

@@ -28,7 +28,7 @@
                 
                 @if($product->discount_percentage > 0)
                 <div class="absolute top-3 left-3 px-2 py-1 rounded-lg bg-daraz-orange text-white text-xs font-black uppercase shadow-md">
-                    -{{ $product->discount_percentage }}% OFF
+                    -{{ $product->discount_percentage }}%
                 </div>
                 @endif
             </div>
@@ -75,14 +75,7 @@
                     <div class="text-2xl sm:text-3xl font-black text-daraz-orange code-font">
                         ৳<span x-text="currentPrice.toFixed(2)"></span>
                     </div>
-                    @if($product->discount_percentage > 0)
-                    <div class="text-sm sm:text-base text-slate-400 line-through code-font">
-                        ৳{{ number_format($product->selling_price, 2) }}
-                    </div>
-                    <span class="px-2.5 py-0.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 font-extrabold text-xs">
-                        -{{ $product->discount_percentage }}% OFF
-                    </span>
-                    @elseif($product->discount_price && $product->discount_price < $product->selling_price)
+                    @if($product->discount_percentage > 0 || ($product->discount_price && $product->discount_price < $product->selling_price))
                     <div class="text-sm sm:text-base text-slate-400 line-through code-font">
                         ৳{{ number_format($product->selling_price, 2) }}
                     </div>
@@ -370,7 +363,7 @@
                             </a>
                             @if($rel->discount_percentage > 0)
                             <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
-                                -{{ $rel->discount_percentage }}% OFF
+                                -{{ $rel->discount_percentage }}%
                             </div>
                             @endif
                         </div>
@@ -382,14 +375,7 @@
                                 <span class="text-sm font-black text-daraz-orange code-font">
                                     ৳{{ number_format($rel->effective_price, 2) }}
                                 </span>
-                                @if($rel->discount_percentage > 0)
-                                <span class="text-[10px] text-slate-400 line-through code-font">
-                                    ৳{{ number_format($rel->selling_price, 2) }}
-                                </span>
-                                <span class="text-[9px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200/60 px-1 py-0.5 rounded font-sans leading-none">
-                                    -{{ $rel->discount_percentage }}%
-                                </span>
-                                @elseif($rel->discount_price && $rel->discount_price < $rel->selling_price)
+                                @if($rel->discount_percentage > 0 || ($rel->discount_price && $rel->discount_price < $rel->selling_price))
                                 <span class="text-[10px] text-slate-400 line-through code-font">
                                     ৳{{ number_format($rel->selling_price, 2) }}
                                 </span>
