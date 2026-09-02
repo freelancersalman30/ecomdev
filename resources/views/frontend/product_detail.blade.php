@@ -220,7 +220,7 @@
 
             <div class="gemini-content text-xs sm:text-sm text-slate-700 leading-relaxed">
                 {!! \Illuminate\Support\Str::markdown($product->description, [
-                    'html_input' => 'strip',
+                    'html_input' => 'allow',
                     'allow_unsafe_links' => false,
                 ]) !!}
             </div>

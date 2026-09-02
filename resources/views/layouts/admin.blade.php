@@ -59,6 +59,10 @@
     <!-- Marked.js (Markdown & Gemini AI Live Renderer) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+    <!-- Turndown.js & GFM Plugin (Smart HTML to Markdown Converter for Gemini Copy-Paste) -->
+    <script src="https://cdn.jsdelivr.net/npm/turndown@7.2.0/dist/turndown.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
