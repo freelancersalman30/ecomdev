@@ -23,28 +23,37 @@
                     </a>
                     
                     @if($prod->discount_percentage > 0)
-                    <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black">
-                        -{{ $prod->discount_percentage }}%
+                    <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
+                        -{{ $prod->discount_percentage }}% OFF
                     </div>
                     @endif
                 </div>
 
                 <div class="text-[10px] text-slate-400 font-semibold uppercase">{{ $prod->category->name ?? 'Hardware' }}</div>
-                <h4 class="text-xs font-semibold text-slate-900 line-clamp-2 group-hover:text-daraz-orange transition mt-0.5">
+                <h4 class="text-xs font-semibold text-slate-900 line-clamp-2 group-hover:text-daraz-orange transition mt-0.5 min-h-[2rem]">
                     <a href="{{ route('product.show', $prod->slug) }}">
                         {{ $prod->name }}
                     </a>
                 </h4>
 
-                <div class="mt-2">
-                    <div class="text-sm font-black text-daraz-orange code-font">
-                        ৳{{ number_format($prod->effective_price, 2) }}
+                <div class="mt-2 space-y-0.5">
+                    <div class="flex items-baseline gap-1.5 flex-wrap">
+                        <span class="text-sm font-black text-daraz-orange code-font">
+                            ৳{{ number_format($prod->effective_price, 2) }}
+                        </span>
+                        @if($prod->discount_percentage > 0)
+                        <span class="text-[11px] text-slate-400 line-through code-font">
+                            ৳{{ number_format($prod->selling_price, 2) }}
+                        </span>
+                        <span class="text-[9px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200/60 px-1 py-0.5 rounded font-sans leading-none">
+                            -{{ $prod->discount_percentage }}%
+                        </span>
+                        @elseif($prod->discount_price && $prod->discount_price < $prod->selling_price)
+                        <span class="text-[11px] text-slate-400 line-through code-font">
+                            ৳{{ number_format($prod->selling_price, 2) }}
+                        </span>
+                        @endif
                     </div>
-                    @if($prod->discount_price)
-                    <div class="text-[10px] text-slate-400 line-through code-font">
-                        ৳{{ number_format($prod->selling_price, 2) }}
-                    </div>
-                    @endif
                 </div>
             </div>
 

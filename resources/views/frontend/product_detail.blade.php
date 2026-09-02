@@ -70,13 +70,20 @@
             </div>
 
             <!-- Price Box -->
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                <div class="flex items-baseline gap-3">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                <div class="flex items-center gap-3 flex-wrap">
                     <div class="text-2xl sm:text-3xl font-black text-daraz-orange code-font">
                         ৳<span x-text="currentPrice.toFixed(2)"></span>
                     </div>
-                    @if($product->discount_price)
-                    <div class="text-sm text-slate-400 line-through code-font">
+                    @if($product->discount_percentage > 0)
+                    <div class="text-sm sm:text-base text-slate-400 line-through code-font">
+                        ৳{{ number_format($product->selling_price, 2) }}
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 font-extrabold text-xs">
+                        -{{ $product->discount_percentage }}% OFF
+                    </span>
+                    @elseif($product->discount_price && $product->discount_price < $product->selling_price)
+                    <div class="text-sm sm:text-base text-slate-400 line-through code-font">
                         ৳{{ number_format($product->selling_price, 2) }}
                     </div>
                     @endif
@@ -357,15 +364,38 @@
                 @foreach($relatedProducts as $rel)
                 <div class="w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0 bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
                     <div>
-                        <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2">
+                        <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2 relative">
                             <a href="{{ route('product.show', $rel->slug) }}">
                                 <img src="{{ $rel->thumbnail }}" alt="{{ $rel->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition">
                             </a>
+                            @if($rel->discount_percentage > 0)
+                            <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
+                                -{{ $rel->discount_percentage }}% OFF
+                            </div>
+                            @endif
                         </div>
                         <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 group-hover:text-daraz-orange transition min-h-[2rem]">
                             <a href="{{ route('product.show', $rel->slug) }}">{{ $rel->name }}</a>
                         </h4>
-                        <div class="text-sm font-black text-daraz-orange code-font mt-1.5">৳{{ number_format($rel->effective_price, 2) }}</div>
+                        <div class="mt-1.5 space-y-0.5">
+                            <div class="flex items-baseline gap-1.5 flex-wrap">
+                                <span class="text-sm font-black text-daraz-orange code-font">
+                                    ৳{{ number_format($rel->effective_price, 2) }}
+                                </span>
+                                @if($rel->discount_percentage > 0)
+                                <span class="text-[10px] text-slate-400 line-through code-font">
+                                    ৳{{ number_format($rel->selling_price, 2) }}
+                                </span>
+                                <span class="text-[9px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200/60 px-1 py-0.5 rounded font-sans leading-none">
+                                    -{{ $rel->discount_percentage }}%
+                                </span>
+                                @elseif($rel->discount_price && $rel->discount_price < $rel->selling_price)
+                                <span class="text-[10px] text-slate-400 line-through code-font">
+                                    ৳{{ number_format($rel->selling_price, 2) }}
+                                </span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Instant Quick Add Button -->

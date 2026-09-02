@@ -100,11 +100,16 @@
                         </td>
                         <td class="px-4 py-3.5 text-xs">
                             <div class="font-bold text-emerald-600 dark:text-emerald-400 code-font">
-                                ৳{{ number_format($product->selling_price, 2) }}
+                                ৳{{ number_format($product->effective_price, 2) }}
                             </div>
-                            @if($product->discount_price)
-                            <div class="text-[10px] text-slate-400 line-through code-font">
-                                ৳{{ number_format($product->discount_price, 2) }}
+                            @if($product->discount_percentage > 0)
+                            <div class="flex items-center gap-1 mt-0.5">
+                                <span class="text-[10px] text-slate-400 line-through code-font">
+                                    ৳{{ number_format($product->selling_price, 2) }}
+                                </span>
+                                <span class="text-[9px] font-extrabold text-rose-600 bg-rose-50 dark:bg-rose-950/50 px-1 py-0.2 rounded font-sans">
+                                    -{{ $product->discount_percentage }}%
+                                </span>
                             </div>
                             @endif
                         </td>

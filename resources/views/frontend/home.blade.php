@@ -184,8 +184,8 @@
                                 </a>
                                 
                                 @if($prod->discount_percentage > 0)
-                                <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-daraz-orange text-white text-[9px] font-black uppercase shadow-sm">
-                                    -{{ $prod->discount_percentage }}%
+                                <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
+                                    -{{ $prod->discount_percentage }}% OFF
                                 </div>
                                 @endif
 
@@ -204,15 +204,24 @@
                             </h4>
 
                             <!-- Price Tag -->
-                            <div class="mt-2">
-                                <div class="text-sm font-black text-daraz-orange code-font">
-                                    ৳{{ number_format($prod->effective_price, 2) }}
+                            <div class="mt-2 space-y-0.5">
+                                <div class="flex items-baseline gap-1.5 flex-wrap">
+                                    <span class="text-sm font-black text-daraz-orange code-font">
+                                        ৳{{ number_format($prod->effective_price, 2) }}
+                                    </span>
+                                    @if($prod->discount_percentage > 0)
+                                    <span class="text-[11px] text-slate-400 line-through code-font">
+                                        ৳{{ number_format($prod->selling_price, 2) }}
+                                    </span>
+                                    <span class="text-[9px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200/60 px-1 py-0.5 rounded font-sans leading-none">
+                                        -{{ $prod->discount_percentage }}%
+                                    </span>
+                                    @elseif($prod->discount_price && $prod->discount_price < $prod->selling_price)
+                                    <span class="text-[11px] text-slate-400 line-through code-font">
+                                        ৳{{ number_format($prod->selling_price, 2) }}
+                                    </span>
+                                    @endif
                                 </div>
-                                @if($prod->discount_price)
-                                <div class="text-[10px] text-slate-400 line-through code-font">
-                                    ৳{{ number_format($prod->selling_price, 2) }}
-                                </div>
-                                @endif
                             </div>
                         </div>
 
@@ -320,8 +329,8 @@
                                     </a>
                                     
                                     @if($prod->discount_percentage > 0)
-                                    <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black shadow-sm">
-                                        -{{ $prod->discount_percentage }}%
+                                    <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
+                                        -{{ $prod->discount_percentage }}% OFF
                                     </div>
                                     @endif
 
@@ -354,15 +363,24 @@
                                 </div>
 
                                 <!-- Price Tag -->
-                                <div class="mt-2">
-                                    <div class="text-sm sm:text-base font-black text-daraz-orange code-font">
-                                        ৳{{ number_format($prod->effective_price, 2) }}
+                                <div class="mt-2 space-y-0.5">
+                                    <div class="flex items-baseline gap-1.5 flex-wrap">
+                                        <span class="text-sm sm:text-base font-black text-daraz-orange code-font">
+                                            ৳{{ number_format($prod->effective_price, 2) }}
+                                        </span>
+                                        @if($prod->discount_percentage > 0)
+                                        <span class="text-[11px] text-slate-400 line-through code-font">
+                                            ৳{{ number_format($prod->selling_price, 2) }}
+                                        </span>
+                                        <span class="text-[9px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200/60 px-1 py-0.5 rounded font-sans leading-none">
+                                            -{{ $prod->discount_percentage }}%
+                                        </span>
+                                        @elseif($prod->discount_price && $prod->discount_price < $prod->selling_price)
+                                        <span class="text-[11px] text-slate-400 line-through code-font">
+                                            ৳{{ number_format($prod->selling_price, 2) }}
+                                        </span>
+                                        @endif
                                     </div>
-                                    @if($prod->discount_price)
-                                    <div class="text-[10px] text-slate-400 line-through code-font">
-                                        ৳{{ number_format($prod->selling_price, 2) }}
-                                    </div>
-                                    @endif
                                 </div>
                             </div>
 
