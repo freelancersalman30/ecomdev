@@ -185,6 +185,10 @@
                         <a href="{{ route('admin.categories.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.categories.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Categories (3-Tier)</a>
                         <a href="{{ route('admin.brands.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.brands.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Brands</a>
                         <a href="{{ route('admin.attributes.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.attributes.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Colors & Sizes / Pinouts</a>
+                        <a href="{{ route('admin.products.layout') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.products.layout*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }} flex items-center justify-between">
+                            <span>Product Layout Options</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-bold uppercase">UI</span>
+                        </a>
                     </div>
                 </div>
 
@@ -330,6 +334,15 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
                         <span>Gemini AI Engine</span>
                         <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">AI</span>
+                    </span>
+                </a>
+
+                <!-- Product Layout & Display Customizer -->
+                <a href="{{ route('admin.products.layout') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.products.layout*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="layout-grid" class="w-5 h-5 flex-shrink-0 text-sky-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
+                        <span>Product Layout & Cards</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-400/20 text-sky-300 font-extrabold uppercase">UI</span>
                     </span>
                 </a>
 

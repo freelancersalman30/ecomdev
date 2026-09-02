@@ -145,7 +145,21 @@
         <!-- Right Products Grid -->
         <div class="lg:col-span-9 space-y-6">
             
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            @php
+                $gridColsClass = match($productLayout['shop_grid_columns'] ?? '4_cols') {
+                    '3_cols' => 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3',
+                    '5_cols' => 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5',
+                    '6_cols' => 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6',
+                    default => 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4',
+                };
+                $showDiscountBadge = ($productLayout['show_discount_badge'] ?? '1') === '1';
+                $showOldPrice = ($productLayout['show_old_price'] ?? '1') === '1';
+                $showQuickAdd = ($productLayout['show_quick_add'] ?? '1') === '1';
+                $showTechSpecs = ($productLayout['show_tech_specs'] ?? '1') === '1';
+                $showRatings = ($productLayout['show_ratings'] ?? '1') === '1';
+            @endphp
+
+            <div class="grid {{ $gridColsClass }} gap-4">
                 @forelse($products as $prod)
                 <div class="bg-white rounded-2xl border border-slate-200 daraz-shadow p-3 flex flex-col justify-between group transition hover:-translate-y-0.5">
                     <div>
@@ -154,7 +168,7 @@
                                 <img src="{{ $prod->thumbnail }}" alt="{{ $prod->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             </a>
                             
-                            @if($prod->discount_percentage > 0)
+                            @if($showDiscountBadge && $prod->discount_percentage > 0)
                             <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
                                 -{{ $prod->discount_percentage }}%
                             </div>
@@ -168,23 +182,25 @@
                             </a>
                         </h3>
 
-                        @if($prod->voltage || $prod->chipset)
+                        @if($showTechSpecs && ($prod->voltage || $prod->chipset))
                         <div class="mt-1 text-[9px] text-slate-500 font-mono truncate">
                             {{ $prod->chipset ?? $prod->voltage }}
                         </div>
                         @endif
 
+                        @if($showRatings)
                         <div class="flex items-center gap-1 mt-1 text-[10px] text-amber-500 font-bold">
                             <span>★★★★★</span>
                             <span class="text-slate-400 text-[9px]">({{ rand(4, 52) }})</span>
                         </div>
+                        @endif
 
                         <div class="mt-2 space-y-0.5">
                             <div class="flex items-baseline gap-1.5 flex-wrap">
                                 <span class="text-sm sm:text-base font-black text-daraz-orange code-font">
                                     ৳{{ number_format($prod->effective_price, 2) }}
                                 </span>
-                                @if($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price))
+                                @if($showOldPrice && ($prod->discount_percentage > 0 || ($prod->discount_price && $prod->discount_price < $prod->selling_price)))
                                 <span class="text-[11px] text-slate-400 line-through code-font">
                                     ৳{{ number_format($prod->selling_price, 2) }}
                                 </span>
@@ -193,6 +209,7 @@
                         </div>
                     </div>
 
+                    @if($showQuickAdd)
                     <div class="pt-2">
                         <button 
                             @click="addToCart({{ $prod->id }})" 
@@ -201,6 +218,7 @@
                             <span>Add to Cart</span>
                         </button>
                     </div>
+                    @endif
                 </div>
                 @empty
                 <div class="col-span-full py-16 text-center text-slate-400 bg-white rounded-3xl border border-slate-200 space-y-3">

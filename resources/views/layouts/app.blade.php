@@ -835,15 +835,20 @@
         function productCarousel(options = {}) {
             return {
                 interval: options.interval || 3200,
+                autoplay: options.autoplay !== undefined ? options.autoplay : true,
+                pauseOnHover: options.pauseOnHover !== undefined ? options.pauseOnHover : true,
                 isPaused: false,
                 timer: null,
 
                 init() {
-                    this.start();
+                    if (this.autoplay) {
+                        this.start();
+                    }
                 },
 
                 start() {
                     if (this.timer) clearInterval(this.timer);
+                    if (!this.autoplay) return;
                     this.timer = setInterval(() => {
                         if (!this.isPaused) {
                             this.next();
@@ -852,11 +857,15 @@
                 },
 
                 pause() {
-                    this.isPaused = true;
+                    if (this.pauseOnHover) {
+                        this.isPaused = true;
+                    }
                 },
 
                 resume() {
-                    this.isPaused = false;
+                    if (this.pauseOnHover) {
+                        this.isPaused = false;
+                    }
                 },
 
                 next() {

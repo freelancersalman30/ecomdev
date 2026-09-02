@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductLayoutController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController;
@@ -156,6 +157,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::delete('/warranties/{warranty}', [AdminWarrantyController::class, 'destroy'])->name('warranties.destroy');
 
     // 4. Product & Catalog Management
+    Route::get('products/layout', [ProductLayoutController::class, 'index'])->name('products.layout');
+    Route::post('products/layout', [ProductLayoutController::class, 'update'])->name('products.layout.update');
+    Route::post('products/layout/reset', [ProductLayoutController::class, 'reset'])->name('products.layout.reset');
+    Route::get('settings/product-layout', fn () => redirect()->route('admin.products.layout'))->name('settings.product_layout');
     Route::post('products/ai-generate-description', [ProductController::class, 'generateAiDescription'])->name('products.ai.generate');
     Route::resource('products', ProductController::class);
 
