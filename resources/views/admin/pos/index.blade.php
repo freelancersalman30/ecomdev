@@ -308,6 +308,52 @@
                         </div>
                     </div>
 
+                    <!-- Delivery Charge Row + Quick Presets -->
+                    <div class="space-y-1.5 pt-1 border-t border-slate-200/60 dark:border-slate-800/60">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="truck" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <span>Delivery Charge (৳):</span>
+                            </span>
+                            <input 
+                                type="number" 
+                                x-model.number="shippingCharge" 
+                                min="0" 
+                                placeholder="0" 
+                                class="w-28 px-2 py-1 text-right text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white code-font font-bold outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                            <button type="button" @click="shippingCharge = 0" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">Free (৳0)</button>
+                            <button type="button" @click="shippingCharge = 60" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">Dhaka (৳60)</button>
+                            <button type="button" @click="shippingCharge = 120" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">Outside (৳120)</button>
+                            <button type="button" @click="shippingCharge = 150" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">Express (৳150)</button>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Paid Row + Quick Chips -->
+                    <div class="space-y-1.5 pt-1 border-t border-slate-200/60 dark:border-slate-800/60">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="badge-check" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                <span>Advanced Paid (৳):</span>
+                            </span>
+                            <input 
+                                type="number" 
+                                x-model.number="advancePaid" 
+                                @input="onAdvancePaidInput()"
+                                min="0" 
+                                placeholder="0" 
+                                class="w-28 px-2 py-1 text-right text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white code-font font-bold outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                            <button type="button" @click="setFullAdvance()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 transition">Full Paid</button>
+                            <button type="button" @click="advancePaid = shippingCharge || 120; onAdvancePaidInput()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">Delivery Only</button>
+                            <button type="button" @click="advancePaid = 500; onAdvancePaidInput()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">৳500</button>
+                            <button type="button" @click="advancePaid = 1000; onAdvancePaidInput()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white transition">৳1000</button>
+                            <button type="button" @click="advancePaid = null; onAdvancePaidInput()" class="px-1.5 py-0.5 rounded text-[10px] text-rose-500 font-bold hover:underline">Reset</button>
+                        </div>
+                    </div>
+
                     <!-- Tax Row -->
                     <div class="flex items-center justify-between gap-3 pt-1 border-t border-slate-200/60 dark:border-slate-800/60">
                         <span class="text-slate-600 dark:text-slate-400">Tax / VAT (৳):</span>
@@ -319,16 +365,28 @@
                             class="w-28 px-2 py-1 text-right text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white code-font font-bold outline-none focus:border-emerald-500">
                     </div>
 
-                    <!-- Grand Total Banner -->
-                    <div class="flex items-center justify-between pt-2.5 border-t border-slate-200 dark:border-slate-700">
-                        <div>
+                    <!-- Grand Total Banner & Advance Paid / Due Summary -->
+                    <div class="pt-2.5 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="flex items-center justify-between">
                             <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Grand Total:</span>
-                        </div>
-                        <div class="text-right">
                             <span class="text-base sm:text-xl font-black text-emerald-600 dark:text-emerald-400 code-font">
                                 ৳<span x-text="getGrandTotal().toFixed(2)"></span>
                             </span>
                         </div>
+
+                        <!-- Advance & Remaining Due Notice -->
+                        <template x-if="advancePaid && advancePaid > 0 && advancePaid < getGrandTotal()">
+                            <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-1">
+                                <div class="flex items-center justify-between text-emerald-700 dark:text-emerald-400 font-bold">
+                                    <span>Advance Received:</span>
+                                    <span class="code-font text-xs font-black">৳<span x-text="Number(advancePaid).toFixed(2)"></span></span>
+                                </div>
+                                <div class="flex items-center justify-between text-rose-600 dark:text-rose-400 font-black">
+                                    <span>Remaining Due on Delivery:</span>
+                                    <span class="code-font text-sm font-black">৳<span x-text="(getGrandTotal() - advancePaid).toFixed(2)"></span></span>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -583,6 +641,7 @@
             discount: 0,
             tax: 0,
             shippingCharge: 0,
+            advancePaid: null,
             paidAmount: null,
             customerModalOpen: false,
             showInlineCustomerForm: false,
@@ -718,6 +777,8 @@
                 this.cart = [];
                 this.discount = 0;
                 this.tax = 0;
+                this.shippingCharge = 0;
+                this.advancePaid = null;
                 this.paidAmount = null;
                 this.resetCustomerToWalkin();
             },
@@ -729,6 +790,19 @@
                 } else {
                     this.discount = val;
                 }
+            },
+
+            onAdvancePaidInput() {
+                if (this.advancePaid !== null && this.advancePaid !== '') {
+                    this.paidAmount = Number(this.advancePaid);
+                } else {
+                    this.paidAmount = null;
+                }
+            },
+
+            setFullAdvance() {
+                this.advancePaid = this.getGrandTotal();
+                this.paidAmount = this.getGrandTotal();
             },
 
             setExactCash() {
@@ -745,7 +819,10 @@
 
             getGrandTotal() {
                 const sub = this.getSubtotal();
-                const total = (sub - (this.discount || 0)) + (this.tax || 0);
+                const discount = Number(this.discount) || 0;
+                const shipping = Number(this.shippingCharge) || 0;
+                const tax = Number(this.tax) || 0;
+                const total = (sub - discount) + shipping + tax;
                 return Math.max(0, total);
             },
 
@@ -768,12 +845,16 @@
 
                 this.isProcessing = true;
 
-                const finalPaid = this.paidAmount !== null && this.paidAmount !== '' ? Number(this.paidAmount) : this.getGrandTotal();
+                const finalPaid = this.advancePaid !== null && this.advancePaid !== '' 
+                    ? Number(this.advancePaid) 
+                    : (this.paidAmount !== null && this.paidAmount !== '' ? Number(this.paidAmount) : this.getGrandTotal());
 
                 const payload = {
                     cart: this.cart,
                     discount: this.discount,
                     tax: this.tax,
+                    shipping_charge: this.shippingCharge || 0,
+                    advance_paid: this.advancePaid,
                     paid_amount: finalPaid,
                     payment_method: this.paymentMethod,
                     customer_id: this.selectedCustomerId || null,

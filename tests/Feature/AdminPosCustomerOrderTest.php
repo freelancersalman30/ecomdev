@@ -140,6 +140,53 @@ class AdminPosCustomerOrderTest extends TestCase
         $response->assertSee('Special PCB customer with warranty');
     }
 
+    public function test_pos_checkout_with_delivery_charge_and_advance_paid(): void
+    {
+        $payload = [
+            'cart' => [
+                [
+                    'product_id' => $this->product->id,
+                    'variant_id' => null,
+                    'quantity' => 2, // 750 * 2 = 1500
+                ],
+            ],
+            'discount' => 50,
+            'shipping_charge' => 120,
+            'advance_paid' => 500,
+            'paid_amount' => 500,
+            'payment_method' => 'pos_cash',
+            'customer_name' => 'Kazi Nazrul',
+            'customer_phone' => '01911223344',
+            'customer_address' => 'Chittagong Port Area',
+            'customer_city' => 'Chittagong',
+        ];
+
+        $response = $this->actingAs($this->admin)->postJson(route('admin.pos.checkout'), $payload);
+
+        $response->assertStatus(200);
+        $orderId = $response->json('order_id');
+        $order = Order::find($orderId);
+
+        $this->assertNotNull($order);
+        $this->assertEquals(1500, $order->subtotal);
+        $this->assertEquals(50, $order->discount);
+        $this->assertEquals(120, $order->shipping_charge);
+        $this->assertEquals(1570, $order->grand_total);
+        $this->assertEquals(500, $order->paid_amount);
+        $this->assertEquals(1070, $order->due_amount);
+        $this->assertEquals('partially_paid', $order->payment_status);
+
+        // Verify receipt shows Delivery Charge and Advance Paid / Due Balance
+        $receiptResponse = $this->actingAs($this->admin)->get(route('admin.pos.receipt', $order->id));
+        $receiptResponse->assertStatus(200);
+        $receiptResponse->assertSee('Delivery Charge:');
+        $receiptResponse->assertSee('120.00');
+        $receiptResponse->assertSee('Advance Paid');
+        $receiptResponse->assertSee('500.00');
+        $receiptResponse->assertSee('Due Balance:');
+        $receiptResponse->assertSee('1,070.00');
+    }
+
     public function test_pos_checkout_with_walk_in_customer_defaults_properly(): void
     {
         $payload = [

@@ -66,6 +66,8 @@ class PosController extends Controller
             'cart.*.product_id' => 'required|exists:products,id',
             'cart.*.quantity' => 'required|integer|min:1',
             'paid_amount' => 'required|numeric|min:0',
+            'shipping_charge' => 'nullable|numeric|min:0',
+            'advance_paid' => 'nullable|numeric|min:0',
             'customer_name' => 'nullable|string|max:191',
             'customer_phone' => 'nullable|string|max:30',
             'customer_address' => 'nullable|string|max:500',

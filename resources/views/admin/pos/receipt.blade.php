@@ -126,6 +126,12 @@
                 <td class="text-right">-৳{{ number_format($order->discount, 2) }}</td>
             </tr>
             @endif
+            @if($order->shipping_charge > 0)
+            <tr>
+                <td>Delivery Charge:</td>
+                <td class="text-right">+৳{{ number_format($order->shipping_charge, 2) }}</td>
+            </tr>
+            @endif
             @if($order->tax > 0)
             <tr>
                 <td>Tax / VAT:</td>
@@ -137,12 +143,12 @@
                 <td class="text-right">৳{{ number_format($order->grand_total, 2) }}</td>
             </tr>
             <tr>
-                <td>Paid ({{ strtoupper($order->payment_method) }}):</td>
+                <td>{{ $order->due_amount > 0 ? 'Advance Paid' : 'Paid' }} ({{ strtoupper($order->payment_method) }}):</td>
                 <td class="text-right">৳{{ number_format($order->paid_amount, 2) }}</td>
             </tr>
             @if($order->due_amount > 0)
             <tr class="font-bold">
-                <td>Due Amount:</td>
+                <td>Due Balance:</td>
                 <td class="text-right">৳{{ number_format($order->due_amount, 2) }}</td>
             </tr>
             @endif
