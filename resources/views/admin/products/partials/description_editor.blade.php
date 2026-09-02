@@ -105,12 +105,32 @@
 
         <!-- Gemini AI Smart Buttons -->
         <div class="flex items-center gap-1.5">
+            <!-- 🤖 1-CLICK GEMINI AUTO-GENERATE BUTTON -->
+            <button 
+                type="button" 
+                @click="autoGenerateFromTitle()" 
+                :disabled="isGenerating"
+                class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-[11px] transition flex items-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed">
+                <template x-if="isGenerating">
+                    <div class="flex items-center gap-1.5">
+                        <i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i>
+                        <span>Generating with Gemini...</span>
+                    </div>
+                </template>
+                <template x-if="!isGenerating">
+                    <div class="flex items-center gap-1.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-yellow-300"></i>
+                        <span>Auto-Generate with Gemini</span>
+                    </div>
+                </template>
+            </button>
+
             <button 
                 type="button" 
                 @click="pasteFromClipboard()" 
-                class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm active:scale-95"
+                class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] transition flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-xs"
                 title="Paste directly from clipboard with smart Gemini HTML conversion">
-                <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i>
+                <i data-lucide="clipboard-paste" class="w-3.5 h-3.5 text-emerald-500"></i>
                 <span>Paste from Gemini</span>
             </button>
 
@@ -120,7 +140,7 @@
                 class="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-[11px] transition flex items-center gap-1.5 border border-emerald-500/30"
                 title="Fill with professional electronic hardware demo data">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Gemini Sample Template</span>
+                <span class="hidden sm:inline">Sample Template</span>
             </button>
 
             <button 
@@ -138,6 +158,29 @@
         name="description" 
         x-model="content"
         class="hidden"></textarea>
+
+    <!-- Generating Banner / Pulse -->
+    <div x-show="isGenerating" x-cloak class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-emerald-500/15 border border-emerald-500/30 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300 animate-pulse">
+        <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold shadow-sm">
+                <i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i>
+            </div>
+            <div>
+                <p class="font-black text-slate-900 dark:text-white">Gemini AI is crafting your product documentation...</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Analyzing hardware name, building pinout map & technical specifications table.</p>
+            </div>
+        </div>
+        <span class="text-[10px] font-mono px-2 py-1 rounded-md bg-emerald-600 text-white font-bold tracking-wider">AI ACTIVE</span>
+    </div>
+
+    <!-- Success Toast -->
+    <div x-show="showAiSuccessToast" x-cloak class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
+        <div class="flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+            <span><strong>Success:</strong> Product overview, technical specifications table & pinout guide generated!</span>
+        </div>
+        <button type="button" @click="showAiSuccessToast = false" class="text-slate-400 hover:text-slate-600">&times;</button>
+    </div>
 
     <!-- Main Workspace Containers -->
     <div class="relative">
@@ -486,6 +529,8 @@ function geminiDescriptionEditor(config = {}) {
         content: config.initialContent || '',
         viewMode: 'visual', // Default to visual WYSIWYG so pastes preserve all Gemini styles!
         previewHtml: '',
+        isGenerating: false,
+        showAiSuccessToast: false,
         stats: {
             words: 0,
             chars: 0,
@@ -506,6 +551,11 @@ function geminiDescriptionEditor(config = {}) {
             this.$watch('content', () => {
                 this.updateStats();
                 this.updatePreviewHtml();
+            });
+
+            // Global event listener for auto-generation from product name button
+            window.addEventListener('trigger-ai-generate', () => {
+                this.autoGenerateFromTitle();
             });
         },
 
@@ -912,6 +962,78 @@ function geminiDescriptionEditor(config = {}) {
                 this.syncContentToVisualCanvas();
             }
             this.updatePreviewHtml();
+        },
+
+        async autoGenerateFromTitle() {
+            // 1. Locate product name input
+            const nameInput = document.querySelector('input[name="name"]');
+            const productName = nameInput ? nameInput.value.trim() : '';
+
+            if (!productName) {
+                alert('Please enter or paste the Product / Component Name at the top first!');
+                if (nameInput) {
+                    nameInput.focus();
+                    nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+
+            // 2. Extract optional category and chipset/model
+            const categorySelect = document.querySelector('select[name="category_id"]');
+            const categoryName = categorySelect && categorySelect.selectedIndex > 0 ? categorySelect.options[categorySelect.selectedIndex].text : '';
+            const chipsetInput = document.querySelector('input[name="chipset"]');
+            const chipset = chipsetInput ? chipsetInput.value.trim() : '';
+
+            this.isGenerating = true;
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch("{{ route('admin.products.ai.generate') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || ''
+                    },
+                    body: JSON.stringify({
+                        name: productName,
+                        category: categoryName,
+                        chipset: chipset
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.description) {
+                    // Populate full technical description
+                    this.content = data.description;
+                    this.syncContentToVisualCanvas();
+                    this.updatePreviewHtml();
+
+                    // Populate short description if input is present
+                    const shortDescTextarea = document.querySelector('textarea[name="short_description"]');
+                    if (shortDescTextarea && data.short_description) {
+                        shortDescTextarea.value = data.short_description;
+                        shortDescTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+
+                    // Switch to visual mode to show immediate rich layout
+                    this.viewMode = 'visual';
+
+                    this.showAiSuccessToast = true;
+                    setTimeout(() => { this.showAiSuccessToast = false; }, 6000);
+                } else {
+                    alert(data.message || 'Could not generate description. Please try again.');
+                }
+            } catch (err) {
+                console.error('Gemini AI Generation Error:', err);
+                alert('Connection error while contacting AI generator. Please try again.');
+            } finally {
+                this.isGenerating = false;
+                this.$nextTick(() => {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                });
+            }
         },
 
         confirmClear() {

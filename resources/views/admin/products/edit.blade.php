@@ -19,7 +19,13 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Product Name *</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-slate-500">Product Name *</label>
+                        <button type="button" @click="window.dispatchEvent(new CustomEvent('trigger-ai-generate'))" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1.5 transition">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            <span>Re-Generate with Gemini</span>
+                        </button>
+                    </div>
                     <input type="text" name="name" value="{{ $product->name }}" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
 

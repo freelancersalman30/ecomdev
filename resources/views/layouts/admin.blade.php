@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard') - {{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</title>
 
     @if(\App\Models\Setting::get('site_favicon'))

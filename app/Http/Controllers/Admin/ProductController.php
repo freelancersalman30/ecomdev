@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\Size;
+use App\Services\GeminiAiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -223,5 +224,25 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully!');
+    }
+
+    /**
+     * AI-Powered Product Description Generator (Google Gemini & Hardware Engine)
+     */
+    public function generateAiDescription(Request $request, GeminiAiService $geminiAiService)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'chipset' => 'nullable|string|max:255',
+        ]);
+
+        $result = $geminiAiService->generateProductDescription(
+            $request->input('name'),
+            $request->input('category'),
+            $request->input('chipset')
+        );
+
+        return response()->json($result);
     }
 }

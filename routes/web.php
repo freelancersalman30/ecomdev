@@ -155,6 +155,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::delete('/warranties/{warranty}', [AdminWarrantyController::class, 'destroy'])->name('warranties.destroy');
 
     // 4. Product & Catalog Management
+    Route::post('products/ai-generate-description', [ProductController::class, 'generateAiDescription'])->name('products.ai.generate');
     Route::resource('products', ProductController::class);
 
     // Categories (3-Tier)
