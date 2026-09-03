@@ -95,6 +95,7 @@
                         <i data-lucide="banknote" class="w-5 h-5 text-emerald-600"></i>
                     </label>
 
+                    @if($bkashActive ?? false)
                     <label class="p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="paymentMethod === 'bkash' ? 'border-pink-500 bg-pink-50 text-slate-900' : 'border-slate-200 text-slate-700'">
                         <div class="flex items-center gap-3">
                             <input type="radio" name="payment_method" value="bkash" :checked="paymentMethod === 'bkash'" @change="paymentMethod = 'bkash'" class="text-pink-600 focus:ring-pink-500">
@@ -105,6 +106,7 @@
                         </div>
                         <span class="font-bold text-xs text-pink-600 font-mono">bKash</span>
                     </label>
+                    @endif
                 </div>
 
                 <div>

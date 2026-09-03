@@ -255,6 +255,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/settings/api-hub/save', fn () => redirect()->route('admin.settings.api_hub'));
     Route::match(['post', 'put'], '/settings/api-hub', [ApiHubController::class, 'update'])->name('settings.api_hub.update');
     Route::match(['post', 'put'], '/settings/api-hub/save', [ApiHubController::class, 'update'])->name('settings.api-hub.update');
+    Route::post('/settings/api-hub/test', [ApiHubController::class, 'testConnection'])->name('settings.api_hub.test');
 
     // 17.5 Google Gemini AI Settings
     Route::get('/settings/gemini', [GeminiSettingController::class, 'index'])->name('settings.gemini');

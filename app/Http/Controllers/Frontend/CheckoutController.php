@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApiSetting;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Services\OrderService;
@@ -37,7 +38,10 @@ class CheckoutController extends Controller
         $insideDhaka = (float) ($settings['inside_dhaka_charge'] ?? 70);
         $outsideDhaka = (float) ($settings['outside_dhaka_charge'] ?? 130);
 
-        return view('frontend.checkout', compact('cart', 'coupon', 'subtotal', 'discount', 'insideDhaka', 'outsideDhaka'));
+        $bkashSetting = ApiSetting::where('provider', 'bkash')->first();
+        $bkashActive = (bool) ($bkashSetting?->is_active ?? false);
+
+        return view('frontend.checkout', compact('cart', 'coupon', 'subtotal', 'discount', 'insideDhaka', 'outsideDhaka', 'bkashActive'));
     }
 
     /**

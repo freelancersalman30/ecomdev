@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApiSetting;
+use App\Services\BkashService;
+use App\Services\CourierService;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -91,17 +94,11 @@ class ApiHubController extends Controller
         $title = $request->input('title')
             ?: ($existing?->title ?: ($knownProviders[$provider]['title'] ?? Str::headline($provider)));
 
-        // Handle is_sandbox and is_active
-        $isSandbox = $request->has('is_sandbox')
-            ? $request->boolean('is_sandbox')
-            : ($existing->is_sandbox ?? false);
+        // Handle is_sandbox and is_active accurately:
+        $isSandbox = $request->boolean('is_sandbox');
+        $isActive = $request->boolean('is_active');
 
-        $isActive = $request->has('is_active')
-            ? $request->boolean('is_active')
-            : ($existing->is_active ?? true);
-
-        // Handle credentials:
-        // Accept either explicit credentials array or any arbitrary input fields
+        // Handle credentials
         if ($request->has('credentials') && is_array($request->input('credentials'))) {
             $inputCredentials = $request->input('credentials');
         } else {
@@ -155,6 +152,46 @@ class ApiHubController extends Controller
             );
         }
 
-        return redirect()->route('admin.settings.api_hub')->with('success', "API integration for {$title} updated successfully!");
+        $statusText = $isActive ? 'Activated & Updated' : 'Deactivated & Saved';
+
+        return redirect()->route('admin.settings.api_hub')->with('success', "API integration for {$title} {$statusText} successfully!");
+    }
+
+    /**
+     * Test live API connection for a provider
+     */
+    public function testConnection(Request $request, SmsService $smsService, CourierService $courierService, BkashService $bkashService)
+    {
+        $provider = $request->input('provider');
+
+        switch ($provider) {
+            case 'bulksms':
+            case 'bulksms_bd':
+                $result = $smsService->checkBalance($request->input('api_key'));
+
+                return response()->json($result);
+
+            case 'steadfast':
+                $result = $courierService->testSteadfastConnection($request->input('api_key'), $request->input('secret_key'));
+
+                return response()->json($result);
+
+            case 'bkash':
+                $result = $bkashService->testConnection(
+                    $request->input('app_key'),
+                    $request->input('app_secret'),
+                    $request->input('username'),
+                    $request->input('password'),
+                    $request->boolean('is_sandbox')
+                );
+
+                return response()->json($result);
+
+            default:
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Direct ping test is not implemented for this provider.',
+                ]);
+        }
     }
 }
