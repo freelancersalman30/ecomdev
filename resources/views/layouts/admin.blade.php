@@ -328,6 +328,15 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Third-Party API Hub</span>
                 </a>
 
+                <!-- System & Git Version Update -->
+                <a href="{{ route('admin.settings.system_update') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.system_update') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="git-branch" class="w-5 h-5 flex-shrink-0 text-cyan-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
+                        <span>System & Git Update</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300 font-extrabold uppercase">Git</span>
+                    </span>
+                </a>
+
                 <!-- Gemini AI Engine -->
                 <a href="{{ route('admin.settings.gemini') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.gemini*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="sparkles" class="w-5 h-5 flex-shrink-0 text-yellow-400"></i>

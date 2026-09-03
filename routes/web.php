@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\SmsMarketingController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\SystemToolController;
+use App\Http\Controllers\Admin\SystemUpdateController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarrantyController as AdminWarrantyController;
 use App\Http\Controllers\Customer\Auth\CustomerAuthController;
@@ -261,6 +262,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/settings/gemini', [GeminiSettingController::class, 'index'])->name('settings.gemini');
     Route::match(['post', 'put'], '/settings/gemini', [GeminiSettingController::class, 'update'])->name('settings.gemini.update');
     Route::post('/settings/gemini/test', [GeminiSettingController::class, 'testConnection'])->name('settings.gemini.test');
+
+    // 17.6 System & Git Version Update
+    Route::get('/settings/system-update', [SystemUpdateController::class, 'index'])->name('settings.system_update');
+    Route::post('/settings/system-update/pull', [SystemUpdateController::class, 'pull'])->name('settings.system_update.pull');
 
     // 18. Banners & Advertising
     Route::get('/banners', [BannerController::class, 'index'])->name('banners.index');
