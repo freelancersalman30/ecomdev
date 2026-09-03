@@ -188,10 +188,6 @@
                         <a href="{{ route('admin.categories.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.categories.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Categories (3-Tier)</a>
                         <a href="{{ route('admin.brands.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.brands.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Brands</a>
                         <a href="{{ route('admin.attributes.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.attributes.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Colors & Sizes / Pinouts</a>
-                        <a href="{{ route('admin.products.layout') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.products.layout*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }} flex items-center justify-between">
-                            <span>Product Layout Options</span>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-bold uppercase">UI</span>
-                        </a>
                     </div>
                 </div>
 
