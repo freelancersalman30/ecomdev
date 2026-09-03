@@ -44,7 +44,7 @@ class SmsService
                     // Clean phone number
                     $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
 
-                    $response = Http::timeout(10)->post('https://bulksmsbd.net/api/smsapi', [
+                    $response = Http::withoutVerifying()->timeout(12)->post('https://bulksmsbd.net/api/smsapi', [
                         'api_key' => $apiKey,
                         'type' => 'text',
                         'number' => $cleanPhone,
@@ -123,7 +123,7 @@ class SmsService
         }
 
         try {
-            $response = Http::timeout(10)->get('https://bulksmsbd.net/api/getBalanceApi', [
+            $response = Http::withoutVerifying()->timeout(12)->get('https://bulksmsbd.net/api/getBalanceApi', [
                 'api_key' => $key,
             ]);
 
