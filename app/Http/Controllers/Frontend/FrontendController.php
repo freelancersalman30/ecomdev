@@ -60,26 +60,19 @@ class FrontendController extends Controller
             }
         }
 
-        // Ultimate fallback if still empty
+        // Fallback to top active products with images if no custom banners set
         if ($heroBanners->isEmpty()) {
-            $heroBanners = collect([
-                (object) [
-                    'badge' => 'Verified Electronic Component',
-                    'title' => 'STM32 & ESP32-S3 IoT Development Boards',
-                    'image' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
-                    'link_url' => '/shop',
-                    'subtitle' => 'Official Enterprise Electronics Distribution in Bangladesh',
-                    'button_text' => 'Explore Collection',
-                ],
-                (object) [
-                    'badge' => 'Premium Hardware',
-                    'title' => 'Professional Quick 861DW Soldering Rework Stations',
-                    'image' => 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80',
-                    'link_url' => '/shop',
-                    'subtitle' => '1000W High Power Digital SMD Rework Master Kit',
-                    'button_text' => 'Shop Equipment',
-                ],
-            ]);
+            $topProducts = Product::where('is_active', true)->whereNotNull('thumbnail')->latest()->take(3)->get();
+            if ($topProducts->isNotEmpty()) {
+                $heroBanners = $topProducts->map(fn ($p) => (object) [
+                    'badge' => $p->category->name ?? 'Verified Hardware',
+                    'title' => $p->name,
+                    'subtitle' => $p->short_description ?: 'Original factory verified products with instant nationwide doorstep delivery across Bangladesh.',
+                    'image' => $p->thumbnail,
+                    'link_url' => route('product.show', $p->slug),
+                    'button_text' => 'Shop Now',
+                ]);
+            }
         }
 
         $promoBanners = Banner::where('placement', 'promo_strip')->where('is_active', true)->latest()->take(2)->get();
@@ -126,10 +119,18 @@ class FrontendController extends Controller
             ->take(24)
             ->get();
 
+        // Two featured/latest spotlight products for the promo mini strip under the slider
+        $promoProducts = Product::where('is_active', true)
+            ->with(['category', 'brand'])
+            ->latest()
+            ->take(2)
+            ->get();
+
         return view('frontend.home', compact(
             'categories',
             'heroBanners',
             'promoBanners',
+            'promoProducts',
             'flashSaleProducts',
             'brands',
             'featuredCategories',

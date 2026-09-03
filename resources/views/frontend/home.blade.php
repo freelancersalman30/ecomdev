@@ -110,26 +110,46 @@
                     @endif
                 </div>
 
-                <!-- Promo Mini Strip -->
+                <!-- Promo Mini Strip: 2 Real Latest Spotlight Products -->
+                @if(isset($promoProducts) && $promoProducts->count() >= 2)
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <a href="{{ \App\Models\Setting::get('promo_strip_1_link', route('shop.index', ['search' => 'ESP32'])) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-900 to-slate-900 text-white border border-sky-800/40 flex items-center justify-between hover:scale-[1.01] transition shadow-sm">
-                        <div class="space-y-0.5">
-                            <span class="text-[10px] uppercase font-bold text-sky-300">{{ \App\Models\Setting::get('promo_strip_1_tag', 'IoT Dev Boards') }}</span>
-                            <h4 class="font-bold text-xs text-white">{{ \App\Models\Setting::get('promo_strip_1_title', 'ESP32-S3 AI Vision Modules') }}</h4>
-                            <span class="text-[11px] text-emerald-400 font-bold">{{ \App\Models\Setting::get('promo_strip_1_offer', 'From ৳650 Only') }}</span>
+                    <!-- Spotlight Product 1 -->
+                    <a href="{{ route('product.show', $promoProducts[0]->slug) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-950 via-slate-900 to-slate-900 text-white border border-sky-800/40 flex items-center justify-between hover:scale-[1.01] hover:border-sky-500/60 transition shadow-sm group">
+                        <div class="space-y-1 min-w-0 pr-3">
+                            <span class="text-[10px] uppercase font-bold text-sky-400 font-mono tracking-wider">{{ $promoProducts[0]->category->name ?? 'Latest Arrival' }}</span>
+                            <h4 class="font-bold text-xs text-white line-clamp-1 group-hover:text-sky-300 transition">{{ $promoProducts[0]->name }}</h4>
+                            <div class="flex items-center gap-1.5 pt-0.5">
+                                <span class="text-xs text-emerald-400 font-black code-font">৳{{ number_format($promoProducts[0]->effective_price, 2) }}</span>
+                                @if($promoProducts[0]->discount_percentage > 0)
+                                <span class="text-[10px] text-slate-400 line-through code-font">৳{{ number_format($promoProducts[0]->selling_price, 2) }}</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-rose-600/80 text-white font-bold">-{{ $promoProducts[0]->discount_percentage }}%</span>
+                                @endif
+                            </div>
                         </div>
-                        <i data-lucide="cpu" class="w-8 h-8 text-sky-400 opacity-80"></i>
+                        <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-800 border border-slate-700/60 flex-shrink-0 shadow-inner">
+                            <img src="{{ $promoProducts[0]->thumbnail }}" alt="{{ $promoProducts[0]->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=200&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        </div>
                     </a>
 
-                    <a href="{{ \App\Models\Setting::get('promo_strip_2_link', route('shop.index', ['search' => 'Quick'])) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-rose-950 to-slate-900 text-white border border-rose-900/40 flex items-center justify-between hover:scale-[1.01] transition shadow-sm">
-                        <div class="space-y-0.5">
-                            <span class="text-[10px] uppercase font-bold text-rose-300">{{ \App\Models\Setting::get('promo_strip_2_tag', 'Soldering Equipment') }}</span>
-                            <h4 class="font-bold text-xs text-white">{{ \App\Models\Setting::get('promo_strip_2_title', 'Quick 861DW 1000W Rework') }}</h4>
-                            <span class="text-[11px] text-amber-400 font-bold">{{ \App\Models\Setting::get('promo_strip_2_offer', 'Official 1-Year Warranty') }}</span>
+                    <!-- Spotlight Product 2 -->
+                    <a href="{{ route('product.show', $promoProducts[1]->slug) }}" class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white border border-emerald-800/40 flex items-center justify-between hover:scale-[1.01] hover:border-emerald-500/60 transition shadow-sm group">
+                        <div class="space-y-1 min-w-0 pr-3">
+                            <span class="text-[10px] uppercase font-bold text-emerald-400 font-mono tracking-wider">{{ $promoProducts[1]->category->name ?? 'Hot Pick' }}</span>
+                            <h4 class="font-bold text-xs text-white line-clamp-1 group-hover:text-emerald-300 transition">{{ $promoProducts[1]->name }}</h4>
+                            <div class="flex items-center gap-1.5 pt-0.5">
+                                <span class="text-xs text-emerald-400 font-black code-font">৳{{ number_format($promoProducts[1]->effective_price, 2) }}</span>
+                                @if($promoProducts[1]->discount_percentage > 0)
+                                <span class="text-[10px] text-slate-400 line-through code-font">৳{{ number_format($promoProducts[1]->selling_price, 2) }}</span>
+                                <span class="text-[9px] px-1 py-0.2 rounded bg-rose-600/80 text-white font-bold">-{{ $promoProducts[1]->discount_percentage }}%</span>
+                                @endif
+                            </div>
                         </div>
-                        <i data-lucide="flame" class="w-8 h-8 text-rose-400 opacity-80"></i>
+                        <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-800 border border-slate-700/60 flex-shrink-0 shadow-inner">
+                            <img src="{{ $promoProducts[1]->thumbnail }}" alt="{{ $promoProducts[1]->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=200&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        </div>
                     </a>
                 </div>
+                @endif
             </div>
 
         </div>
