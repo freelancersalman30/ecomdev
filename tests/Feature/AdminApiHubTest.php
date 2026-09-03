@@ -24,6 +24,7 @@ class AdminApiHubTest extends TestCase
     {
         $response = $this->get('/admin/settings/api-hub');
         $response->assertStatus(200);
+        $response->assertSee('Bulk SMS Dhaka Gateway');
         $response->assertSee('Steadfast Courier API');
         $response->assertSee('BulkSMS BD Gateway');
         $response->assertSee('bKash Payment Gateway');
@@ -33,6 +34,26 @@ class AdminApiHubTest extends TestCase
     {
         $response = $this->get('/admin/settings/api-hub/save');
         $response->assertRedirect('/admin/settings/api-hub');
+    }
+
+    public function test_api_hub_can_save_and_activate_bulksmsdhaka(): void
+    {
+        $response = $this->put('/admin/settings/api-hub/save', [
+            'provider' => 'bulksmsdhaka',
+            'api_key' => 'dhaka_key_live_998',
+            'caller_id' => '1234',
+            'is_active' => '1',
+        ]);
+
+        $response->assertSessionHas('success');
+        $response->assertRedirect();
+
+        $setting = ApiSetting::where('provider', 'bulksmsdhaka')->first();
+        $this->assertNotNull($setting);
+        $this->assertEquals('sms', $setting->type);
+        $this->assertEquals('dhaka_key_live_998', $setting->api_key);
+        $this->assertEquals('1234', $setting->caller_id);
+        $this->assertTrue($setting->is_active);
     }
 
     public function test_api_hub_can_save_and_activate_bulksms_bd(): void
@@ -151,6 +172,15 @@ class AdminApiHubTest extends TestCase
 
     public function test_test_connection_endpoint_for_providers(): void
     {
+        // Test BulkSMS Dhaka Connection Endpoint
+        $dhakaResponse = $this->postJson('/admin/settings/api-hub/test', [
+            'provider' => 'bulksmsdhaka',
+            'api_key' => 'demo_dhaka_key',
+            'caller_id' => '1234',
+        ]);
+        $dhakaResponse->assertStatus(200);
+        $dhakaResponse->assertJson(['success' => true]);
+
         // Test Steadfast Connection Endpoint
         $sfResponse = $this->postJson('/admin/settings/api-hub/test', [
             'provider' => 'steadfast',
