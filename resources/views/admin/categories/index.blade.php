@@ -3,8 +3,14 @@
 @section('title', '3-Tier Category Management')
 @section('page-title', 'Product Category Architecture')
 
+@push('styles')
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+@endpush
+
 @section('content')
-<div class="space-y-6" x-data="categoryApp()">
+<div class="space-y-6" x-data="categoryApp()" x-cloak>
 
     <!-- Flash Alerts -->
     @if(session('success'))
@@ -87,7 +93,7 @@
             </div>
 
             <!-- Search Filter (Active on catalog view) -->
-            <div x-show="activeTab === 'catalog'" class="relative w-full sm:w-64">
+            <div x-cloak x-show="activeTab === 'catalog'" class="relative w-full sm:w-64">
                 <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
                 <input 
                     type="text" 
@@ -99,7 +105,7 @@
         </div>
 
         <!-- TAB 1: CATEGORY EXPLORER & TREE CRUD -->
-        <div x-show="activeTab === 'catalog'" class="p-4 sm:p-6 space-y-4">
+        <div x-cloak x-show="activeTab === 'catalog'" class="p-4 sm:p-6 space-y-4">
             
             <div class="text-xs text-slate-500 flex items-center justify-between">
                 <span>Click the status badge to <strong>Toggle Active / Inactive</strong> instantly. Click <strong>Edit</strong> for full settings.</span>
@@ -272,7 +278,7 @@
         </div>
 
         <!-- TAB 2: CREATION WORKSPACE (3-TIER COLUMNS) -->
-        <div x-show="activeTab === 'create'" class="p-4 sm:p-6 space-y-6">
+        <div x-cloak x-show="activeTab === 'create'" class="p-4 sm:p-6 space-y-6">
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
