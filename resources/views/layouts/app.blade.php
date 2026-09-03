@@ -524,24 +524,17 @@
                     <a href="{{ route('shop.index', ['sort' => 'featured']) }}" class="px-2 py-1 rounded-lg text-amber-400 hover:text-white hover:bg-slate-800 transition font-bold flex-shrink-0">
                         🔥 Flash Deals
                     </a>
-                    <a href="{{ route('shop.index', ['search' => 'ESP32']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
-                        ESP32 & IoT
-                    </a>
-                    <a href="{{ route('shop.index', ['search' => 'STM32']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
-                        STM32 ARM Dev Boards
-                    </a>
-                    <a href="{{ route('shop.index', ['search' => 'Arduino']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
-                        Arduino & Shields
-                    </a>
-                    <a href="{{ route('shop.index', ['search' => 'Rework']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
-                        Soldering & Rework
-                    </a>
-                    <a href="{{ route('shop.index', ['search' => 'Sensor']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
-                        Sensors & Modules
-                    </a>
-                    <a href="{{ route('shop.index', ['search' => 'Robot']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
-                        Robotics & DIY Kits
-                    </a>
+
+                    @if(isset($navbarCategories) && $navbarCategories->isNotEmpty())
+                        @foreach($navbarCategories as $navCat)
+                        <a href="{{ route('shop.index', ['category_id' => $navCat->id]) }}" class="px-2.5 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0 flex items-center gap-1.5 {{ request('category_id') == $navCat->id ? 'text-daraz-orange bg-slate-800 font-bold' : '' }}">
+                            <span>{{ $navCat->name }}</span>
+                            @if($navCat->products_count > 0)
+                            <span class="text-[10px] opacity-70">({{ $navCat->products_count }})</span>
+                            @endif
+                        </a>
+                        @endforeach
+                    @endif
 
                     <!-- Genuine Guarantee Badge (Desktop) -->
                     <div class="hidden lg:flex items-center gap-1.5 ml-auto text-[11px] text-emerald-400 font-semibold flex-shrink-0">
@@ -627,52 +620,36 @@
 
                     <!-- Main Navigation Links List -->
                     <div class="p-4 space-y-1 text-xs">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Browse Catalog</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Navigation</div>
                         
                         <a href="{{ route('home') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold {{ request()->routeIs('home') ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
                             <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
                             <span>Home</span>
                         </a>
 
-                        <a href="{{ route('shop.index') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold {{ request()->routeIs('shop.*') && !request('sort') && !request('search') ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <a href="{{ route('shop.index') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold {{ request()->routeIs('shop.*') && !request('category_id') && !request('sort') && !request('search') ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
                             <i data-lucide="grid" class="w-4 h-4 text-sky-600"></i>
-                            <span>All Categories / Mega Shop</span>
+                            <span>All Products / Mega Shop</span>
                         </a>
 
                         <a href="{{ route('shop.index', ['sort' => 'featured']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
                             <span class="text-sm">🔥</span>
-                            <span>Flash Sale Deals & Offers</span>
+                            <span>Flash Deals & Offers</span>
                         </a>
 
-                        <a href="{{ route('shop.index', ['search' => 'ESP32']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
-                            <i data-lucide="cpu" class="w-4 h-4 text-emerald-500"></i>
-                            <span>ESP32 & IoT Modules</span>
-                        </a>
-
-                        <a href="{{ route('shop.index', ['search' => 'STM32']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
-                            <i data-lucide="microchip" class="w-4 h-4 text-indigo-500"></i>
-                            <span>STM32 ARM Dev Boards</span>
-                        </a>
-
-                        <a href="{{ route('shop.index', ['search' => 'Arduino']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
-                            <i data-lucide="bot" class="w-4 h-4 text-teal-500"></i>
-                            <span>Arduino & Shields</span>
-                        </a>
-
-                        <a href="{{ route('shop.index', ['search' => 'Rework']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
-                            <i data-lucide="wrench" class="w-4 h-4 text-amber-500"></i>
-                            <span>Soldering & Rework Stations</span>
-                        </a>
-
-                        <a href="{{ route('shop.index', ['search' => 'Sensor']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
-                            <i data-lucide="activity" class="w-4 h-4 text-purple-500"></i>
-                            <span>Sensors & Relays</span>
-                        </a>
-
-                        <a href="{{ route('shop.index', ['search' => 'Robot']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
-                            <i data-lucide="package" class="w-4 h-4 text-rose-500"></i>
-                            <span>Robotics & DIY Kits</span>
-                        </a>
+                        <!-- Real Database Categories -->
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-3 mb-1 px-2">Live Categories</div>
+                        @if(isset($navbarCategories) && $navbarCategories->isNotEmpty())
+                            @foreach($navbarCategories as $navCat)
+                            <a href="{{ route('shop.index', ['category_id' => $navCat->id]) }}" @click="mobileMenuOpen = false" class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold {{ request('category_id') == $navCat->id ? 'bg-emerald-50 text-emerald-700 font-bold' : '' }}">
+                                <div class="flex items-center gap-2.5 truncate">
+                                    <i data-lucide="{{ $navCat->icon === 'tool' ? 'wrench' : ($navCat->icon === 'activity' ? 'activity' : ($navCat->icon ?: 'cpu')) }}" class="w-4 h-4 text-emerald-600"></i>
+                                    <span class="truncate">{{ $navCat->name }}</span>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">({{ $navCat->products_count }})</span>
+                            </a>
+                            @endforeach
+                        @endif
 
                         <div class="pt-2 border-t border-slate-100">
                             <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Quick Services</div>
