@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class SmsService
 {
     /**
-     * Send SMS with tag replacement & Multi-Gateway Dispatch (BulkSMS Dhaka, BulkSMS BD, Greenweb)
+     * Send SMS with tag replacement & Multi-Gateway Dispatch (Custom Gateway, BulkSMS Dhaka, BulkSMS BD)
      */
     public function send(string $phone, string $template, array $data = [], string $gateway = 'BulkSMS'): bool
     {
@@ -27,33 +27,51 @@ class SmsService
         // Clean phone number (e.g. 01712345678)
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
 
-        // Check active SMS provider: prefer bulksmsdhaka, bulksms_bd, or bulksms
+        // Fetch active SMS provider
         $setting = ApiSetting::where('is_active', true)
-            ->whereIn('provider', ['bulksmsdhaka', 'bulksms_bd', 'bulksms'])
+            ->whereIn('provider', ['custom_sms', 'bulksmsdhaka', 'bulksms_bd', 'bulksms'])
             ->first();
 
-        // If none is explicitly active, fallback to any configured provider
+        // If none is explicitly active, fallback to configured
         if (! $setting) {
-            $setting = ApiSetting::whereIn('provider', ['bulksmsdhaka', 'bulksms_bd', 'bulksms'])->first();
+            $setting = ApiSetting::whereIn('provider', ['custom_sms', 'bulksmsdhaka', 'bulksms_bd', 'bulksms'])->first();
         }
 
         $provider = $setting?->provider ?? 'bulksmsdhaka';
         $isActive = $setting ? (bool) $setting->is_active : true;
-        $apiKey = $setting?->getCredential('api_key') ?? ($setting?->getCredential('apikey') ?? $setting?->api_key);
-        $callerId = $setting?->getCredential('caller_id') ?? ($setting?->getCredential('sender_id') ?? ($setting?->sender_id ?? '1234'));
 
         $status = 'sent';
         $responseId = 'SMS_'.uniqid();
         $errorMessage = null;
+        $gatewayDisplayName = $setting?->title ?? 'Custom SMS Gateway';
 
-        if ($isActive && $apiKey) {
-            if (app()->environment('testing') || str_contains($apiKey, 'demo') || str_contains($apiKey, 'mock')) {
-                $status = 'sent';
-                $responseId = 'SMS_SIM_'.uniqid();
-            } else {
-                try {
-                    if ($provider === 'bulksmsdhaka') {
-                        // 1. Bulk SMS Dhaka API (https://bulksmsdhaka.com / bulksmsdhaka.net)
+        if ($isActive) {
+            if ($provider === 'custom_sms') {
+                // 1. Universal Custom Bulk SMS Gateway Dispatch
+                $endpointUrl = $setting->getCredential('endpoint_url');
+                $apiKey = $setting->getCredential('api_key_value') ?: $setting->getCredential('api_key');
+
+                if (app()->environment('testing') || empty($endpointUrl) || str_contains($apiKey ?? '', 'demo')) {
+                    $status = 'sent';
+                    $responseId = 'SMS_CUSTOM_'.uniqid();
+                } else {
+                    $result = $this->dispatchCustomSms($setting, $cleanPhone, $message);
+                    $status = $result['success'] ? 'sent' : 'failed';
+                    $responseId = $result['response_id'] ?? null;
+                    $errorMessage = $result['error_message'] ?? null;
+                    $gatewayDisplayName = $setting->getCredential('gateway_name') ?: $gatewayDisplayName;
+                }
+            } elseif ($provider === 'bulksmsdhaka') {
+                // 2. Bulk SMS Dhaka API (https://bulksmsdhaka.com / bulksmsdhaka.net)
+                $apiKey = $setting->getCredential('api_key') ?? ($setting->getCredential('apikey') ?? $setting->api_key);
+                $callerId = $setting->getCredential('caller_id') ?? ($setting->getCredential('sender_id') ?? ($setting->sender_id ?? '1234'));
+                $gatewayDisplayName = 'Bulk SMS Dhaka';
+
+                if (app()->environment('testing') || str_contains($apiKey ?? '', 'demo') || str_contains($apiKey ?? '', 'mock')) {
+                    $status = 'sent';
+                    $responseId = 'SMS_SIM_'.uniqid();
+                } else {
+                    try {
                         $response = Http::withoutVerifying()->timeout(12)->get('https://bulksmsdhaka.net/api/otpsend', [
                             'apikey' => $apiKey,
                             'callerID' => $callerId,
@@ -74,8 +92,24 @@ class SmsService
                             $errorMessage = $resData['Message'] ?? ($resData['error_message'] ?? ($response->body() ?: 'Bulk SMS Dhaka dispatch failed.'));
                             Log::warning('Bulk SMS Dhaka Error: '.$errorMessage);
                         }
-                    } else {
-                        // 2. BulkSMS BD Gateway (https://bulksmsbd.net)
+                    } catch (\Exception $e) {
+                        Log::error('Bulk SMS Dhaka HTTP Error: '.$e->getMessage());
+                        $status = 'failed';
+                        $responseId = null;
+                        $errorMessage = $e->getMessage();
+                    }
+                }
+            } else {
+                // 3. BulkSMS BD Gateway (https://bulksmsbd.net)
+                $apiKey = $setting?->getCredential('api_key') ?? $setting?->api_key;
+                $callerId = $setting?->getCredential('sender_id') ?? ($setting?->sender_id ?? '8809617618999');
+                $gatewayDisplayName = 'BulkSMS BD';
+
+                if (app()->environment('testing') || str_contains($apiKey ?? '', 'demo') || str_contains($apiKey ?? '', 'mock')) {
+                    $status = 'sent';
+                    $responseId = 'SMS_SIM_'.uniqid();
+                } else {
+                    try {
                         $response = Http::withoutVerifying()->timeout(12)->post('https://bulksmsbd.net/api/smsapi', [
                             'api_key' => $apiKey,
                             'type' => 'text',
@@ -96,15 +130,15 @@ class SmsService
                             $errorMessage = $resData['error_message'] ?? ($response->body() ?: 'BulkSMS BD submission failed.');
                             Log::warning('BulkSMS BD Error: '.$errorMessage);
                         }
+                    } catch (\Exception $e) {
+                        Log::error('BulkSMS BD HTTP Error: '.$e->getMessage());
+                        $status = 'failed';
+                        $responseId = null;
+                        $errorMessage = $e->getMessage();
                     }
-                } catch (\Exception $e) {
-                    Log::error("SMS Gateway ($provider) HTTP Error: ".$e->getMessage());
-                    $status = 'failed';
-                    $responseId = null;
-                    $errorMessage = $e->getMessage();
                 }
             }
-        } elseif (! $isActive) {
+        } else {
             Log::info("SMS Gateway is disabled in API Hub. Message to {$phone} skipped from live dispatch.");
             $status = 'sent';
             $responseId = 'SMS_INACTIVE_'.uniqid();
@@ -113,7 +147,7 @@ class SmsService
         // Log SMS entry
         try {
             SmsLog::create([
-                'gateway' => $provider === 'bulksmsdhaka' ? 'Bulk SMS Dhaka' : 'BulkSMS BD',
+                'gateway' => $gatewayDisplayName,
                 'phone' => $phone,
                 'message' => $message,
                 'character_count' => $charCount,
@@ -130,6 +164,150 @@ class SmsService
 
             return false;
         }
+    }
+
+    /**
+     * Dispatch SMS via Universal Custom Gateway
+     */
+    public function dispatchCustomSms(ApiSetting|array $config, string $phone, string $message): array
+    {
+        $get = function ($key, $default = null) use ($config) {
+            if ($config instanceof ApiSetting) {
+                return $config->getCredential($key, $default);
+            }
+
+            return $config[$key] ?? $default;
+        };
+
+        $url = trim($get('endpoint_url', ''));
+        if (empty($url)) {
+            return ['success' => false, 'error_message' => 'API Endpoint URL is missing.'];
+        }
+
+        $method = strtoupper($get('http_method', 'GET'));
+        $apiKeyParam = trim($get('api_key_param', 'apikey')) ?: 'apikey';
+        $apiKeyValue = trim($get('api_key_value', '') ?: $get('api_key', ''));
+
+        $senderParam = trim($get('sender_id_param', 'callerID')) ?: 'callerID';
+        $senderValue = trim($get('sender_id_value', '') ?: ($get('caller_id', '') ?: $get('sender_id', '')));
+
+        $phoneParam = trim($get('phone_param', 'number')) ?: 'number';
+        $msgParam = trim($get('message_param', 'message')) ?: 'message';
+
+        $successKeyword = trim($get('success_keyword', ''));
+
+        // Prepare request parameters
+        $params = [];
+        if ($apiKeyParam && $apiKeyValue) {
+            $params[$apiKeyParam] = $apiKeyValue;
+        }
+        if ($senderParam && $senderValue) {
+            $params[$senderParam] = $senderValue;
+        }
+        $params[$phoneParam] = $phone;
+        $params[$msgParam] = $message;
+
+        // Parse extra parameters (e.g. type=text, format=json)
+        $extraParamsRaw = trim($get('extra_params', ''));
+        if (! empty($extraParamsRaw)) {
+            $lines = preg_split('/[\r\n,&]+/', $extraParamsRaw);
+            foreach ($lines as $line) {
+                if (str_contains($line, '=')) {
+                    [$k, $v] = explode('=', $line, 2);
+                    $params[trim($k)] = trim($v);
+                }
+            }
+        }
+
+        try {
+            $http = Http::withoutVerifying()->timeout(15);
+
+            if ($method === 'POST_JSON') {
+                $response = $http->post($url, $params);
+            } elseif ($method === 'POST' || $method === 'POST_FORM') {
+                $response = $http->asForm()->post($url, $params);
+            } else {
+                $response = $http->get($url, $params);
+            }
+
+            $body = $response->body();
+            $jsonData = $response->json();
+
+            // Evaluate Success
+            $isSuccess = false;
+            if (! empty($successKeyword)) {
+                $isSuccess = str_contains(strtolower($body), strtolower($successKeyword));
+            } elseif (is_array($jsonData)) {
+                $status = $jsonData['Status'] ?? ($jsonData['status'] ?? ($jsonData['response_code'] ?? null));
+                $isSuccess = ($jsonData['Success'] ?? '') === 'true'
+                    || ($jsonData['success'] ?? false) === true
+                    || $status === '1000' || $status === 1000 || $status === 202 || $status === 200 || $status === '200' || $status === '202';
+            } else {
+                $isSuccess = $response->successful();
+            }
+
+            if ($isSuccess) {
+                $msgId = null;
+                if (is_array($jsonData)) {
+                    $msgId = $jsonData['message_id'] ?? ($jsonData['msg_id'] ?? ($jsonData['id'] ?? ($jsonData['response_id'] ?? null)));
+                }
+
+                return [
+                    'success' => true,
+                    'response_id' => (string) ($msgId ?: ('SMS_CUSTOM_'.uniqid())),
+                    'raw_response' => $body,
+                ];
+            }
+
+            $err = is_array($jsonData)
+                ? ($jsonData['Message'] ?? ($jsonData['message'] ?? ($jsonData['error_message'] ?? ($jsonData['error'] ?? $body))))
+                : $body;
+
+            return [
+                'success' => false,
+                'error_message' => $err ?: 'Failed to dispatch via Custom SMS Gateway.',
+                'raw_response' => $body,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Custom SMS Gateway HTTP Error: '.$e->getMessage());
+
+            return [
+                'success' => false,
+                'error_message' => 'Connection Exception: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Test Custom SMS Gateway Connection & Live Ping
+     */
+    public function testCustomSms(array $data): array
+    {
+        $testNumber = $data['test_phone'] ?? '01700000000';
+        $testMessage = $data['test_message'] ?? 'Custom SMS Gateway connection verification ping';
+
+        if (empty($data['endpoint_url'])) {
+            return [
+                'success' => false,
+                'message' => 'API Endpoint URL is required.',
+            ];
+        }
+
+        $result = $this->dispatchCustomSms($data, $testNumber, $testMessage);
+
+        if ($result['success']) {
+            return [
+                'success' => true,
+                'message' => 'Custom SMS Gateway connected successfully! Raw response: '.substr($result['raw_response'] ?? '', 0, 200),
+                'raw' => $result['raw_response'] ?? '',
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => $result['error_message'] ?? 'Failed to connect to Custom SMS Gateway.',
+            'raw' => $result['raw_response'] ?? '',
+        ];
     }
 
     /**
@@ -156,7 +334,6 @@ class SmsService
         }
 
         try {
-            // Test ping by sending check request to /api/otpsend with test phone
             $response = Http::withoutVerifying()->timeout(12)->get('https://bulksmsdhaka.net/api/otpsend', [
                 'apikey' => $key,
                 'callerID' => $caller,

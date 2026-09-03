@@ -12,12 +12,12 @@
                 <i data-lucide="blocks" class="w-5 h-5 text-emerald-500"></i>
                 <span>Third-Party API Integrations & Gateways</span>
             </h2>
-            <p class="text-xs text-slate-500 mt-1">Configure credentials, toggle Active / Inactive states, and test live server API connectivity for Bulk SMS Dhaka, Steadfast, bKash, BulkSMS BD, and Pathao.</p>
+            <p class="text-xs text-slate-500 mt-1">Configure and connect any Custom SMS Gateway, Bulk SMS Dhaka, Steadfast Courier, bKash, BulkSMS BD, and Pathao.</p>
         </div>
         <div class="flex items-center gap-2 text-xs">
             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-semibold">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Live Multi-Gateway Active</span>
+                <span>Universal Gateway Engine Ready</span>
             </span>
         </div>
     </div>
@@ -38,6 +38,147 @@
             </ul>
         </div>
     @endif
+
+    <!-- Universal Custom SMS Gateway Full-Width Card -->
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 {{ ($apis['custom_sms']->is_active ?? false) ? 'border-sky-500 shadow-lg ring-4 ring-sky-500/10' : 'border-slate-200 dark:border-slate-800 shadow-sm' }} space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 flex items-center justify-center text-sky-600 dark:text-sky-400 font-bold">
+                    <i data-lucide="radio" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-black text-base text-slate-900 dark:text-white">Custom Bulk SMS Gateway (Connect Any Provider)</h3>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 font-extrabold uppercase">Universal REST API</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">Plug in any SMS provider in Bangladesh or globally by configuring its HTTP Endpoint and parameter keys.</p>
+                </div>
+            </div>
+            <div>
+                <span class="text-xs font-extrabold uppercase px-3 py-1 rounded-full {{ ($apis['custom_sms']->is_active ?? false) ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700' }}">
+                    {{ ($apis['custom_sms']->is_active ?? false) ? 'Active Gateway' : 'Inactive' }}
+                </span>
+            </div>
+        </div>
+
+        <form id="form-custom-sms" method="POST" action="{{ route('admin.settings.api-hub.update') }}" class="space-y-4">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="provider" value="custom_sms">
+            <input type="hidden" name="type" value="sms">
+            <input type="hidden" name="title" value="Custom Bulk SMS Gateway">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Gateway Provider Name</label>
+                    <input type="text" name="gateway_name" id="custom_gateway_name" value="{{ old('gateway_name', $apis['custom_sms']->credentials['gateway_name'] ?? 'My Custom Bulk SMS') }}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold outline-none focus:ring-2 focus:ring-sky-500" placeholder="e.g. Diana Host, GreenWeb, Alpha SMS">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">HTTP Request Method</label>
+                    <select name="http_method" id="custom_http_method" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold outline-none focus:ring-2 focus:ring-sky-500">
+                        <option value="GET" {{ ($apis['custom_sms']->credentials['http_method'] ?? 'GET') === 'GET' ? 'selected' : '' }}>GET Request (Standard Query Params)</option>
+                        <option value="POST" {{ ($apis['custom_sms']->credentials['http_method'] ?? '') === 'POST' ? 'selected' : '' }}>POST Request (Form Data)</option>
+                        <option value="POST_JSON" {{ ($apis['custom_sms']->credentials['http_method'] ?? '') === 'POST_JSON' ? 'selected' : '' }}>POST Request (JSON Payload)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">API Endpoint URL *</label>
+                    <input type="url" name="endpoint_url" id="custom_endpoint_url" value="{{ old('endpoint_url', $apis['custom_sms']->credentials['endpoint_url'] ?? '') }}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono outline-none focus:ring-2 focus:ring-sky-500" placeholder="https://api.provider.com/sms/send">
+                </div>
+            </div>
+
+            <!-- Dynamic Parameter Mappings -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-4">
+                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-4 h-4 text-sky-500"></i>
+                    <span>Dynamic Parameter Key Names & Credentials Mapping</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <!-- API Key Param & Value -->
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">API Key Parameter Name</label>
+                        <input type="text" name="api_key_param" id="custom_api_key_param" value="{{ old('api_key_param', $apis['custom_sms']->credentials['api_key_param'] ?? 'apikey') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. apikey, api_key, token">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">API Key Value</label>
+                        <input type="password" name="api_key_value" id="custom_api_key_value" value="{{ old('api_key_value', $apis['custom_sms']->credentials['api_key_value'] ?? '') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="Enter API Key / Token">
+                    </div>
+
+                    <!-- Sender ID Param & Value -->
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">Sender / Caller ID Param Name</label>
+                        <input type="text" name="sender_id_param" id="custom_sender_id_param" value="{{ old('sender_id_param', $apis['custom_sms']->credentials['sender_id_param'] ?? 'callerID') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. callerID, sender_id">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">Sender ID / Masking Value</label>
+                        <input type="text" name="sender_id_value" id="custom_sender_id_value" value="{{ old('sender_id_value', $apis['custom_sms']->credentials['sender_id_value'] ?? '1234') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. 1234, BrandName">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <!-- Phone Param -->
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">Recipient Phone Param Name</label>
+                        <input type="text" name="phone_param" id="custom_phone_param" value="{{ old('phone_param', $apis['custom_sms']->credentials['phone_param'] ?? 'number') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. number, to, phone">
+                    </div>
+
+                    <!-- Message Param -->
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">Message Content Param Name</label>
+                        <input type="text" name="message_param" id="custom_message_param" value="{{ old('message_param', $apis['custom_sms']->credentials['message_param'] ?? 'message') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. message, msg, text">
+                    </div>
+
+                    <!-- Extra Params -->
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">Extra Fixed Params (Optional)</label>
+                        <input type="text" name="extra_params" id="custom_extra_params" value="{{ old('extra_params', $apis['custom_sms']->credentials['extra_params'] ?? '') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. type=text, format=json">
+                    </div>
+
+                    <!-- Success Keyword -->
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-bold text-slate-500">Success Indicator Keyword</label>
+                        <input type="text" name="success_keyword" id="custom_success_keyword" value="{{ old('success_keyword', $apis['custom_sms']->credentials['success_keyword'] ?? '1000') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none" placeholder="e.g. 1000, 202, success, true">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-sky-700 dark:text-sky-300">
+                    <input type="hidden" name="is_active" value="0">
+                    <input type="checkbox" name="is_active" value="1" {{ ($apis['custom_sms']->is_active ?? false) ? 'checked' : '' }} class="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4">
+                    <span>Set this Custom Gateway as Active Provider</span>
+                </label>
+            </div>
+        </form>
+
+        <!-- Custom SMS Live Test & Save Controls -->
+        <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div x-show="testResults.custom_sms" x-transition class="p-3 rounded-xl text-xs font-medium" :class="testResults.custom_sms?.success ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300'">
+                <div class="font-bold flex items-center gap-1.5 mb-0.5">
+                    <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+                    <span>Custom Gateway Test Output:</span>
+                </div>
+                <div x-text="testResults.custom_sms?.message"></div>
+                <template x-if="testResults.custom_sms?.raw">
+                    <pre class="mt-2 p-2 bg-slate-950 text-emerald-400 rounded-lg text-[10px] font-mono overflow-x-auto whitespace-pre-wrap" x-text="testResults.custom_sms.raw"></pre>
+                </template>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <input type="text" x-model="testNumber" placeholder="Test Mobile Number (e.g. 01700000000)" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono outline-none w-56">
+                    <button type="button" @click="testCustomGateway()" :disabled="loading.custom_sms" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                        <span x-show="loading.custom_sms" class="w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></span>
+                        <span>Send Test Ping SMS</span>
+                    </button>
+                </div>
+                <button type="submit" form="form-custom-sms" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-bold transition shadow-sm">Save Custom SMS Gateway</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Integrations Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -350,17 +491,64 @@
 <script>
 function apiHubManager() {
     return {
+        testNumber: '01700000000',
         loading: {
+            custom_sms: false,
             bulksmsdhaka: false,
             steadfast: false,
             bulksms: false,
             bkash: false,
         },
         testResults: {
+            custom_sms: null,
             bulksmsdhaka: null,
             steadfast: null,
             bulksms: null,
             bkash: null,
+        },
+        async testCustomGateway() {
+            this.loading.custom_sms = true;
+            this.testResults.custom_sms = null;
+
+            const payload = {
+                provider: 'custom_sms',
+                _token: '{{ csrf_token() }}',
+                gateway_name: document.getElementById('custom_gateway_name')?.value || '',
+                http_method: document.getElementById('custom_http_method')?.value || 'GET',
+                endpoint_url: document.getElementById('custom_endpoint_url')?.value || '',
+                api_key_param: document.getElementById('custom_api_key_param')?.value || '',
+                api_key_value: document.getElementById('custom_api_key_value')?.value || '',
+                sender_id_param: document.getElementById('custom_sender_id_param')?.value || '',
+                sender_id_value: document.getElementById('custom_sender_id_value')?.value || '',
+                phone_param: document.getElementById('custom_phone_param')?.value || 'number',
+                message_param: document.getElementById('custom_message_param')?.value || 'message',
+                extra_params: document.getElementById('custom_extra_params')?.value || '',
+                success_keyword: document.getElementById('custom_success_keyword')?.value || '',
+                test_phone: this.testNumber || '01700000000',
+                test_message: 'Custom SMS Gateway connection verification test ping'
+            };
+
+            try {
+                const response = await fetch('{{ route('admin.settings.api_hub.test') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                this.testResults.custom_sms = data;
+            } catch (err) {
+                this.testResults.custom_sms = {
+                    success: false,
+                    message: 'Network error or server unreachable while testing Custom SMS Gateway.'
+                };
+            } finally {
+                this.loading.custom_sms = false;
+            }
         },
         async testProvider(provider) {
             this.loading[provider] = true;

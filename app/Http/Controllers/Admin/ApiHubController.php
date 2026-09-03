@@ -31,6 +31,7 @@ class ApiHubController extends Controller
             'stripe' => ['type' => 'payment', 'title' => 'Stripe International Payments'],
 
             // SMS Gateways
+            'custom_sms' => ['type' => 'sms', 'title' => 'Custom Bulk SMS Gateway (Any Provider)'],
             'bulksmsdhaka' => ['type' => 'sms', 'title' => 'Bulk SMS Dhaka Gateway (bulksmsdhaka.com)'],
             'bulksms' => ['type' => 'sms', 'title' => 'BulkSMS BD Gateway'],
             'bulksms_bd' => ['type' => 'sms', 'title' => 'BulkSMS BD Gateway'],
@@ -69,6 +70,7 @@ class ApiHubController extends Controller
             'sslcommerz' => ['type' => 'payment',  'title' => 'SSLCommerz Payment Hub'],
             'amarpay' => ['type' => 'payment',  'title' => 'aamarPay'],
             'stripe' => ['type' => 'payment',  'title' => 'Stripe International Payments'],
+            'custom_sms' => ['type' => 'sms',  'title' => 'Custom Bulk SMS Gateway (Any Provider)'],
             'bulksmsdhaka' => ['type' => 'sms',  'title' => 'Bulk SMS Dhaka Gateway (bulksmsdhaka.com)'],
             'bulksms' => ['type' => 'sms',      'title' => 'BulkSMS BD Gateway'],
             'bulksms_bd' => ['type' => 'sms',      'title' => 'BulkSMS BD Gateway'],
@@ -167,6 +169,11 @@ class ApiHubController extends Controller
         $provider = $request->input('provider');
 
         switch ($provider) {
+            case 'custom_sms':
+                $result = $smsService->testCustomSms($request->all());
+
+                return response()->json($result);
+
             case 'bulksmsdhaka':
                 $result = $smsService->checkBulkSmsDhaka(
                     $request->input('api_key') ?: $request->input('apikey'),
