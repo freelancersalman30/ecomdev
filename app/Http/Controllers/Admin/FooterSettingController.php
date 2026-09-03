@@ -15,7 +15,28 @@ class FooterSettingController extends Controller
             ->pluck('value', 'key')
             ->toArray();
 
-        return view('admin.settings.footer', compact('settings'));
+        // Decode popular categories
+        $popularCategories = [];
+        if (! empty($settings['footer_popular_categories'])) {
+            $decoded = json_decode($settings['footer_popular_categories'], true);
+            if (is_array($decoded)) {
+                $popularCategories = $decoded;
+            }
+        }
+
+        // Default categories if empty
+        if (empty($popularCategories)) {
+            $popularCategories = [
+                ['title' => 'ESP32 & IoT Microcontrollers', 'url' => '/shop?search=ESP32'],
+                ['title' => 'STM32 ARM Cortex Boards', 'url' => '/shop?search=STM32'],
+                ['title' => 'Arduino Uno & Mega Kits', 'url' => '/shop?search=Arduino'],
+                ['title' => 'Quick 861DW & Soldering Rework', 'url' => '/shop?search=Soldering'],
+                ['title' => 'Sensors & Relay Modules', 'url' => '/shop?search=Sensor'],
+                ['title' => 'Robotics & DIY Hardware', 'url' => '/shop?search=Robot'],
+            ];
+        }
+
+        return view('admin.settings.footer', compact('settings', 'popularCategories'));
     }
 
     public function update(Request $request)
@@ -53,6 +74,27 @@ class FooterSettingController extends Controller
             Setting::set($field, $request->input($field, ''), 'footer');
         }
 
-        return redirect()->route('admin.settings.footer')->with('success', 'Footer information updated successfully!');
+        // Process dynamic popular categories
+        if ($request->has('popular_categories')) {
+            $categoriesInput = $request->input('popular_categories');
+            $cleanCategories = [];
+
+            if (is_array($categoriesInput)) {
+                foreach ($categoriesInput as $cat) {
+                    $title = trim($cat['title'] ?? '');
+                    $url = trim($cat['url'] ?? '');
+                    if (! empty($title)) {
+                        $cleanCategories[] = [
+                            'title' => $title,
+                            'url' => $url ?: '/shop',
+                        ];
+                    }
+                }
+            }
+
+            Setting::set('footer_popular_categories', json_encode(array_values($cleanCategories)), 'footer');
+        }
+
+        return redirect()->route('admin.settings.footer')->with('success', 'Footer information & popular categories updated successfully!');
     }
 }

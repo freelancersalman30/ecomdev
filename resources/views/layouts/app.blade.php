@@ -928,14 +928,35 @@
                 </div>
             </div>
 
+            @php
+                $footerCategoriesRaw = \App\Models\Setting::get('footer_popular_categories');
+                $footerCategories = [];
+                if (!empty($footerCategoriesRaw)) {
+                    $decoded = json_decode($footerCategoriesRaw, true);
+                    if (is_array($decoded)) {
+                        $footerCategories = $decoded;
+                    }
+                }
+                if (empty($footerCategories)) {
+                    $footerCategories = [
+                        ['title' => 'ESP32 & IoT Microcontrollers', 'url' => '/shop?search=ESP32'],
+                        ['title' => 'STM32 ARM Cortex Boards', 'url' => '/shop?search=STM32'],
+                        ['title' => 'Arduino Uno & Mega Kits', 'url' => '/shop?search=Arduino'],
+                        ['title' => 'Quick 861DW Rework Stations', 'url' => '/shop?search=Soldering'],
+                        ['title' => 'Sensors & Relay Modules', 'url' => '/shop?search=Sensor'],
+                    ];
+                }
+            @endphp
             <div class="space-y-2">
                 <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">Popular Categories</h4>
                 <ul class="space-y-1.5 text-xs">
-                    <li><a href="{{ route('shop.index', ['search' => 'ESP32']) }}" class="hover:text-daraz-orange transition">ESP32 & IoT Microcontrollers</a></li>
-                    <li><a href="{{ route('shop.index', ['search' => 'STM32']) }}" class="hover:text-daraz-orange transition">STM32 ARM Cortex Boards</a></li>
-                    <li><a href="{{ route('shop.index', ['search' => 'Arduino']) }}" class="hover:text-daraz-orange transition">Arduino Uno & Mega Kits</a></li>
-                    <li><a href="{{ route('shop.index', ['search' => 'Soldering']) }}" class="hover:text-daraz-orange transition">Quick 861DW Rework Stations</a></li>
-                    <li><a href="{{ route('shop.index', ['search' => 'Sensor']) }}" class="hover:text-daraz-orange transition">Sensors & Relay Modules</a></li>
+                    @foreach($footerCategories as $fCat)
+                    <li>
+                        <a href="{{ str_starts_with($fCat['url'] ?? '', 'http') || str_starts_with($fCat['url'] ?? '', '/') ? ($fCat['url'] ?? '/shop') : url($fCat['url'] ?? '/shop') }}" class="hover:text-daraz-orange transition">
+                            {{ $fCat['title'] ?? 'Category' }}
+                        </a>
+                    </li>
+                    @endforeach
                 </ul>
             </div>
 

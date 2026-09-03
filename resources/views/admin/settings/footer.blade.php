@@ -4,7 +4,7 @@
 @section('page-title', 'Footer Information & CMS Settings')
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-6">
+<div class="max-w-5xl mx-auto space-y-6" x-data="footerManager({{ json_encode($popularCategories) }})">
 
     @if(session('success'))
     <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold flex items-center gap-2">
@@ -16,7 +16,69 @@
     <form method="POST" action="{{ route('admin.settings.footer.update') }}" class="space-y-6">
         @csrf
 
-        <!-- 1. Company Summary & Slogan -->
+        <!-- 1. Popular Categories Manager (Add, Edit, Delete) -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border-2 border-emerald-500/30 shadow-md space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                        <i data-lucide="layers" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Footer Popular Categories Links (Add / Edit / Delete)</h3>
+                        <p class="text-xs text-slate-400">Manage category links shown in the "Popular Categories" column of the public website footer.</p>
+                    </div>
+                </div>
+                <button type="button" @click="addCategory()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs w-fit">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    <span>Add New Category Link</span>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <template x-for="(cat, index) in categories" :key="index">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                        <span class="w-6 text-center font-mono font-bold text-xs text-slate-400" x-text="index + 1"></span>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Category Title / Label *</label>
+                                <input 
+                                    type="text" 
+                                    :name="'popular_categories[' + index + '][title]'" 
+                                    x-model="cat.title" 
+                                    required 
+                                    placeholder="e.g. ESP32 & IoT Microcontrollers" 
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Target URL or Search Query *</label>
+                                <input 
+                                    type="text" 
+                                    :name="'popular_categories[' + index + '][url]'" 
+                                    x-model="cat.url" 
+                                    required 
+                                    placeholder="e.g. /shop?search=ESP32 or https://..." 
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+
+                        <button 
+                            type="button" 
+                            @click="removeCategory(index)" 
+                            class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition flex-shrink-0" 
+                            title="Delete this category">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </template>
+
+                <div x-show="categories.length === 0" class="p-6 text-center text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    No custom popular categories yet. Click "Add New Category Link" above.
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Company Summary & Slogan -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i data-lucide="building-2" class="w-4 h-4 text-emerald-500"></i>
@@ -43,7 +105,7 @@
             </div>
         </div>
 
-        <!-- 2. Contact Numbers & Addresses -->
+        <!-- 3. Contact Numbers & Addresses -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i data-lucide="phone-call" class="w-4 h-4 text-sky-500"></i>
@@ -88,7 +150,7 @@
             </div>
         </div>
 
-        <!-- 3. Social Media URLs -->
+        <!-- 4. Social Media URLs -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i data-lucide="share-2" class="w-4 h-4 text-purple-500"></i>
@@ -128,7 +190,7 @@
             </div>
         </div>
 
-        <!-- 4. Payment Badges & Courier Partners -->
+        <!-- 5. Payment Badges & Courier Partners -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i data-lucide="credit-card" class="w-4 h-4 text-amber-500"></i>
@@ -148,7 +210,7 @@
             </div>
         </div>
 
-        <!-- 5. Custom Footer Quick Links -->
+        <!-- 6. Custom Footer Quick Links -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i data-lucide="link-2" class="w-4 h-4 text-emerald-500"></i>
@@ -182,11 +244,31 @@
         <div class="flex items-center justify-end gap-3 pt-4">
             <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
                 <i data-lucide="save" class="w-4 h-4"></i>
-                <span>Save Footer Settings</span>
+                <span>Save Footer Settings & Popular Categories</span>
             </button>
         </div>
 
     </form>
 
 </div>
+
+<script>
+function footerManager(initialCategories) {
+    return {
+        categories: initialCategories || [],
+        addCategory() {
+            this.categories.push({
+                title: '',
+                url: '/shop'
+            });
+            this.$nextTick(() => {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
+        },
+        removeCategory(index) {
+            this.categories.splice(index, 1);
+        }
+    };
+}
+</script>
 @endsection
