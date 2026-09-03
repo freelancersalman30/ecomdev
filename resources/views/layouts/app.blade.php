@@ -299,10 +299,14 @@
     </div>
     @endif
 
-    <!-- 2. MAIN HEADER (Search Bar, Logo, Cart Drawer) -->
-    <header class="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-3 sm:py-3.5">
-            <div class="flex items-center justify-between gap-3 sm:gap-8">
+    <!-- 2. MAIN HEADER (Search Bar, Logo, Navigation, Cart Drawer) -->
+    <header class="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-xs">
+        
+        <!-- Main Top Bar Container -->
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3.5">
+            
+            <!-- Desktop Layout (>= 640px) -->
+            <div class="hidden sm:flex items-center justify-between gap-4 lg:gap-8">
                 
                 <!-- Brand Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-2 flex-shrink-0 group">
@@ -313,10 +317,10 @@
                             <i data-lucide="cpu" class="w-5 h-5 text-emerald-400"></i>
                         </div>
                         <div>
-                            <div class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 flex items-center">
+                            <div class="text-xl lg:text-2xl font-black tracking-tight text-slate-900 flex items-center">
                                 {{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}
                             </div>
-                            <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold -mt-1 hidden sm:block">{{ \App\Models\Setting::get('site_tagline', 'Electronics Mega Mart') }}</p>
+                            <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold -mt-1">{{ \App\Models\Setting::get('site_tagline', 'Electronics Mega Mart') }}</p>
                         </div>
                     @endif
                 </a>
@@ -329,18 +333,18 @@
                                 type="text" 
                                 name="search" 
                                 value="{{ request('search') }}"
-                                placeholder="Search in DREAMERS PCB (e.g. ESP32, STM32, Arduino, Soldering Station...)" 
-                                class="w-full pl-4 pr-12 sm:pr-24 py-2.5 rounded-xl sm:rounded-2xl border-2 border-daraz-orange/80 bg-slate-50 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:ring-4 focus:ring-daraz-orange/10 transition">
+                                placeholder="Search products, ESP32, STM32, Arduino, Soldering Station..." 
+                                class="w-full pl-4 pr-24 py-2.5 rounded-2xl border-2 border-daraz-orange/80 bg-slate-50 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:ring-4 focus:ring-daraz-orange/10 transition">
                             
-                            <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 sm:px-6 rounded-lg sm:rounded-xl bg-daraz-orange hover:bg-daraz-orangeHover text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+                            <button type="submit" class="absolute right-1 top-1 bottom-1 px-5 rounded-xl bg-daraz-orange hover:bg-daraz-orangeHover text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
                                 <i data-lucide="search" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Search</span>
+                                <span>Search</span>
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Right Action Buttons (Customer Account, Track, Cart Drawer Trigger) -->
+                <!-- Right Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                     
                     <!-- Customer Auth Trigger -->
@@ -350,11 +354,10 @@
                             <div class="w-5 h-5 rounded-full bg-daraz-orange text-white text-[10px] font-black flex items-center justify-center">
                                 {{ substr(Auth::guard('customer')->user()->name, 0, 1) }}
                             </div>
-                            <span class="hidden sm:inline truncate max-w-[100px]">{{ Auth::guard('customer')->user()->name }}</span>
+                            <span class="truncate max-w-[110px]">{{ Auth::guard('customer')->user()->name }}</span>
                             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
                         </button>
 
-                        <!-- Dropdown Menu -->
                         <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 text-xs space-y-1">
                             <div class="px-3 py-1.5 border-b border-slate-100 font-bold text-slate-900 truncate">
                                 {{ Auth::guard('customer')->user()->name }}
@@ -394,7 +397,7 @@
                     @endif
 
                     <!-- Fast Track Button -->
-                    <a href="{{ route('order.track') }}" class="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition">
+                    <a href="{{ route('order.track') }}" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition">
                         <i data-lucide="truck" class="w-4 h-4 text-daraz-orange"></i>
                         <span>Track</span>
                     </a>
@@ -402,9 +405,9 @@
                     <!-- Cart Drawer Trigger Button -->
                     <button 
                         @click="cartOpen = true" 
-                        class="relative p-2.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2.5 transition shadow-md group">
+                        class="relative px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2.5 transition shadow-md group">
                         <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-400 group-hover:scale-110 transition"></i>
-                        <span class="hidden sm:inline text-xs font-bold">Cart</span>
+                        <span class="text-xs font-bold">Cart</span>
                         <span 
                             x-text="cartCount" 
                             class="w-5 h-5 rounded-full bg-daraz-orange text-white text-[10px] font-black flex items-center justify-center shadow-sm">
@@ -413,43 +416,304 @@
                     </button>
 
                 </div>
-
             </div>
-        </div>
 
-        <!-- Secondary Categories Sub-Navbar (Daraz Yellow/Orange Ribbon) -->
-        <nav class="bg-slate-900 text-white text-xs border-t border-slate-800 hidden sm:block">
-            <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+            <!-- Mobile Layout (< 640px) -->
+            <div class="sm:hidden space-y-2.5">
                 
-                <div class="flex items-center gap-6 py-2">
-                    <a href="{{ route('shop.index') }}" class="font-bold flex items-center gap-1.5 text-emerald-400 hover:text-white transition">
-                        <i data-lucide="grid" class="w-4 h-4"></i>
-                        <span>All Categories</span>
-                    </a>
-                    <a href="{{ route('shop.index', ['sort' => 'featured']) }}" class="hover:text-amber-400 transition font-medium">🔥 Flash Sale Deals</a>
-                    <a href="{{ route('shop.index', ['search' => 'ESP32']) }}" class="hover:text-amber-400 transition font-medium">ESP32 & IoT</a>
-                    <a href="{{ route('shop.index', ['search' => 'STM32']) }}" class="hover:text-amber-400 transition font-medium">STM32 ARM Dev Boards</a>
-                    <a href="{{ route('shop.index', ['search' => 'Arduino']) }}" class="hover:text-amber-400 transition font-medium">Arduino & Shields</a>
-                    <a href="{{ route('shop.index', ['search' => 'Rework']) }}" class="hover:text-amber-400 transition font-medium">Soldering & Rework Stations</a>
+                <!-- Mobile Top Row: Hamburger + Logo + Quick Actions -->
+                <div class="flex items-center justify-between gap-2">
+                    
+                    <!-- Left: Hamburger Button & Logo -->
+                    <div class="flex items-center gap-2">
+                        <button 
+                            @click="mobileMenuOpen = true" 
+                            type="button" 
+                            class="p-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-800 transition" 
+                            aria-label="Open Mobile Menu">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+
+                        <a href="{{ route('home') }}" class="flex items-center gap-1.5">
+                            @if(\App\Models\Setting::get('site_logo'))
+                                <img src="{{ asset(\App\Models\Setting::get('site_logo')) }}" alt="{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}" class="h-8 max-w-[130px] object-contain">
+                            @else
+                                <div class="w-7 h-7 rounded-xl bg-slate-950 flex items-center justify-center text-emerald-400 shadow-xs">
+                                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                                </div>
+                                <span class="font-black text-sm text-slate-900 tracking-tight">
+                                    {{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}
+                                </span>
+                            @endif
+                        </a>
+                    </div>
+
+                    <!-- Right: Track + Account + Cart -->
+                    <div class="flex items-center gap-1.5">
+                        
+                        <!-- Mobile Track Link -->
+                        <a href="{{ route('order.track') }}" class="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition" title="Track Order">
+                            <i data-lucide="truck" class="w-4 h-4 text-daraz-orange"></i>
+                        </a>
+
+                        <!-- Mobile Account Link -->
+                        @if(Auth::guard('customer')->check())
+                        <a href="{{ route('customer.dashboard') }}" class="p-1.5 rounded-xl bg-daraz-orange/10 text-daraz-orange font-bold text-xs" title="My Account">
+                            <div class="w-5 h-5 rounded-full bg-daraz-orange text-white text-[10px] font-black flex items-center justify-center">
+                                {{ substr(Auth::guard('customer')->user()->name, 0, 1) }}
+                            </div>
+                        </a>
+                        @else
+                        <a href="{{ route('customer.login') }}" class="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition" title="Login">
+                            <i data-lucide="user" class="w-4 h-4 text-slate-700"></i>
+                        </a>
+                        @endif
+
+                        <!-- Mobile Cart Trigger -->
+                        <button 
+                            @click="cartOpen = true" 
+                            class="relative p-2 rounded-xl bg-slate-900 text-white transition flex items-center justify-center">
+                            <i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-400"></i>
+                            <span 
+                                x-text="cartCount" 
+                                class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-daraz-orange text-white text-[9px] font-black flex items-center justify-center shadow-xs">
+                                0
+                            </span>
+                        </button>
+                    </div>
+
                 </div>
 
-                <div class="flex items-center gap-4 text-[11px] text-slate-400">
-                    <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                <!-- Mobile Full-Width Search Input -->
+                <form action="{{ route('shop.index') }}" method="GET" class="w-full">
+                    <div class="relative w-full">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            value="{{ request('search') }}"
+                            placeholder="Search in DREAMERS PCB (e.g. ESP32, STM32, Arduino...)" 
+                            class="w-full pl-9 pr-16 py-2 rounded-xl border border-daraz-orange/60 bg-slate-50 text-xs font-medium text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-daraz-orange focus:ring-2 focus:ring-daraz-orange/20 transition">
+                        
+                        <div class="absolute left-3 top-2.5 text-slate-400">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        </div>
+
+                        <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 rounded-lg bg-daraz-orange text-white font-bold text-[11px] flex items-center gap-1 shadow-xs">
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- 3. SECONDARY CATEGORIES & DEALS SUB-NAVBAR (Responsive Horizontally Scrollable on Mobile) -->
+        <nav class="bg-slate-900 text-white text-xs border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-3 sm:px-4">
+                
+                <div class="flex items-center gap-2 sm:gap-6 py-2 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
+                    
+                    <!-- All Categories Chip -->
+                    <a href="{{ route('shop.index') }}" class="font-bold flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-white transition flex-shrink-0">
+                        <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+                        <span>All Categories</span>
+                    </a>
+
+                    <!-- Category & Deal Links -->
+                    <a href="{{ route('shop.index', ['sort' => 'featured']) }}" class="px-2 py-1 rounded-lg text-amber-400 hover:text-white hover:bg-slate-800 transition font-bold flex-shrink-0">
+                        🔥 Flash Deals
+                    </a>
+                    <a href="{{ route('shop.index', ['search' => 'ESP32']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
+                        ESP32 & IoT
+                    </a>
+                    <a href="{{ route('shop.index', ['search' => 'STM32']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
+                        STM32 ARM Dev Boards
+                    </a>
+                    <a href="{{ route('shop.index', ['search' => 'Arduino']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
+                        Arduino & Shields
+                    </a>
+                    <a href="{{ route('shop.index', ['search' => 'Rework']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
+                        Soldering & Rework
+                    </a>
+                    <a href="{{ route('shop.index', ['search' => 'Sensor']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
+                        Sensors & Modules
+                    </a>
+                    <a href="{{ route('shop.index', ['search' => 'Robot']) }}" class="px-2 py-1 rounded-lg hover:text-amber-400 hover:bg-slate-800 transition font-medium flex-shrink-0">
+                        Robotics & DIY Kits
+                    </a>
+
+                    <!-- Genuine Guarantee Badge (Desktop) -->
+                    <div class="hidden lg:flex items-center gap-1.5 ml-auto text-[11px] text-emerald-400 font-semibold flex-shrink-0">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                         <span>{{ \App\Models\Setting::get('guarantee_badge_text', '100% Genuine Hardware Guaranteed') }}</span>
-                    </span>
+                    </div>
+
                 </div>
 
             </div>
         </nav>
     </header>
 
+    <!-- 4. SLIDE-OUT RESPONSIVE MOBILE NAVIGATION DRAWER -->
+    <div x-cloak x-show="mobileMenuOpen" class="fixed inset-0 z-50 overflow-hidden sm:hidden">
+        <!-- Backdrop -->
+        <div 
+            x-show="mobileMenuOpen" 
+            x-transition:enter="transition-opacity ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="mobileMenuOpen = false" 
+            class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"></div>
+
+        <!-- Drawer Panel -->
+        <div class="fixed inset-y-0 left-0 max-w-full flex pr-10">
+            <div 
+                x-show="mobileMenuOpen" 
+                x-transition:enter="transform transition ease-in-out duration-300"
+                x-transition:enter-start="-translate-x-full"
+                x-transition:enter-end="translate-x-0"
+                x-transition:leave="transform transition ease-in-out duration-200"
+                x-transition:leave-start="translate-x-0"
+                x-transition:leave-end="-translate-x-full"
+                class="w-screen max-w-xs bg-white shadow-2xl flex flex-col justify-between overflow-y-auto">
+                
+                <div>
+                    <!-- Drawer Header -->
+                    <div class="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                                <i data-lucide="cpu" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xs leading-none text-white">{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</h3>
+                                <p class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold mt-0.5">Mobile Navigation</p>
+                            </div>
+                        </div>
+                        <button @click="mobileMenuOpen = false" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Customer Account Card in Drawer -->
+                    <div class="p-4 bg-slate-50 border-b border-slate-200">
+                        @if(Auth::guard('customer')->check())
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-daraz-orange text-white text-sm font-black flex items-center justify-center">
+                                {{ substr(Auth::guard('customer')->user()->name, 0, 1) }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="font-bold text-xs text-slate-900 truncate">{{ Auth::guard('customer')->user()->name }}</div>
+                                <div class="text-[11px] text-slate-500 truncate">{{ Auth::guard('customer')->user()->email ?? Auth::guard('customer')->user()->phone }}</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+                            <a href="{{ route('customer.dashboard') }}" @click="mobileMenuOpen = false" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold text-center hover:bg-slate-100">Dashboard</a>
+                            <a href="{{ route('customer.orders') }}" @click="mobileMenuOpen = false" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold text-center hover:bg-slate-100">My Orders</a>
+                        </div>
+                        @else
+                        <div class="space-y-2">
+                            <p class="text-xs text-slate-600 font-medium">Welcome! Sign in to view your orders and track purchases.</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="{{ route('customer.login') }}" @click="mobileMenuOpen = false" class="px-3 py-2 rounded-xl bg-daraz-orange text-white font-bold text-xs text-center shadow-xs">Login</a>
+                                <a href="{{ route('customer.register') }}" @click="mobileMenuOpen = false" class="px-3 py-2 rounded-xl bg-slate-200 text-slate-800 font-bold text-xs text-center">Register</a>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    <!-- Main Navigation Links List -->
+                    <div class="p-4 space-y-1 text-xs">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Browse Catalog</div>
+                        
+                        <a href="{{ route('home') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold {{ request()->routeIs('home') ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Home</span>
+                        </a>
+
+                        <a href="{{ route('shop.index') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold {{ request()->routeIs('shop.*') && !request('sort') && !request('search') ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <i data-lucide="grid" class="w-4 h-4 text-sky-600"></i>
+                            <span>All Categories / Mega Shop</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['sort' => 'featured']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <span class="text-sm">🔥</span>
+                            <span>Flash Sale Deals & Offers</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['search' => 'ESP32']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <i data-lucide="cpu" class="w-4 h-4 text-emerald-500"></i>
+                            <span>ESP32 & IoT Modules</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['search' => 'STM32']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <i data-lucide="microchip" class="w-4 h-4 text-indigo-500"></i>
+                            <span>STM32 ARM Dev Boards</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['search' => 'Arduino']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <i data-lucide="bot" class="w-4 h-4 text-teal-500"></i>
+                            <span>Arduino & Shields</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['search' => 'Rework']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <i data-lucide="wrench" class="w-4 h-4 text-amber-500"></i>
+                            <span>Soldering & Rework Stations</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['search' => 'Sensor']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <i data-lucide="activity" class="w-4 h-4 text-purple-500"></i>
+                            <span>Sensors & Relays</span>
+                        </a>
+
+                        <a href="{{ route('shop.index', ['search' => 'Robot']) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                            <i data-lucide="package" class="w-4 h-4 text-rose-500"></i>
+                            <span>Robotics & DIY Kits</span>
+                        </a>
+
+                        <div class="pt-2 border-t border-slate-100">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Quick Services</div>
+                            
+                            <a href="{{ route('order.track') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-daraz-orange"></i>
+                                <span>Track My Order</span>
+                            </a>
+
+                            <a href="{{ route('warranty.verify') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+                                <span>Warranty Verification</span>
+                            </a>
+
+                            <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-emerald-700 font-bold hover:bg-emerald-50">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-600"></i>
+                                <span>Admin Panel</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drawer Bottom Contact & Hotline -->
+                <div class="p-4 bg-slate-900 text-white border-t border-slate-800 space-y-2">
+                    <div class="text-xs font-bold text-slate-300">Need Tech Assistance?</div>
+                    <a href="tel:{{ \App\Models\Setting::get('site_phone', \App\Models\Setting::get('phone', '+880 1700-112233')) }}" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-xs">
+                        <i data-lucide="phone-call" class="w-4 h-4"></i>
+                        <span>Call Hotline</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Area -->
     <main class="flex-1">
         
         <!-- Flash Message Alerts -->
         @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 mt-4">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 mt-3 sm:mt-4">
             <div class="p-3.5 rounded-2xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-between shadow-md">
                 <div class="flex items-center gap-2">
                     <i data-lucide="check-circle" class="w-4 h-4"></i>
@@ -461,7 +725,7 @@
         @endif
 
         @if(session('warning'))
-        <div class="max-w-7xl mx-auto px-4 mt-4">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 mt-3 sm:mt-4">
             <div class="p-3.5 rounded-2xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-between shadow-md">
                 <div class="flex items-center gap-2">
                     <i data-lucide="alert-circle" class="w-4 h-4"></i>
@@ -475,7 +739,7 @@
         @yield('content')
     </main>
 
-    <!-- 3. SLIDE-OUT CART DRAWER (Alpine.js Responsive) -->
+    <!-- 5. SLIDE-OUT CART DRAWER (Alpine.js Responsive) -->
     <div x-cloak x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden">
         <!-- Backdrop -->
         <div 
@@ -487,7 +751,7 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             @click="cartOpen = false" 
-            class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
+            class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"></div>
 
         <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
             <div 
@@ -576,7 +840,7 @@
         </div>
     </div>
 
-    <!-- 4. MODERN FOOTER (Daraz Style Trust Badges, Payment Icons, Categories) -->
+    <!-- 6. MODERN FOOTER (Daraz Style Trust Badges, Payment Icons, Categories) -->
     <footer style="background-color: {{ $footerBg }};" class="text-slate-400 text-xs mt-16 border-t border-slate-800">
         
         <!-- Trust Guarantee Top Strip -->
@@ -671,7 +935,7 @@
                     <li><a href="{{ route('shop.index', ['search' => 'STM32']) }}" class="hover:text-daraz-orange transition">STM32 ARM Cortex Boards</a></li>
                     <li><a href="{{ route('shop.index', ['search' => 'Arduino']) }}" class="hover:text-daraz-orange transition">Arduino Uno & Mega Kits</a></li>
                     <li><a href="{{ route('shop.index', ['search' => 'Soldering']) }}" class="hover:text-daraz-orange transition">Quick 861DW Rework Stations</a></li>
-                    <li><a href="{{ route('shop.index') }}" class="hover:text-daraz-orange transition">Sensors & Relay Modules</a></li>
+                    <li><a href="{{ route('shop.index', ['search' => 'Sensor']) }}" class="hover:text-daraz-orange transition">Sensors & Relay Modules</a></li>
                 </ul>
             </div>
 
@@ -713,34 +977,34 @@
         </div>
 
         <!-- Copyright -->
-        <div class="border-t border-slate-900 py-4 text-center text-slate-500 text-[11px]">
+        <div class="border-t border-slate-900 py-4 text-center text-slate-500 text-[11px] pb-16 sm:pb-4">
             <p>{{ \App\Models\Setting::get('footer_copyright', '© ' . date('Y') . ' DREAMERS PCB. All rights reserved. Built for high-speed electronics e-commerce.') }}</p>
         </div>
 
     </footer>
 
-    <!-- 5. MOBILE BOTTOM NAVIGATION (Daraz Style) -->
-    <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-4 py-2 flex items-center justify-around text-[10px] font-bold text-slate-600 shadow-lg">
+    <!-- 7. MOBILE BOTTOM NAVIGATION (Daraz Style) -->
+    <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-3 py-2 flex items-center justify-around text-[10px] font-bold text-slate-600 shadow-lg">
         <a href="{{ route('home') }}" class="flex flex-col items-center gap-0.5 {{ request()->routeIs('home') ? 'text-daraz-orange' : '' }}">
             <i data-lucide="home" class="w-5 h-5"></i>
             <span>Home</span>
         </a>
-        <a href="{{ route('shop.index') }}" class="flex flex-col items-center gap-0.5 {{ request()->routeIs('shop.*') ? 'text-daraz-orange' : '' }}">
+        <button @click="mobileMenuOpen = true" class="flex flex-col items-center gap-0.5 text-slate-600 hover:text-daraz-orange">
             <i data-lucide="grid" class="w-5 h-5"></i>
-            <span>Categories</span>
-        </a>
+            <span>Menu</span>
+        </button>
         <button @click="cartOpen = true" class="flex flex-col items-center gap-0.5 relative text-slate-800">
             <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-600"></i>
             <span class="absolute -top-1 right-2 w-4 h-4 rounded-full bg-daraz-orange text-white text-[9px] flex items-center justify-center font-bold" x-text="cartCount">0</span>
             <span>Cart</span>
         </button>
         <a href="{{ route('order.track') }}" class="flex flex-col items-center gap-0.5 {{ request()->routeIs('order.track') ? 'text-daraz-orange' : '' }}">
-            <i data-lucide="map-pin" class="w-5 h-5"></i>
+            <i data-lucide="truck" class="w-5 h-5"></i>
             <span>Track</span>
         </a>
-        <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center gap-0.5 text-slate-500 hover:text-emerald-500">
+        <a href="{{ Auth::guard('customer')->check() ? route('customer.dashboard') : route('customer.login') }}" class="flex flex-col items-center gap-0.5 {{ request()->routeIs('customer.*') ? 'text-daraz-orange' : 'text-slate-600' }}">
             <i data-lucide="user" class="w-5 h-5"></i>
-            <span>Admin</span>
+            <span>{{ Auth::guard('customer')->check() ? 'Account' : 'Login' }}</span>
         </a>
     </div>
 
@@ -752,6 +1016,7 @@
 
         function globalStore() {
             return {
+                mobileMenuOpen: false,
                 cartOpen: false,
                 cartItems: [],
                 cartCount: 0,
