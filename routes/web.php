@@ -169,14 +169,17 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'storeCategory'])->name('categories.store');
     Route::put('/categories/{category}', [CategoryController::class, 'updateCategory'])->name('categories.update');
+    Route::post('/categories/{category}/toggle-status', [CategoryController::class, 'toggleCategoryStatus'])->name('categories.toggle');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
     Route::post('/sub-categories', [CategoryController::class, 'storeSubCategory'])->name('subcategories.store');
     Route::put('/sub-categories/{subCategory}', [CategoryController::class, 'updateSubCategory'])->name('subcategories.update');
+    Route::post('/sub-categories/{subCategory}/toggle-status', [CategoryController::class, 'toggleSubCategoryStatus'])->name('subcategories.toggle');
     Route::delete('/sub-categories/{subCategory}', [CategoryController::class, 'destroySubCategory'])->name('subcategories.destroy');
 
     Route::post('/child-categories', [CategoryController::class, 'storeChildCategory'])->name('childcategories.store');
     Route::put('/child-categories/{childCategory}', [CategoryController::class, 'updateChildCategory'])->name('childcategories.update');
+    Route::post('/child-categories/{childCategory}/toggle-status', [CategoryController::class, 'toggleChildCategoryStatus'])->name('childcategories.toggle');
     Route::delete('/child-categories/{childCategory}', [CategoryController::class, 'destroyChildCategory'])->name('childcategories.destroy');
 
     // Brands

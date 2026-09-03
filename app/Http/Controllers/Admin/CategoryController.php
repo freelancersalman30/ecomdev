@@ -30,7 +30,18 @@ class CategoryController extends Controller
         $subCategories = SubCategory::with(['category'])->withCount(['childCategories', 'products'])->orderBy('name', 'asc')->get();
         $childCategories = ChildCategory::with(['subCategory.category'])->withCount('products')->orderBy('name', 'asc')->get();
 
-        return view('admin.categories.index', compact('categories', 'subCategories', 'childCategories'));
+        $totalCategoriesCount = $categories->count();
+        $activeCategoriesCount = $categories->where('is_active', true)->count();
+        $inactiveCategoriesCount = $categories->where('is_active', false)->count();
+
+        return view('admin.categories.index', compact(
+            'categories',
+            'subCategories',
+            'childCategories',
+            'totalCategoriesCount',
+            'activeCategoriesCount',
+            'inactiveCategoriesCount'
+        ));
     }
 
     /**
@@ -45,7 +56,6 @@ class CategoryController extends Controller
         ]);
 
         $slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
-        // Ensure unique slug
         $count = Category::where('slug', $slug)->count();
         if ($count > 0) {
             $slug .= '-'.time();
@@ -56,8 +66,8 @@ class CategoryController extends Controller
             'slug' => $slug,
             'icon' => $request->icon ?: 'cpu',
             'description' => $request->description,
-            'is_featured' => $request->has('is_featured') || $request->input('is_featured') == '1',
-            'is_active' => $request->has('is_active') ? ($request->input('is_active') == '1') : true,
+            'is_featured' => $request->boolean('is_featured'),
+            'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
             'display_order' => $request->input('display_order', 0),
         ]);
 
@@ -88,12 +98,26 @@ class CategoryController extends Controller
             'slug' => $slug,
             'icon' => $request->icon ?: ($category->icon ?: 'cpu'),
             'description' => $request->description,
-            'is_featured' => $request->has('is_featured') && ($request->input('is_featured') == '1' || $request->input('is_featured') === true),
-            'is_active' => $request->has('is_active') ? ($request->input('is_active') == '1' || $request->input('is_active') === true) : true,
+            'is_featured' => $request->boolean('is_featured'),
+            'is_active' => $request->boolean('is_active'),
             'display_order' => $request->input('display_order', $category->display_order ?? 0),
         ]);
 
         return redirect()->back()->with('success', 'Category updated successfully!');
+    }
+
+    /**
+     * One-Click Toggle Primary Category Active/Inactive Status
+     */
+    public function toggleCategoryStatus(Category $category)
+    {
+        $category->update([
+            'is_active' => ! $category->is_active,
+        ]);
+
+        $statusLabel = $category->is_active ? 'Active' : 'Inactive';
+
+        return redirect()->back()->with('success', "Category '{$category->name}' is now {$statusLabel}!");
     }
 
     /**
@@ -128,7 +152,7 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => $slug,
             'description' => $request->description,
-            'is_active' => $request->has('is_active') ? ($request->input('is_active') == '1') : true,
+            'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
             'display_order' => $request->input('display_order', 0),
         ]);
 
@@ -159,11 +183,25 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => $slug,
             'description' => $request->description,
-            'is_active' => $request->has('is_active') ? ($request->input('is_active') == '1' || $request->input('is_active') === true) : true,
+            'is_active' => $request->boolean('is_active'),
             'display_order' => $request->input('display_order', $subCategory->display_order ?? 0),
         ]);
 
         return redirect()->back()->with('success', 'Sub-Category updated successfully!');
+    }
+
+    /**
+     * One-Click Toggle Sub-Category Status
+     */
+    public function toggleSubCategoryStatus(SubCategory $subCategory)
+    {
+        $subCategory->update([
+            'is_active' => ! $subCategory->is_active,
+        ]);
+
+        $statusLabel = $subCategory->is_active ? 'Active' : 'Inactive';
+
+        return redirect()->back()->with('success', "Sub-Category '{$subCategory->name}' is now {$statusLabel}!");
     }
 
     /**
@@ -197,7 +235,7 @@ class CategoryController extends Controller
             'sub_category_id' => $request->sub_category_id,
             'name' => $request->name,
             'slug' => $slug,
-            'is_active' => $request->has('is_active') ? ($request->input('is_active') == '1') : true,
+            'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
             'display_order' => $request->input('display_order', 0),
         ]);
 
@@ -227,11 +265,25 @@ class CategoryController extends Controller
             'sub_category_id' => $request->sub_category_id,
             'name' => $request->name,
             'slug' => $slug,
-            'is_active' => $request->has('is_active') ? ($request->input('is_active') == '1' || $request->input('is_active') === true) : true,
+            'is_active' => $request->boolean('is_active'),
             'display_order' => $request->input('display_order', $childCategory->display_order ?? 0),
         ]);
 
         return redirect()->back()->with('success', 'Child-Category updated successfully!');
+    }
+
+    /**
+     * One-Click Toggle Child-Category Status
+     */
+    public function toggleChildCategoryStatus(ChildCategory $childCategory)
+    {
+        $childCategory->update([
+            'is_active' => ! $childCategory->is_active,
+        ]);
+
+        $statusLabel = $childCategory->is_active ? 'Active' : 'Inactive';
+
+        return redirect()->back()->with('success', "Child-Category '{$childCategory->name}' is now {$statusLabel}!");
     }
 
     /**

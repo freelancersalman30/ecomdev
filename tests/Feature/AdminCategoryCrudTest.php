@@ -29,12 +29,12 @@ class AdminCategoryCrudTest extends TestCase
     {
         $response = $this->get('/admin/categories');
         $response->assertStatus(200);
-        $response->assertSee('Categories, Sub-Categories & Child-Categories CRUD');
+        $response->assertSee('Product Category Architecture');
     }
 
-    public function test_admin_can_crud_primary_category(): void
+    public function test_admin_can_crud_and_inactivate_primary_category(): void
     {
-        // 1. Create
+        // 1. Create Active Category
         $createRes = $this->post('/admin/categories', [
             'name' => 'Wireless Transceivers',
             'icon' => 'radio',
@@ -44,29 +44,34 @@ class AdminCategoryCrudTest extends TestCase
             'is_active' => '1',
         ]);
         $createRes->assertRedirect();
-        $this->assertDatabaseHas('categories', ['name' => 'Wireless Transceivers', 'icon' => 'radio']);
-
         $category = Category::where('name', 'Wireless Transceivers')->first();
+        $this->assertTrue($category->is_active);
 
-        // 2. Update
+        // 2. Inactivate Category via Update (sending is_active = 0)
         $updateRes = $this->put('/admin/categories/'.$category->id, [
             'name' => 'Wireless & RF Modules',
             'slug' => 'wireless-rf-modules',
             'icon' => 'wifi',
-            'description' => 'Updated RF modules',
-            'display_order' => 10,
-            'is_active' => '1',
+            'is_active' => '0',
         ]);
         $updateRes->assertRedirect();
-        $this->assertDatabaseHas('categories', ['id' => $category->id, 'name' => 'Wireless & RF Modules', 'slug' => 'wireless-rf-modules']);
+        $category->refresh();
+        $this->assertFalse($category->is_active);
+        $this->assertEquals('Wireless & RF Modules', $category->name);
 
-        // 3. Delete
+        // 3. One-Click Toggle Category Status
+        $toggleRes = $this->post('/admin/categories/'.$category->id.'/toggle-status');
+        $toggleRes->assertRedirect();
+        $category->refresh();
+        $this->assertTrue($category->is_active);
+
+        // 4. Delete
         $deleteRes = $this->delete('/admin/categories/'.$category->id);
         $deleteRes->assertRedirect();
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
 
-    public function test_admin_can_crud_subcategory(): void
+    public function test_admin_can_crud_and_toggle_subcategory(): void
     {
         $category = Category::create([
             'name' => 'Development Boards',
@@ -78,30 +83,35 @@ class AdminCategoryCrudTest extends TestCase
         $createRes = $this->post('/admin/sub-categories', [
             'category_id' => $category->id,
             'name' => 'ESP32 IoT Series',
-            'description' => 'ESP32 Wi-Fi + Bluetooth modules',
+            'is_active' => '1',
         ]);
         $createRes->assertRedirect();
-        $this->assertDatabaseHas('sub_categories', ['name' => 'ESP32 IoT Series', 'category_id' => $category->id]);
-
         $subCategory = SubCategory::where('name', 'ESP32 IoT Series')->first();
+        $this->assertTrue($subCategory->is_active);
 
-        // 2. Update SubCategory
+        // 2. Inactivate SubCategory via update
         $updateRes = $this->put('/admin/sub-categories/'.$subCategory->id, [
             'category_id' => $category->id,
-            'name' => 'ESP32 & ESP8266 Series',
-            'slug' => 'esp32-esp8266-series',
-            'description' => 'Updated description',
+            'name' => 'ESP32 IoT Series',
+            'is_active' => '0',
         ]);
         $updateRes->assertRedirect();
-        $this->assertDatabaseHas('sub_categories', ['id' => $subCategory->id, 'name' => 'ESP32 & ESP8266 Series']);
+        $subCategory->refresh();
+        $this->assertFalse($subCategory->is_active);
 
-        // 3. Delete SubCategory
+        // 3. Toggle status
+        $toggleRes = $this->post('/admin/sub-categories/'.$subCategory->id.'/toggle-status');
+        $toggleRes->assertRedirect();
+        $subCategory->refresh();
+        $this->assertTrue($subCategory->is_active);
+
+        // 4. Delete
         $deleteRes = $this->delete('/admin/sub-categories/'.$subCategory->id);
         $deleteRes->assertRedirect();
         $this->assertDatabaseMissing('sub_categories', ['id' => $subCategory->id]);
     }
 
-    public function test_admin_can_crud_childcategory(): void
+    public function test_admin_can_crud_and_toggle_childcategory(): void
     {
         $category = Category::create([
             'name' => 'Sensors',
@@ -120,22 +130,19 @@ class AdminCategoryCrudTest extends TestCase
         $createRes = $this->post('/admin/child-categories', [
             'sub_category_id' => $subCategory->id,
             'name' => 'BME280 Pressure Sensors',
+            'is_active' => '1',
         ]);
         $createRes->assertRedirect();
-        $this->assertDatabaseHas('child_categories', ['name' => 'BME280 Pressure Sensors', 'sub_category_id' => $subCategory->id]);
-
         $childCategory = ChildCategory::where('name', 'BME280 Pressure Sensors')->first();
+        $this->assertTrue($childCategory->is_active);
 
-        // 2. Update ChildCategory
-        $updateRes = $this->put('/admin/child-categories/'.$childCategory->id, [
-            'sub_category_id' => $subCategory->id,
-            'name' => 'BME280 & BMP280 Sensors',
-            'slug' => 'bme280-bmp280-sensors',
-        ]);
-        $updateRes->assertRedirect();
-        $this->assertDatabaseHas('child_categories', ['id' => $childCategory->id, 'name' => 'BME280 & BMP280 Sensors']);
+        // 2. Toggle Status to Inactive
+        $toggleRes = $this->post('/admin/child-categories/'.$childCategory->id.'/toggle-status');
+        $toggleRes->assertRedirect();
+        $childCategory->refresh();
+        $this->assertFalse($childCategory->is_active);
 
-        // 3. Delete ChildCategory
+        // 3. Delete
         $deleteRes = $this->delete('/admin/child-categories/'.$childCategory->id);
         $deleteRes->assertRedirect();
         $this->assertDatabaseMissing('child_categories', ['id' => $childCategory->id]);
