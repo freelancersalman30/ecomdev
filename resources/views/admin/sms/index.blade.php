@@ -9,16 +9,27 @@
     <!-- Top KPI Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">SMS Gateway Balance</span>
-            <div class="text-2xl font-black text-emerald-500 code-font mt-2">৳{{ number_format($estimatedBalance, 2) }}</div>
-            <div class="text-xs text-slate-400 mt-1">BulkSMS BD Gateway API</div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active SMS Gateway</span>
+                <div class="text-base font-black text-emerald-600 dark:text-emerald-400 mt-2 truncate">{{ $gatewayName }}</div>
+                <div class="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Direct API Connection Live</span>
+                </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <a href="{{ route('admin.settings.api_hub') }}" class="text-[11px] font-bold text-sky-600 hover:text-sky-500 flex items-center gap-1">
+                    <span>Manage Gateway API Keys</span>
+                    <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </a>
+            </div>
         </div>
 
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
             <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Sent Messages</span>
             <div class="text-2xl font-black text-slate-900 dark:text-white code-font mt-2">{{ number_format($totalSent) }}</div>
-            <div class="text-xs text-slate-400 mt-1">{{ $totalFailed }} failed dispatches</div>
+            <div class="text-xs text-slate-400 mt-1">{{ $totalFailed }} failed attempts</div>
         </div>
 
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -28,6 +39,20 @@
         </div>
 
     </div>
+
+    @if(session('success'))
+        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('warning'))
+        <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+            <span>{{ session('warning') }}</span>
+        </div>
+    @endif
 
     <!-- 2 Columns: Bulk SMS Sender & Template Tokens Helper -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -51,7 +76,7 @@
                 </div>
 
                 <div x-show="recipientType === 'custom_numbers'" class="space-y-1">
-                    <label class="block text-xs font-semibold text-slate-500">Enter Mobile Numbers (017..., 018...)</label>
+                    <label class="block text-xs font-semibold text-slate-500">Enter Mobile Numbers (e.g. 01711223344, 01899887766...)</label>
                     <textarea name="custom_numbers" rows="2" placeholder="01711223344, 01899887766, 01900112233..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none"></textarea>
                 </div>
 
@@ -108,8 +133,9 @@
 
     <!-- SMS Dispatch Logs Table -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-sm text-slate-900 dark:text-white">
-            Recent Outbound SMS Logs
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-sm text-slate-900 dark:text-white flex items-center justify-between">
+            <span>Recent Outbound SMS Logs</span>
+            <span class="text-xs text-slate-400 font-normal">Page {{ $logs->currentPage() }} of {{ $logs->lastPage() }}</span>
         </div>
         <table class="w-full text-left text-xs">
             <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-bold uppercase">
@@ -117,7 +143,7 @@
                     <th class="p-3">Gateway</th>
                     <th class="p-3">Phone Number</th>
                     <th class="p-3">Message Content</th>
-                    <th class="p-3 text-center">Parts</th>
+                    <th class="p-3 text-center">Msg ID</th>
                     <th class="p-3">Status</th>
                     <th class="p-3">Date & Time</th>
                 </tr>
@@ -127,8 +153,8 @@
                 <tr>
                     <td class="p-3 font-semibold text-slate-800 dark:text-slate-200">{{ $log->gateway }}</td>
                     <td class="p-3 font-mono font-bold text-slate-900 dark:text-white">{{ $log->phone }}</td>
-                    <td class="p-3 max-w-md truncate text-slate-600 dark:text-slate-400">{{ $log->message }}</td>
-                    <td class="p-3 text-center font-bold">{{ $log->sms_parts }}</td>
+                    <td class="p-3 max-w-md truncate text-slate-600 dark:text-slate-400" title="{{ $log->message }}">{{ $log->message }}</td>
+                    <td class="p-3 text-center font-mono text-slate-500">{{ $log->response_id ?? '-' }}</td>
                     <td class="p-3">
                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $log->status === 'sent' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' }}">
                             {{ $log->status }}
@@ -143,6 +169,12 @@
                 @endforelse
             </tbody>
         </table>
+
+        @if($logs->hasPages())
+        <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+            {{ $logs->links() }}
+        </div>
+        @endif
     </div>
 
 </div>

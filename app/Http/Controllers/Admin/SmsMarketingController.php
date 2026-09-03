@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApiSetting;
 use App\Models\Customer;
 use App\Models\SmsLog;
 use App\Services\SmsService;
@@ -22,11 +23,17 @@ class SmsMarketingController extends Controller
         $logs = SmsLog::latest()->paginate(25);
         $totalSent = SmsLog::where('status', 'sent')->count();
         $totalFailed = SmsLog::where('status', 'failed')->count();
-        $estimatedBalance = 485.50; // Mock balance BDT
 
-        $customersCount = Customer::where('is_active', true)->count();
+        // Get active SMS gateway title
+        $activeGateway = ApiSetting::where('is_active', true)
+            ->whereIn('provider', ['bulksmsdhaka', 'bulksms_bd', 'bulksms'])
+            ->first();
 
-        return view('admin.sms.index', compact('logs', 'totalSent', 'totalFailed', 'estimatedBalance', 'customersCount'));
+        $gatewayName = $activeGateway ? $activeGateway->title : 'Bulk SMS Dhaka Gateway';
+
+        $customersCount = Customer::where('is_active', true)->whereNotNull('phone')->count();
+
+        return view('admin.sms.index', compact('logs', 'totalSent', 'totalFailed', 'gatewayName', 'customersCount', 'activeGateway'));
     }
 
     public function sendBulk(Request $request)
@@ -39,11 +46,12 @@ class SmsMarketingController extends Controller
 
         $template = $request->message;
         $count = 0;
+        $failedCount = 0;
 
         if ($request->recipient_type === 'all_customers') {
             $customers = Customer::where('is_active', true)->whereNotNull('phone')->get();
             foreach ($customers as $cust) {
-                $this->smsService->send(
+                $sent = $this->smsService->send(
                     $cust->phone,
                     $template,
                     [
@@ -52,13 +60,17 @@ class SmsMarketingController extends Controller
                         'tracking_link' => 'https://dreamerspcb.com/track',
                     ]
                 );
-                $count++;
+                if ($sent) {
+                    $count++;
+                } else {
+                    $failedCount++;
+                }
             }
         } else {
             $numbers = explode(',', str_replace(["\n", "\r", ' '], '', $request->custom_numbers));
             foreach ($numbers as $num) {
                 if (! empty($num)) {
-                    $this->smsService->send(
+                    $sent = $this->smsService->send(
                         $num,
                         $template,
                         [
@@ -67,11 +79,25 @@ class SmsMarketingController extends Controller
                             'tracking_link' => 'https://dreamerspcb.com/track',
                         ]
                     );
-                    $count++;
+                    if ($sent) {
+                        $count++;
+                    } else {
+                        $failedCount++;
+                    }
                 }
             }
         }
 
-        return redirect()->back()->with('success', "Dispatched {$count} SMS messages successfully!");
+        $activeGateway = ApiSetting::where('is_active', true)
+            ->whereIn('provider', ['bulksmsdhaka', 'bulksms_bd', 'bulksms'])
+            ->first();
+
+        $gatewayName = $activeGateway ? $activeGateway->title : 'Bulk SMS Dhaka';
+
+        if ($failedCount > 0) {
+            return redirect()->back()->with('warning', "Dispatched {$count} SMS via {$gatewayName}. {$failedCount} failed.");
+        }
+
+        return redirect()->back()->with('success', "Dispatched {$count} SMS messages successfully via {$gatewayName}!");
     }
 }
