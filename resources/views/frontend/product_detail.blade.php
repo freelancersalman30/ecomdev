@@ -327,89 +327,66 @@
     </style>
     @endpush
 
-    <!-- Related Components Auto-Sliding Carousel -->
+    <!-- Related Components Auto-Sliding Carousel or Grid -->
     @if($relatedProducts->count() > 0)
+    @php
+        $productLayout = \App\Services\ProductLayoutService::getConfig();
+        $relatedLayout = $productLayout['product_related_layout'] ?? 'carousel';
+        $carouselInterval = (int) ($productLayout['carousel_interval'] ?? 3400);
+        $carouselAutoplay = ($productLayout['carousel_autoplay'] ?? '1') === '1' ? 'true' : 'false';
+        $carouselPauseHover = ($productLayout['carousel_pause_hover'] ?? '1') === '1' ? 'true' : 'false';
+    @endphp
     <div class="space-y-4">
         <div class="flex items-center justify-between">
             <h3 class="text-base font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
                 <i data-lucide="sparkles" class="w-4 h-4 text-daraz-orange"></i>
                 <span>People Also Bought</span>
             </h3>
-            <span class="text-xs text-slate-400 font-medium">Auto-sliding recommendations</span>
+            <span class="text-xs text-slate-400 font-medium">Recommended components</span>
         </div>
 
-        <div x-data="productCarousel({ interval: 3400 })" 
-             @mouseenter="pause()" 
-             @mouseleave="resume()" 
-             class="relative group/carousel">
-
-            <!-- Left Nav Arrow Button -->
-            <button 
-                type="button" 
-                @click="prev()" 
-                class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
-                aria-label="Previous Products">
-                <i data-lucide="chevron-left" class="w-5 h-5"></i>
-            </button>
-
-            <!-- Carousel Track -->
-            <div x-ref="track" 
-                 @mousedown="onMouseDown($event)"
-                 @mousemove="onMouseMove($event)"
-                 @mouseup="onMouseUp()"
-                 class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
+        @if($relatedLayout === 'grid')
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
                 @foreach($relatedProducts as $rel)
-                <div class="carousel-card w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0 bg-white rounded-2xl border border-slate-200 daraz-shadow p-2.5 flex flex-col justify-between group transition hover:-translate-y-0.5">
-                    <div>
-                        <div class="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2 relative">
-                            <a href="{{ route('product.show', $rel->slug) }}">
-                                <img src="{{ $rel->thumbnail }}" alt="{{ $rel->name }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80';" class="w-full h-full object-cover group-hover:scale-105 transition">
-                            </a>
-                            @if($rel->discount_percentage > 0)
-                            <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600 text-white text-[9px] font-black uppercase shadow-sm">
-                                -{{ $rel->discount_percentage }}%
-                            </div>
-                            @endif
-                        </div>
-                        <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 group-hover:text-daraz-orange transition min-h-[2rem]">
-                            <a href="{{ route('product.show', $rel->slug) }}">{{ $rel->name }}</a>
-                        </h4>
-                        <div class="mt-1.5 space-y-0.5">
-                            <div class="flex items-baseline gap-1.5 flex-wrap">
-                                <span class="text-sm font-black text-daraz-orange code-font">
-                                    ৳{{ number_format($rel->effective_price, 2) }}
-                                </span>
-                                @if($rel->discount_percentage > 0 || ($rel->discount_price && $rel->discount_price < $rel->selling_price))
-                                <span class="text-[10px] text-slate-400 line-through code-font">
-                                    ৳{{ number_format($rel->selling_price, 2) }}
-                                </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Instant Quick Add Button -->
-                    <div class="pt-2">
-                        <button 
-                            @click="addToCart({{ $rel->id }})" 
-                            class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-daraz-orange text-white font-bold text-[11px] flex items-center justify-center gap-1 transition shadow-sm active:scale-95">
-                            <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-                            <span>Add</span>
-                        </button>
-                    </div>
-                </div>
+                    <x-product-card :product="$rel" :layout="$productLayout" />
                 @endforeach
             </div>
+        @else
+            <div x-data="productCarousel({ interval: {{ $carouselInterval }}, autoplay: {{ $carouselAutoplay }}, pauseOnHover: {{ $carouselPauseHover }} })" 
+                 @mouseenter="pause()" 
+                 @mouseleave="resume()" 
+                 class="relative group/carousel">
 
-            <!-- Right Nav Arrow Button -->
-            <button 
-                type="button" 
-                @click="next()" 
-                class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
-                aria-label="Next Products">
-                <i data-lucide="chevron-right" class="w-5 h-5"></i>
-            </button>
-        </div>
+                <!-- Left Nav Arrow Button -->
+                <button 
+                    type="button" 
+                    @click="prev()" 
+                    class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                    aria-label="Previous Products">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+
+                <!-- Carousel Track -->
+                <div x-ref="track" 
+                     @mousedown="onMouseDown($event)"
+                     @mousemove="onMouseMove($event)"
+                     @mouseup="onMouseUp()"
+                     class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
+                    @foreach($relatedProducts as $rel)
+                        <x-product-card :product="$rel" :layout="$productLayout" class="carousel-card w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0" />
+                    @endforeach
+                </div>
+
+                <!-- Right Nav Arrow Button -->
+                <button 
+                    type="button" 
+                    @click="next()" 
+                    class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center text-slate-800 dark:text-white hover:bg-daraz-orange hover:text-white transition opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                    aria-label="Next Products">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        @endif
     </div>
     @endif
 

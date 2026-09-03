@@ -97,4 +97,39 @@ class AdminProductLayoutTest extends TestCase
         $this->assertEquals('modern_daraz', Setting::get('product_card_style'));
         $this->assertEquals('carousel', Setting::get('home_flash_sale_layout'));
     }
+
+    public function test_storefront_dynamically_reflects_card_style_and_grid_settings()
+    {
+        $category = Category::create([
+            'name' => 'Microcontrollers',
+            'slug' => 'microcontrollers',
+            'is_active' => true,
+        ]);
+
+        Product::create([
+            'name' => 'ESP32-WROOM-32D Development Board',
+            'slug' => 'esp32-wroom-32d',
+            'sku' => 'ESP32-TEST-01',
+            'category_id' => $category->id,
+            'purchase_price' => 250,
+            'selling_price' => 450,
+            'discount_price' => 380,
+            'stock_quantity' => 100,
+            'is_active' => true,
+        ]);
+
+        // 1. Set style to minimalist_bordered and shop columns to 3_cols
+        Setting::set('product_card_style', 'minimalist_bordered', 'product_layout');
+        Setting::set('shop_grid_columns', '3_cols', 'product_layout');
+        Setting::set('home_flash_sale_layout', 'grid', 'product_layout');
+
+        $shopResponse = $this->get('/shop');
+        $shopResponse->assertStatus(200);
+        $shopResponse->assertSee('lg:grid-cols-3');
+        $shopResponse->assertSee('ESP32-WROOM-32D');
+
+        $homeResponse = $this->get('/');
+        $homeResponse->assertStatus(200);
+        $homeResponse->assertSee('ESP32-WROOM-32D');
+    }
 }
