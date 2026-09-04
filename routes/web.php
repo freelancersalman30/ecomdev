@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\GeneralSettingController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductLayoutController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\Customer\CustomerWarrantyController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\FrontendController;
+use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Frontend\ProductController as FrontProductController;
 use App\Http\Controllers\Frontend\ProductFeedController;
 use App\Http\Controllers\Frontend\ShopController;
@@ -53,6 +55,7 @@ Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/category/{slug}', [ShopController::class, 'category'])->name('category.show');
 Route::get('/brand/{slug}', [ShopController::class, 'brand'])->name('brand.show');
 Route::get('/product/{slug}', [FrontProductController::class, 'show'])->name('product.show');
+Route::get('/page/{slug}', [FrontendPageController::class, 'show'])->name('page.show');
 
 // Shopping Cart & Live Drawer APIs
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -221,6 +224,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
 
     // 8. Landing Page & Campaign Builder
     Route::resource('landing-pages', LandingPageController::class);
+
+    // 8.5 Custom CMS Pages & Policies (Header & Footer Dynamic Management)
+    Route::post('/pages/{page}/toggle', [PageController::class, 'toggleStatus'])->name('pages.toggle');
+    Route::resource('pages', PageController::class);
 
     // 9. Fraud & Risk Check
     Route::get('/fraud-checks', [FraudCheckController::class, 'index'])->name('fraud.index');

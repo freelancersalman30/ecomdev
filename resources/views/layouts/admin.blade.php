@@ -228,6 +228,15 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Landing Page Builder</span>
                 </a>
 
+                <!-- Custom Pages & Policies -->
+                <a href="{{ route('admin.pages.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.pages.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="file-text" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
+                        <span>Custom Pages & Policies</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">Pages</span>
+                    </span>
+                </a>
+
                 <!-- Fraud & Risk Check -->
                 <a href="{{ route('admin.fraud.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.fraud.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-alert" class="w-5 h-5 flex-shrink-0 text-red-400"></i>

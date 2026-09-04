@@ -288,6 +288,11 @@
                     <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i>
                     <span>Warranty Check</span>
                 </a>
+                @foreach(\App\Models\Page::header()->get() as $topPage)
+                <a href="{{ route('page.show', $topPage->slug) }}" class="hover:text-amber-300 transition">
+                    {{ $topPage->title }}
+                </a>
+                @endforeach
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-emerald-400 transition flex items-center gap-1 font-semibold text-emerald-400">
                     <i data-lucide="layout-dashboard" class="w-3 h-3"></i>
                     <span>Admin Panel</span>
@@ -652,7 +657,7 @@
                         @endif
 
                         <div class="pt-2 border-t border-slate-100">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Quick Services</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Quick Services & Policies</div>
                             
                             <a href="{{ route('order.track') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
                                 <i data-lucide="map-pin" class="w-4 h-4 text-daraz-orange"></i>
@@ -663,6 +668,13 @@
                                 <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
                                 <span>Warranty Verification</span>
                             </a>
+
+                            @foreach(\App\Models\Page::header()->get() as $mobPage)
+                            <a href="{{ route('page.show', $mobPage->slug) }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 font-semibold">
+                                <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i>
+                                <span>{{ $mobPage->title }}</span>
+                            </a>
+                            @endforeach
 
                             <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-emerald-700 font-bold hover:bg-emerald-50">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-600"></i>
@@ -942,6 +954,9 @@
                 <ul class="space-y-1.5 text-xs">
                     <li><a href="{{ route('order.track') }}" class="hover:text-daraz-orange transition">Track My Order</a></li>
                     <li><a href="{{ route('warranty.verify') }}" class="hover:text-daraz-orange transition">Warranty Verification</a></li>
+                    @foreach(\App\Models\Page::footer()->get() as $fPage)
+                    <li><a href="{{ route('page.show', $fPage->slug) }}" class="hover:text-emerald-400 transition">{{ $fPage->title }}</a></li>
+                    @endforeach
                     <li><a href="{{ route('cart.index') }}" class="hover:text-daraz-orange transition">My Shopping Cart</a></li>
                     <li><a href="{{ route('shop.index') }}" class="hover:text-daraz-orange transition">Special Flash Offers</a></li>
                     <li><a href="{{ route('customer.dashboard') }}" class="hover:text-daraz-orange transition">Customer Portal</a></li>
