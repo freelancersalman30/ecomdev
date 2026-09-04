@@ -60,11 +60,11 @@
         </form>
 
         <!-- Bulk Action Form -->
-        <div x-show="selectedOrders.length > 0" class="flex items-center gap-2 w-full sm:w-auto bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+        <div x-show="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 w-full sm:w-auto bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800">
             <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300"><span x-text="selectedOrders.length"></span> selected</span>
             <form method="POST" action="{{ route('admin.orders.bulk.status') }}" class="flex items-center gap-2">
                 @csrf
-                <template x-for="id in selectedOrders" :key="id">
+                <template x-for="id in selectedOrders" :key="'status-'+id">
                     <input type="hidden" name="order_ids[]" :value="id">
                 </template>
                 <select name="status" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">
@@ -74,8 +74,19 @@
                     <option value="completed">Mark Completed</option>
                     <option value="cancelled">Mark Cancelled</option>
                 </select>
-                <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold">
+                <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition">
                     Apply
+                </button>
+            </form>
+            <div class="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
+            <form method="POST" action="{{ route('admin.orders.bulk.delete') }}" onsubmit="return confirm('Are you sure you want to delete the selected orders? This action will restore product inventory and recalculate customer statistics.')" class="flex items-center">
+                @csrf
+                <template x-for="id in selectedOrders" :key="'del-'+id">
+                    <input type="hidden" name="order_ids[]" :value="id">
+                </template>
+                <button type="submit" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Delete Selected</span>
                 </button>
             </form>
         </div>
@@ -178,6 +189,13 @@
                             <a href="{{ route('admin.orders.packing_slip', $order->id) }}" target="_blank" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800 inline-flex" title="Packing Slip">
                                 <i data-lucide="package" class="w-4 h-4"></i>
                             </a>
+                            <form method="POST" action="{{ route('admin.orders.destroy', $order->id) }}" onsubmit="return confirm('Are you sure you want to delete order #{{ $order->order_no }}?')" class="inline-flex">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition" title="Delete Order">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     @empty

@@ -32,6 +32,14 @@
                 <i data-lucide="package" class="w-4 h-4"></i>
                 <span>Packing Slip</span>
             </a>
+            <form method="POST" action="{{ route('admin.orders.destroy', $order->id) }}" onsubmit="return confirm('Are you sure you want to delete order #{{ $order->order_no }}? This action will restore product inventory and recalculate customer statistics.')" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Delete Order</span>
+                </button>
+            </form>
         </div>
     </div>
 

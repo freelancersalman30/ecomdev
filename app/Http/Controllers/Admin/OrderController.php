@@ -123,6 +123,52 @@ class OrderController extends Controller
         return redirect()->back()->with('success', count($orders).' orders updated successfully.');
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'order_ids' => 'required|array|min:1',
+            'order_ids.*' => 'exists:orders,id',
+        ]);
+
+        $orders = Order::whereIn('id', $request->order_ids)->get();
+        $count = $orders->count();
+
+        foreach ($orders as $order) {
+            $customer = $order->customer;
+            if (! in_array($order->status, ['cancelled', 'returned'])) {
+                foreach ($order->items as $item) {
+                    $this->inventoryService->restoreStock($item->product_id, $item->variant_id, $item->quantity);
+                }
+            }
+            $order->delete();
+            if ($customer) {
+                $customer->recalculateMetrics();
+            }
+        }
+
+        return redirect()->back()->with('success', "{$count} selected order(s) deleted successfully.");
+    }
+
+    public function destroy(Order $order)
+    {
+        $orderNo = $order->order_no;
+        $customer = $order->customer;
+
+        if (! in_array($order->status, ['cancelled', 'returned'])) {
+            foreach ($order->items as $item) {
+                $this->inventoryService->restoreStock($item->product_id, $item->variant_id, $item->quantity);
+            }
+        }
+
+        $order->delete();
+
+        if ($customer) {
+            $customer->recalculateMetrics();
+        }
+
+        return redirect()->route('admin.orders.index')->with('success', "Order #{$orderNo} deleted successfully.");
+    }
+
     public function bookCourier(Request $request, Order $order)
     {
         $request->validate([

@@ -142,6 +142,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status.update');
     Route::post('/orders/bulk-status', [OrderController::class, 'bulkUpdateStatus'])->name('orders.bulk.status');
+    Route::post('/orders/bulk-delete', [OrderController::class, 'bulkDestroy'])->name('orders.bulk.delete');
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/book-courier', [OrderController::class, 'bookCourier'])->name('orders.courier.book');
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::get('/orders/{order}/packing-slip', [OrderController::class, 'packingSlip'])->name('orders.packing_slip');
