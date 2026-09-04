@@ -822,9 +822,9 @@
         
         <!-- Trust Guarantee Top Strip -->
         <div class="border-b border-slate-800/80 py-8 bg-slate-900/60">
-            <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-daraz-orange/10 text-daraz-orange flex items-center justify-center flex-shrink-0">
+            <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="flex items-center justify-center sm:justify-start gap-3 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-daraz-orange/10 text-daraz-orange flex items-center justify-center shrink-0">
                         <i data-lucide="truck" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -833,8 +833,8 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                <div class="flex items-center justify-center sm:justify-start gap-3 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                         <i data-lucide="shield-check" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -843,8 +843,8 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center flex-shrink-0">
+                <div class="flex items-center justify-center sm:justify-start gap-3 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
                         <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -853,8 +853,8 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center flex-shrink-0">
+                <div class="flex items-center justify-center sm:justify-start gap-3 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
                         <i data-lucide="headphones" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -866,12 +866,12 @@
         </div>
 
         <!-- Links Columns -->
-        <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="space-y-3">
-                <div class="text-lg font-black text-white flex items-center">
+        <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+            <div class="space-y-3 flex flex-col items-center md:items-start text-center md:text-left">
+                <div class="text-lg font-black text-white flex items-center justify-center md:justify-start">
                     DREAMERS<span class="text-daraz-orange ml-1">PCB</span>
                 </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
+                <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
                     {{ \App\Models\Setting::get('footer_about', "Bangladesh's enterprise online superstore for hardware developers, robotics researchers, and electronics enthusiasts.") }}
                 </p>
                 <div class="text-xs text-slate-300 space-y-1">
@@ -881,7 +881,7 @@
                 </div>
 
                 <!-- Social Icons -->
-                <div class="flex items-center gap-3 pt-2 text-slate-400">
+                <div class="flex items-center justify-center md:justify-start gap-3 pt-2 text-slate-400">
                     @if(\App\Models\Setting::get('footer_facebook_url'))
                     <a href="{{ \App\Models\Setting::get('footer_facebook_url') }}" target="_blank" class="hover:text-blue-400 transition" title="Facebook">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -924,7 +924,7 @@
                     ];
                 }
             @endphp
-            <div class="space-y-2">
+            <div class="space-y-2 flex flex-col items-center md:items-start text-center md:text-left">
                 <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">Popular Categories</h4>
                 <ul class="space-y-1.5 text-xs">
                     @foreach($footerCategories as $fCat)
@@ -937,7 +937,7 @@
                 </ul>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2 flex flex-col items-center md:items-start text-center md:text-left">
                 <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">Customer Care & Policies</h4>
                 <ul class="space-y-1.5 text-xs">
                     <li><a href="{{ route('order.track') }}" class="hover:text-daraz-orange transition">Track My Order</a></li>
@@ -954,9 +954,9 @@
                 </ul>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 flex flex-col items-center md:items-start text-center md:text-left">
                 <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">Accepted Payment Methods</h4>
-                <div class="flex flex-wrap gap-2 pt-1">
+                <div class="flex flex-wrap justify-center md:justify-start gap-2 pt-1">
                     <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-bold text-pink-400">bKash</span>
                     <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-bold text-amber-400">Nagad</span>
                     <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-bold text-emerald-400">Cash On Delivery</span>
