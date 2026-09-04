@@ -142,6 +142,78 @@
                 @endforeach
             </div>
 
+            <!-- Promo Coupon Card -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i data-lucide="ticket-percent" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Have a Promo Coupon?</span>
+                    </span>
+                    <span x-show="appliedCoupon" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        Applied
+                    </span>
+                </div>
+
+                <!-- Input when NO coupon applied -->
+                <div x-show="!appliedCoupon" class="space-y-2">
+                    <div class="flex gap-2">
+                        <input 
+                            type="text" 
+                            x-model="couponCode" 
+                            @keydown.enter.prevent="applyCouponCode()"
+                            placeholder="Enter coupon code..." 
+                            class="flex-1 px-3.5 py-2 text-xs font-mono font-bold uppercase rounded-xl border border-slate-200 bg-white placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-daraz-orange/20 focus:border-daraz-orange">
+                        <button 
+                            type="button" 
+                            @click="applyCouponCode()" 
+                            :disabled="isApplyingCoupon || !couponCode.trim()"
+                            :class="(isApplyingCoupon || !couponCode.trim()) ? 'opacity-50 cursor-not-allowed bg-slate-800' : 'bg-slate-900 hover:bg-slate-800 active:scale-95'"
+                            class="px-4 py-2 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0">
+                            <span x-show="!isApplyingCoupon">Apply</span>
+                            <span x-show="isApplyingCoupon" class="flex items-center gap-1">
+                                <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                                <span>...</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Badge when coupon IS applied -->
+                <div x-show="appliedCoupon" class="flex items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                            <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="truncate">
+                            <div class="font-extrabold text-emerald-950 font-mono flex items-center gap-1">
+                                <span x-text="appliedCoupon ? appliedCoupon.code : ''"></span>
+                                <span class="text-[10px] font-semibold text-emerald-700 font-sans" x-text="appliedCoupon && appliedCoupon.discount_type === 'percentage' ? '(' + appliedCoupon.discount_value + '% OFF)' : '(FLAT DISCOUNT)'"></span>
+                            </div>
+                            <div class="text-[11px] text-emerald-700 font-bold">
+                                Saved -৳<span x-text="discount.toFixed(2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button 
+                        type="button" 
+                        @click="removeCouponCode()" 
+                        :disabled="isRemovingCoupon"
+                        class="text-xs text-rose-600 hover:text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-50 transition flex items-center gap-1 shrink-0">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Remove</span>
+                    </button>
+                </div>
+
+                <!-- Live Message Notification -->
+                <div x-show="couponMessage" :class="couponSuccess ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-rose-700 bg-rose-50 border-rose-200'" class="p-2.5 rounded-xl border text-[11px] font-semibold flex items-center gap-2">
+                    <i :data-lucide="couponSuccess ? 'check-circle' : 'alert-circle'" class="w-3.5 h-3.5 shrink-0"></i>
+                    <span x-text="couponMessage"></span>
+                </div>
+            </div>
+
             <!-- Financial Calculation Breakdown -->
             <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
                 <div class="flex justify-between text-slate-600">
@@ -149,12 +221,10 @@
                     <span class="font-bold text-slate-900 code-font">৳{{ number_format($subtotal, 2) }}</span>
                 </div>
 
-                @if($discount > 0)
-                <div class="flex justify-between text-emerald-600 font-bold">
-                    <span>Coupon Discount ({{ $coupon['code'] }}):</span>
-                    <span class="code-font">-৳{{ number_format($discount, 2) }}</span>
+                <div x-show="discount > 0" class="flex justify-between text-emerald-600 font-bold">
+                    <span>Coupon Discount (<span x-text="appliedCoupon ? appliedCoupon.code : ''"></span>):</span>
+                    <span class="code-font">-৳<span x-text="discount.toFixed(2)"></span></span>
                 </div>
-                @endif
 
                 <div class="flex justify-between text-slate-600">
                     <span>Shipping Fee:</span>
@@ -163,7 +233,7 @@
 
                 <div class="flex justify-between text-base font-black text-slate-900 pt-3 border-t border-slate-200">
                     <span>Total Amount Payable:</span>
-                    <span class="text-daraz-orange code-font text-xl">৳<span x-text="(subtotal - discount + shippingCharge).toFixed(2)"></span></span>
+                    <span class="text-daraz-orange code-font text-xl">৳<span x-text="Math.max(0, subtotal - discount + shippingCharge).toFixed(2)"></span></span>
                 </div>
             </div>
 
@@ -193,7 +263,100 @@
             discount: {{ (float) $discount }},
             shippingArea: 'inside_dhaka',
             shippingCharge: {{ (float) $insideDhaka }},
-            paymentMethod: 'cash_on_delivery'
+            paymentMethod: 'cash_on_delivery',
+            couponCode: '',
+            appliedCoupon: @json($coupon),
+            couponMessage: '',
+            couponSuccess: false,
+            isApplyingCoupon: false,
+            isRemovingCoupon: false,
+
+            init() {
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                });
+            },
+
+            async applyCouponCode() {
+                const code = this.couponCode.trim();
+                if (!code) return;
+
+                this.isApplyingCoupon = true;
+                this.couponMessage = '';
+
+                try {
+                    const res = await fetch(`{{ route('cart.coupon.apply') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ code: code })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        this.appliedCoupon = data.coupon;
+                        this.discount = parseFloat(data.coupon.calculated_discount || 0);
+                        this.couponSuccess = true;
+                        this.couponMessage = data.message;
+                        this.couponCode = '';
+                    } else {
+                        this.couponSuccess = false;
+                        this.couponMessage = data.message || 'Invalid or expired coupon code.';
+                    }
+                } catch (error) {
+                    this.couponSuccess = false;
+                    this.couponMessage = 'Failed to apply coupon. Please check your connection.';
+                } finally {
+                    this.isApplyingCoupon = false;
+                    this.$nextTick(() => {
+                        if (window.lucide) {
+                            window.lucide.createIcons();
+                        }
+                    });
+                }
+            },
+
+            async removeCouponCode() {
+                this.isRemovingCoupon = true;
+                this.couponMessage = '';
+
+                try {
+                    const res = await fetch(`{{ route('cart.coupon.remove') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        this.appliedCoupon = null;
+                        this.discount = 0;
+                        this.couponSuccess = true;
+                        this.couponMessage = 'Coupon removed successfully.';
+                        this.couponCode = '';
+                    }
+                } catch (error) {
+                    this.couponSuccess = false;
+                    this.couponMessage = 'Failed to remove coupon.';
+                } finally {
+                    this.isRemovingCoupon = false;
+                    this.$nextTick(() => {
+                        if (window.lucide) {
+                            window.lucide.createIcons();
+                        }
+                    });
+                }
+            }
         };
     }
 </script>
