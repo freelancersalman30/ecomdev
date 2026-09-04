@@ -218,7 +218,7 @@
                         </div>
                         <i x-show="sidebarOpen" data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform"></i>
                     </button>
-                    <div x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
+                    <div x-cloak x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
                         <a href="{{ route('admin.products.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.products.index') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">All Products & Tech Specs</a>
                         <a href="{{ route('admin.products.create') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.products.create') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Add New Product</a>
                         <a href="{{ route('admin.categories.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.categories.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Categories (3-Tier)</a>
@@ -306,7 +306,7 @@
                             <i data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform text-slate-400"></i>
                         </div>
                     </button>
-                    <div x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
+                    <div x-cloak x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
                         <a href="{{ route('admin.reports.orders') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ (request()->routeIs('admin.reports.orders') || (request()->routeIs('admin.reports.index') && request('type', 'sales') === 'sales')) ? 'text-emerald-400 font-semibold bg-slate-800' : 'hover:text-white text-slate-400' }}">
                             <span>Order Report</span>
                             <i data-lucide="shopping-bag" class="w-3.5 h-3.5 opacity-60"></i>
@@ -341,7 +341,7 @@
                         </div>
                         <i x-show="sidebarOpen" data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform"></i>
                     </button>
-                    <div x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
+                    <div x-cloak x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
                         <a href="{{ route('admin.users.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.users.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Admin Users</a>
                         <a href="{{ route('admin.roles.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.roles.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Roles & Permissions (RBAC)</a>
                         <a href="{{ route('admin.customers.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.customers.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Customers Directory</a>
@@ -485,7 +485,8 @@
                             <span class="hidden xs:inline sm:inline">Reports</span>
                             <i data-lucide="chevron-down" :class="{ 'rotate-180': reportsDropdown }" class="w-3.5 h-3.5 transition-transform text-slate-400"></i>
                         </button>
-                        <div x-show="reportsDropdown" 
+                        <div x-cloak
+                             x-show="reportsDropdown" 
                              x-transition:enter="transition ease-out duration-150"
                              x-transition:enter-start="opacity-0 scale-95"
                              x-transition:enter-end="opacity-100 scale-100"
