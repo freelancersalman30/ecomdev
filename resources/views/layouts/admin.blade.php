@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ darkMode: false, sidebarOpen: true, mobileSidebarOpen: false }" :class="{ 'dark': darkMode }">
+<html lang="en" x-data="{ 
+    darkMode: localStorage.getItem('admin_dark_mode') === 'true' || (localStorage.getItem('admin_dark_mode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches), 
+    sidebarOpen: true, 
+    mobileSidebarOpen: false,
+    toggleDarkMode() {
+        this.darkMode = !this.darkMode;
+        localStorage.setItem('admin_dark_mode', this.darkMode ? 'true' : 'false');
+        if (this.darkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }
+}" :class="{ 'dark': darkMode }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard') - {{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</title>
+
+    <!-- Immediate Dark Mode Hydration Script (Zero Flash on Reload) -->
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('admin_dark_mode');
+                if (saved === 'true' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
 
     @if(\App\Models\Setting::get('site_favicon'))
     <link rel="icon" href="{{ asset(\App\Models\Setting::get('site_favicon')) }}">
@@ -509,7 +536,7 @@
                     </div>
 
                     <!-- Dark / Light Toggle -->
-                    <button @click="darkMode = !darkMode" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Theme">
+                    <button @click="toggleDarkMode()" type="button" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" title="Toggle Theme">
                         <i data-lucide="sun" x-show="darkMode" class="w-5 h-5 text-amber-400"></i>
                         <i data-lucide="moon" x-show="!darkMode" class="w-5 h-5 text-slate-600"></i>
                     </button>

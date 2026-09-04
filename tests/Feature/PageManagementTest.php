@@ -13,6 +13,8 @@ class PageManagementTest extends TestCase
     {
         parent::setUp();
 
+        Page::query()->delete();
+
         $admin = User::firstOrCreate(
             ['email' => 'admin@dreamerspcb.com'],
             ['name' => 'Dreamers Admin', 'password' => Hash::make('password')]
