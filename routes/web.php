@@ -241,6 +241,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     // 11. Accounts & Funds
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
+    Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::post('/accounts/{account}/toggle', [AccountController::class, 'toggleStatus'])->name('accounts.toggle');
+    Route::delete('/accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
     Route::post('/accounts/deposit', [AccountController::class, 'deposit'])->name('accounts.deposit');
     Route::post('/accounts/transfer', [AccountController::class, 'transfer'])->name('accounts.transfer');
 

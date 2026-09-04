@@ -157,4 +157,53 @@ class AccountController extends Controller
 
         return redirect()->back()->with('success', 'Fund transfer completed successfully!');
     }
+
+    public function update(Request $request, Account $account)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'account_type' => 'required|in:cash,bank,mobile_banking',
+            'account_number' => 'nullable|string|max:50',
+            'bank_name' => 'nullable|string|max:100',
+            'branch_name' => 'nullable|string|max:100',
+            'is_default' => 'nullable',
+            'is_active' => 'nullable',
+        ]);
+
+        $isDefault = $request->boolean('is_default');
+        if ($isDefault) {
+            Account::where('id', '!=', $account->id)->update(['is_default' => false]);
+        }
+
+        $account->update([
+            'name' => $request->name,
+            'account_type' => $request->account_type,
+            'account_number' => $request->account_number,
+            'bank_name' => $request->bank_name,
+            'branch_name' => $request->branch_name,
+            'is_default' => $isDefault,
+            'is_active' => $request->has('is_active') ? $request->boolean('is_active') : $account->is_active,
+        ]);
+
+        return redirect()->back()->with('success', 'Account updated successfully!');
+    }
+
+    public function toggleStatus(Account $account)
+    {
+        $account->update([
+            'is_active' => ! $account->is_active,
+        ]);
+
+        $statusText = $account->is_active ? 'activated' : 'deactivated';
+
+        return redirect()->back()->with('success', "Account '{$account->name}' {$statusText} successfully!");
+    }
+
+    public function destroy(Account $account)
+    {
+        $accountName = $account->name;
+        $account->delete();
+
+        return redirect()->back()->with('success', "Account '{$accountName}' deleted successfully!");
+    }
 }
