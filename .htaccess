@@ -3,6 +3,11 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    # Disable LiteSpeed cache for dynamic forms/sessions
+    <IfModule LiteSpeed>
+        CacheDisable
+    </IfModule>
+
     RewriteEngine On
 
     # Block direct web access to sensitive environment, git, and configuration files

@@ -19,7 +19,11 @@ class CustomerAuthController extends Controller
             return redirect()->route('customer.dashboard');
         }
 
-        return view('customer.auth.login');
+        return response()
+            ->view('customer.auth.login')
+            ->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sun, 02 Jan 1990 00:00:00 GMT');
     }
 
     /**
@@ -76,7 +80,11 @@ class CustomerAuthController extends Controller
             return redirect()->route('customer.dashboard');
         }
 
-        return view('customer.auth.register');
+        return response()
+            ->view('customer.auth.register')
+            ->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sun, 02 Jan 1990 00:00:00 GMT');
     }
 
     /**
