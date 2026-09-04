@@ -65,6 +65,10 @@ class DeliveryController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Schema::hasTable('delivery_methods')) {
+            return redirect()->back()->with('error', "Database table 'delivery_methods' not found. Please run 'php artisan migrate'.");
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:100|unique:delivery_methods,code',
@@ -116,6 +120,10 @@ class DeliveryController extends Controller
      */
     public function update(Request $request, DeliveryMethod $deliveryMethod)
     {
+        if (! Schema::hasTable('delivery_methods')) {
+            return redirect()->back()->with('error', "Database table 'delivery_methods' not found. Please run 'php artisan migrate'.");
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100|unique:delivery_methods,code,'.$deliveryMethod->id,

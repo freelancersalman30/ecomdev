@@ -5,11 +5,14 @@ namespace Tests\Feature;
 use App\Models\DeliveryMethod;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminDeliveryManagementTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -28,7 +31,7 @@ class AdminDeliveryManagementTest extends TestCase
     {
         $response = $this->get('/admin/delivery');
         $response->assertStatus(200);
-        $response->assertSee('Delivery Zones & Shipping Charges');
+        $response->assertSee('Delivery Zones & Shipping Charges', false);
     }
 
     /**
