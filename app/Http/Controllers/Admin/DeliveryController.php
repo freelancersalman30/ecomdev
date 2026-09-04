@@ -7,6 +7,7 @@ use App\Models\ApiSetting;
 use App\Models\DeliveryMethod;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class DeliveryController extends Controller
@@ -16,7 +17,14 @@ class DeliveryController extends Controller
      */
     public function index()
     {
-        $deliveryMethods = DeliveryMethod::orderBy('sort_order')->orderBy('id')->get();
+        $deliveryMethods = collect();
+        if (Schema::hasTable('delivery_methods')) {
+            try {
+                $deliveryMethods = DeliveryMethod::orderBy('sort_order')->orderBy('id')->get();
+            } catch (\Throwable $e) {
+                $deliveryMethods = collect();
+            }
+        }
 
         // Summary Statistics
         $totalZones = $deliveryMethods->count();

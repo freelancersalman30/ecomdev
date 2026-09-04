@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class CheckoutController extends Controller
 {
@@ -40,8 +41,16 @@ class CheckoutController extends Controller
         $outsideDhaka = (float) ($settings['outside_dhaka_charge'] ?? 130);
         $globalFreeThreshold = ! empty($settings['free_shipping_threshold']) ? (float) $settings['free_shipping_threshold'] : null;
 
-        // Fetch active delivery methods from database
-        $deliveryMethods = DeliveryMethod::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+        // Fetch active delivery methods from database safely
+        $deliveryMethods = collect();
+        if (Schema::hasTable('delivery_methods')) {
+            try {
+                $deliveryMethods = DeliveryMethod::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+            } catch (\Throwable $e) {
+                $deliveryMethods = collect();
+            }
+        }
+
         if ($deliveryMethods->isEmpty()) {
             $deliveryMethods = collect([
                 new DeliveryMethod([
@@ -110,8 +119,15 @@ class CheckoutController extends Controller
         $settings = Setting::pluck('value', 'key')->toArray();
         $globalFreeThreshold = ! empty($settings['free_shipping_threshold']) ? (float) $settings['free_shipping_threshold'] : null;
 
-        // Calculate dynamic delivery charge
-        $selectedMethod = DeliveryMethod::where('code', $request->shipping_area)->where('is_active', true)->first();
+        // Calculate dynamic delivery charge safely
+        $selectedMethod = null;
+        if (Schema::hasTable('delivery_methods')) {
+            try {
+                $selectedMethod = DeliveryMethod::where('code', $request->shipping_area)->where('is_active', true)->first();
+            } catch (\Throwable $e) {
+                $selectedMethod = null;
+            }
+        }
 
         if ($globalFreeThreshold && $subtotal >= $globalFreeThreshold) {
             $shippingCharge = 0.0;
