@@ -75,7 +75,7 @@
                     </select>
                 </div>
 
-                <div x-show="recipientType === 'custom_numbers'" class="space-y-1">
+                <div x-cloak x-show="recipientType === 'custom_numbers'" class="space-y-1">
                     <label class="block text-xs font-semibold text-slate-500">Enter Mobile Numbers (e.g. 01711223344, 01899887766...)</label>
                     <textarea name="custom_numbers" rows="2" placeholder="01711223344, 01899887766, 01900112233..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none"></textarea>
                 </div>
