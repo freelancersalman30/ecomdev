@@ -165,11 +165,17 @@
         .carousel-track {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
         }
-        .carousel-card {
-            scroll-snap-align: start;
-            scroll-snap-stop: normal;
+        .carousel-track img {
+            -webkit-user-drag: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        .carousel-track a {
+            -webkit-user-drag: none;
         }
     </style>
     @stack('styles')
@@ -1118,7 +1124,7 @@
             };
         }
 
-        // Global Auto-Sliding Smooth Product Carousel System
+        // Global Auto-Sliding Smooth Product Carousel System with Press & Slide gestures
         function productCarousel(options = {}) {
             return {
                 interval: options.interval || 3200,
@@ -1127,13 +1133,28 @@
                 isPaused: false,
                 timer: null,
                 isDragging: false,
+                hasDragged: false,
                 startX: 0,
                 scrollStart: 0,
+                dragThreshold: 6,
 
                 init() {
                     if (this.autoplay) {
                         this.start();
                     }
+
+                    // Window-level safety listeners to ensure drag ends cleanly outside element bounds
+                    window.addEventListener('mouseup', () => {
+                        if (this.isDragging) {
+                            this.onMouseUp();
+                        }
+                    });
+
+                    window.addEventListener('mousemove', (e) => {
+                        if (this.isDragging) {
+                            this.onMouseMove(e);
+                        }
+                    });
                 },
 
                 start() {
@@ -1153,7 +1174,7 @@
                 },
 
                 resume() {
-                    if (this.pauseOnHover) {
+                    if (this.pauseOnHover && !this.isDragging) {
                         this.isPaused = false;
                     }
                 },
@@ -1161,7 +1182,7 @@
                 getCardStep() {
                     const track = this.$refs.track;
                     if (!track) return 220;
-                    const card = track.querySelector(':scope > div');
+                    const card = track.querySelector(':scope > div, :scope > a, :scope > article');
                     return card ? (card.offsetWidth + 16) : 220;
                 },
 
@@ -1192,11 +1213,15 @@
                 },
 
                 onMouseDown(e) {
+                    if (e.button !== 0) return;
                     const track = this.$refs.track;
                     if (!track) return;
                     this.isDragging = true;
-                    this.startX = e.pageX - track.offsetLeft;
+                    this.hasDragged = false;
+                    this.startX = e.pageX;
                     this.scrollStart = track.scrollLeft;
+                    track.style.scrollBehavior = 'auto';
+                    track.style.cursor = 'grabbing';
                     this.pause();
                 },
 
@@ -1204,16 +1229,68 @@
                     if (!this.isDragging) return;
                     const track = this.$refs.track;
                     if (!track) return;
-                    e.preventDefault();
-                    const x = e.pageX - track.offsetLeft;
-                    const walk = (x - this.startX) * 1.3;
+                    const walk = (e.pageX - this.startX) * 1.35;
+                    if (Math.abs(walk) > this.dragThreshold) {
+                        this.hasDragged = true;
+                    }
                     track.scrollLeft = this.scrollStart - walk;
                 },
 
                 onMouseUp() {
                     if (this.isDragging) {
                         this.isDragging = false;
+                        const track = this.$refs.track;
+                        if (track) {
+                            track.style.scrollBehavior = 'smooth';
+                            track.style.cursor = 'grab';
+                        }
+                        setTimeout(() => {
+                            this.hasDragged = false;
+                        }, 80);
                         this.resume();
+                    }
+                },
+
+                onTouchStart(e) {
+                    const track = this.$refs.track;
+                    if (!track || !e.touches || !e.touches[0]) return;
+                    this.isDragging = true;
+                    this.hasDragged = false;
+                    this.startX = e.touches[0].pageX;
+                    this.scrollStart = track.scrollLeft;
+                    track.style.scrollBehavior = 'auto';
+                    this.pause();
+                },
+
+                onTouchMove(e) {
+                    if (!this.isDragging || !e.touches || !e.touches[0]) return;
+                    const track = this.$refs.track;
+                    if (!track) return;
+                    const walk = (e.touches[0].pageX - this.startX) * 1.25;
+                    if (Math.abs(walk) > this.dragThreshold) {
+                        this.hasDragged = true;
+                    }
+                    track.scrollLeft = this.scrollStart - walk;
+                },
+
+                onTouchEnd() {
+                    if (this.isDragging) {
+                        this.isDragging = false;
+                        const track = this.$refs.track;
+                        if (track) {
+                            track.style.scrollBehavior = 'smooth';
+                        }
+                        setTimeout(() => {
+                            this.hasDragged = false;
+                        }, 80);
+                        this.resume();
+                    }
+                },
+
+                handleClickCapture(e) {
+                    if (this.hasDragged) {
+                        e.preventDefault();
+                        e.stopPropagation();
                     }
                 }
             };
