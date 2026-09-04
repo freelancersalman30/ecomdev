@@ -54,23 +54,53 @@
 
                     <!-- Delivery Area Selector with Live Delivery Fee Update -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-2">Select Delivery Location & Shipping Charge *</label>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-bold text-slate-700">Select Delivery Location & Shipping Charge *</label>
+                            @if(!empty($globalFreeThreshold))
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+                                <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i>
+                                <span>Free delivery on orders &ge; ৳{{ number_format($globalFreeThreshold, 0) }}</span>
+                            </span>
+                            @endif
+                        </div>
+                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <label class="p-3.5 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="shippingArea === 'inside_dhaka' ? 'border-daraz-orange bg-daraz-light text-slate-900' : 'border-slate-200 text-slate-700'">
-                                <div class="flex items-center gap-2">
-                                    <input type="radio" name="shipping_area" value="inside_dhaka" :checked="shippingArea === 'inside_dhaka'" @change="shippingArea = 'inside_dhaka'; shippingCharge = {{ $insideDhaka }}" class="text-daraz-orange focus:ring-daraz-orange">
-                                    <span class="text-xs font-bold">Inside Dhaka ({{ \App\Models\Setting::get('inside_dhaka_estimate', '1-2 Days') }})</span>
+                            @foreach($deliveryMethods as $method)
+                            <label 
+                                class="p-3.5 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" 
+                                :class="shippingArea === '{{ $method->code }}' ? 'border-daraz-orange bg-daraz-light text-slate-900 shadow-sm' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <input 
+                                        type="radio" 
+                                        name="shipping_area" 
+                                        value="{{ $method->code }}" 
+                                        :checked="shippingArea === '{{ $method->code }}'" 
+                                        @change="selectDeliveryMethod('{{ $method->code }}', {{ (float) $method->charge }}, {{ $method->min_order_for_free_delivery ? (float) $method->min_order_for_free_delivery : 'null' }})" 
+                                        class="text-daraz-orange focus:ring-daraz-orange">
+                                    <div class="truncate">
+                                        <div class="text-xs font-bold truncate flex items-center gap-1">
+                                            <span>{{ $method->name }}</span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                                            <i data-lucide="clock" class="w-3 h-3 text-amber-500"></i>
+                                            <span>{{ $method->estimated_days }}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="font-bold code-font text-xs">৳{{ $insideDhaka }}</span>
-                            </label>
-
-                            <label class="p-3.5 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="shippingArea === 'outside_dhaka' ? 'border-daraz-orange bg-daraz-light text-slate-900' : 'border-slate-200 text-slate-700'">
-                                <div class="flex items-center gap-2">
-                                    <input type="radio" name="shipping_area" value="outside_dhaka" :checked="shippingArea === 'outside_dhaka'" @change="shippingArea = 'outside_dhaka'; shippingCharge = {{ $outsideDhaka }}" class="text-daraz-orange focus:ring-daraz-orange">
-                                    <span class="text-xs font-bold">Outside Dhaka ({{ \App\Models\Setting::get('outside_dhaka_estimate', '2-4 Days') }})</span>
+                                <div class="text-right flex-shrink-0 ml-2">
+                                    <template x-if="isMethodFree('{{ $method->code }}', {{ (float) $method->charge }}, {{ $method->min_order_for_free_delivery ? (float) $method->min_order_for_free_delivery : 'null' }})">
+                                        <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-black text-xs uppercase">
+                                            FREE
+                                        </span>
+                                    </template>
+                                    <template x-if="!isMethodFree('{{ $method->code }}', {{ (float) $method->charge }}, {{ $method->min_order_for_free_delivery ? (float) $method->min_order_for_free_delivery : 'null' }})">
+                                        <span class="font-bold code-font text-xs">
+                                            ৳{{ number_format($method->charge, 2) }}
+                                        </span>
+                                    </template>
                                 </div>
-                                <span class="font-bold code-font text-xs">৳{{ $outsideDhaka }}</span>
                             </label>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -261,8 +291,9 @@
         return {
             subtotal: {{ (float) $subtotal }},
             discount: {{ (float) $discount }},
-            shippingArea: 'inside_dhaka',
-            shippingCharge: {{ (float) $insideDhaka }},
+            shippingArea: '{{ $defaultMethod->code ?? 'inside_dhaka' }}',
+            shippingCharge: {{ (float) ($defaultMethod ? ($globalFreeThreshold && $subtotal >= $globalFreeThreshold ? 0 : $defaultMethod->getEffectiveCharge($subtotal)) : $insideDhaka) }},
+            globalFreeThreshold: {{ $globalFreeThreshold ? (float) $globalFreeThreshold : 'null' }},
             paymentMethod: 'cash_on_delivery',
             couponCode: '',
             appliedCoupon: @json($coupon),
@@ -270,6 +301,25 @@
             couponSuccess: false,
             isApplyingCoupon: false,
             isRemovingCoupon: false,
+
+            isMethodFree(code, charge, minOrder) {
+                if (this.globalFreeThreshold && this.subtotal >= this.globalFreeThreshold) {
+                    return true;
+                }
+                if (minOrder && this.subtotal >= minOrder) {
+                    return true;
+                }
+                return charge <= 0;
+            },
+
+            selectDeliveryMethod(code, charge, minOrder) {
+                this.shippingArea = code;
+                if (this.isMethodFree(code, charge, minOrder)) {
+                    this.shippingCharge = 0;
+                } else {
+                    this.shippingCharge = parseFloat(charge);
+                }
+            },
 
             init() {
                 this.$nextTick(() => {

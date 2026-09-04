@@ -148,6 +148,15 @@
                     <span x-show="sidebarOpen" class="whitespace-nowrap">Orders Management</span>
                 </a>
 
+                <!-- Delivery & Shipping Control -->
+                <a href="{{ route('admin.delivery.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.delivery.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
+                    <i data-lucide="truck" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
+                        <span>Delivery & Charges</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">Rates</span>
+                    </span>
+                </a>
+
                 <!-- Product Warranty Verification -->
                 <a href="{{ route('admin.warranties.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.warranties.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-check" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DeliveryController;
 use App\Http\Controllers\Admin\EmailSettingController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\FooterSettingController;
@@ -156,6 +157,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::put('/warranties/{warranty}', [AdminWarrantyController::class, 'update'])->name('warranties.update');
     Route::get('/warranties/verify', [AdminWarrantyController::class, 'verify'])->name('warranties.verify');
     Route::delete('/warranties/{warranty}', [AdminWarrantyController::class, 'destroy'])->name('warranties.destroy');
+
+    // 3.6 Delivery & Shipping Management (CRUD & Rates)
+    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+    Route::post('/delivery', [DeliveryController::class, 'store'])->name('delivery.store');
+    Route::put('/delivery/{deliveryMethod}', [DeliveryController::class, 'update'])->name('delivery.update');
+    Route::post('/delivery/{deliveryMethod}/toggle', [DeliveryController::class, 'toggleStatus'])->name('delivery.toggle');
+    Route::post('/delivery/{deliveryMethod}/default', [DeliveryController::class, 'setDefault'])->name('delivery.default');
+    Route::delete('/delivery/{deliveryMethod}', [DeliveryController::class, 'destroy'])->name('delivery.destroy');
+    Route::post('/delivery/global-rules', [DeliveryController::class, 'updateGlobalRules'])->name('delivery.global-rules');
 
     // 4. Product & Catalog Management
     Route::get('products/layout', [ProductLayoutController::class, 'index'])->name('products.layout');

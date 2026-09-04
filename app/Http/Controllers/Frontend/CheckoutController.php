@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApiSetting;
+use App\Models\DeliveryMethod;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Services\OrderService;
@@ -37,11 +38,48 @@ class CheckoutController extends Controller
         $settings = Setting::pluck('value', 'key')->toArray();
         $insideDhaka = (float) ($settings['inside_dhaka_charge'] ?? 70);
         $outsideDhaka = (float) ($settings['outside_dhaka_charge'] ?? 130);
+        $globalFreeThreshold = ! empty($settings['free_shipping_threshold']) ? (float) $settings['free_shipping_threshold'] : null;
+
+        // Fetch active delivery methods from database
+        $deliveryMethods = DeliveryMethod::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+        if ($deliveryMethods->isEmpty()) {
+            $deliveryMethods = collect([
+                new DeliveryMethod([
+                    'name' => 'Inside Dhaka',
+                    'code' => 'inside_dhaka',
+                    'charge' => $insideDhaka,
+                    'estimated_days' => $settings['inside_dhaka_estimate'] ?? '1-2 Days',
+                    'is_active' => true,
+                    'is_default' => true,
+                ]),
+                new DeliveryMethod([
+                    'name' => 'Outside Dhaka',
+                    'code' => 'outside_dhaka',
+                    'charge' => $outsideDhaka,
+                    'estimated_days' => $settings['outside_dhaka_estimate'] ?? '2-4 Days',
+                    'is_active' => true,
+                    'is_default' => false,
+                ]),
+            ]);
+        }
+
+        $defaultMethod = $deliveryMethods->firstWhere('is_default', true) ?? $deliveryMethods->first();
 
         $bkashSetting = ApiSetting::where('provider', 'bkash')->first();
         $bkashActive = (bool) ($bkashSetting?->is_active ?? false);
 
-        return view('frontend.checkout', compact('cart', 'coupon', 'subtotal', 'discount', 'insideDhaka', 'outsideDhaka', 'bkashActive'));
+        return view('frontend.checkout', compact(
+            'cart',
+            'coupon',
+            'subtotal',
+            'discount',
+            'insideDhaka',
+            'outsideDhaka',
+            'deliveryMethods',
+            'defaultMethod',
+            'globalFreeThreshold',
+            'bkashActive'
+        ));
     }
 
     /**
@@ -54,7 +92,7 @@ class CheckoutController extends Controller
             'shipping_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:1000',
             'shipping_city' => 'required|string|max:100',
-            'shipping_area' => 'required|in:inside_dhaka,outside_dhaka',
+            'shipping_area' => 'required|string|max:100',
             'payment_method' => 'required|in:cash_on_delivery,bkash,nagad,bank_transfer',
             'notes' => 'nullable|string|max:500',
         ]);
@@ -67,11 +105,23 @@ class CheckoutController extends Controller
 
         $coupon = session()->get('coupon', null);
         $discount = $coupon ? ($coupon['calculated_discount'] ?? 0) : 0;
+        $subtotal = array_sum(array_column($cart, 'subtotal'));
 
         $settings = Setting::pluck('value', 'key')->toArray();
-        $shippingCharge = $request->shipping_area === 'inside_dhaka'
-            ? (float) ($settings['inside_dhaka_charge'] ?? 70)
-            : (float) ($settings['outside_dhaka_charge'] ?? 130);
+        $globalFreeThreshold = ! empty($settings['free_shipping_threshold']) ? (float) $settings['free_shipping_threshold'] : null;
+
+        // Calculate dynamic delivery charge
+        $selectedMethod = DeliveryMethod::where('code', $request->shipping_area)->where('is_active', true)->first();
+
+        if ($globalFreeThreshold && $subtotal >= $globalFreeThreshold) {
+            $shippingCharge = 0.0;
+        } elseif ($selectedMethod) {
+            $shippingCharge = $selectedMethod->getEffectiveCharge($subtotal);
+        } else {
+            $shippingCharge = $request->shipping_area === 'inside_dhaka'
+                ? (float) ($settings['inside_dhaka_charge'] ?? 70)
+                : (float) ($settings['outside_dhaka_charge'] ?? 130);
+        }
 
         // Format cart items for OrderService
         $cartItems = [];
