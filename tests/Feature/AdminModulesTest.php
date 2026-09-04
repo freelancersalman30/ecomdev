@@ -339,7 +339,7 @@ class AdminModulesTest extends TestCase
 
     public function test_product_store_with_uploaded_images(): void
     {
-        $category = Category::first();
+        $category = Category::firstOrCreate(['slug' => 'test-cat-modules'], ['name' => 'Test Cat Modules', 'is_active' => true]);
         $thumbnail = UploadedFile::fake()->image('stm32_thumb.jpg', 600, 600);
         $galleryImage = UploadedFile::fake()->image('stm32_gal1.jpg', 800, 800);
 
@@ -348,7 +348,7 @@ class AdminModulesTest extends TestCase
         $response = $this->post('/admin/products', [
             'name' => 'ESP32-S3 Dual Core AI Dev Board',
             'sku' => $sku,
-            'category_id' => $category ? $category->id : 1,
+            'category_id' => $category->id,
             'purchase_price' => 250,
             'selling_price' => 450,
             'stock_quantity' => 25,

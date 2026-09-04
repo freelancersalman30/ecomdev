@@ -25,12 +25,12 @@
         </div>
 
         <!-- View Mode Switcher -->
-        <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/80 self-start sm:self-auto text-xs">
+        <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/80 overflow-x-auto max-w-full text-xs">
             <button 
                 type="button" 
                 @click="switchMode('visual')" 
                 :class="viewMode === 'visual' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg whitespace-nowrap transition"
                 title="Rich Visual Editor: Paste directly like Word/Google Docs">
                 <i data-lucide="layout-template" class="w-3.5 h-3.5"></i>
                 <span>Visual WYSIWYG</span>
@@ -40,7 +40,7 @@
                 type="button" 
                 @click="switchMode('markdown')" 
                 :class="viewMode === 'markdown' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg whitespace-nowrap transition"
                 title="Markdown Mode: Raw markdown source with smart paste">
                 <i data-lucide="file-code" class="w-3.5 h-3.5"></i>
                 <span>Markdown</span>
@@ -50,7 +50,7 @@
                 type="button" 
                 @click="switchMode('preview')" 
                 :class="viewMode === 'preview' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg whitespace-nowrap transition"
                 title="Preview Mode: Exactly as customer sees on storefront">
                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                 <span>Storefront Preview</span>
@@ -60,7 +60,7 @@
                 type="button" 
                 @click="switchMode('split')" 
                 :class="viewMode === 'split' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition"
+                class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg whitespace-nowrap transition"
                 title="Split Screen: Visual editor on left, live storefront preview on right">
                 <i data-lucide="columns-2" class="w-3.5 h-3.5"></i>
                 <span>Split Screen</span>
