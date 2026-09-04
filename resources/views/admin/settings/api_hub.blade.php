@@ -484,6 +484,129 @@
             </div>
         </div>
 
+        <!-- Zachaikori Fraud & Courier Risk API Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 {{ ($apis['zachaikori']->is_active ?? false) ? 'border-indigo-500 shadow-md ring-2 ring-indigo-500/10' : 'border-slate-200 dark:border-slate-800 shadow-sm' }} flex flex-col justify-between space-y-4">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs">
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-slate-900 dark:text-white">Zachaikori Fraud API</h4>
+                            <span class="text-[10px] text-slate-400">Courier Risk Scoring</span>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full {{ ($apis['zachaikori']->is_active ?? false) ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' }}">
+                        {{ ($apis['zachaikori']->is_active ?? false) ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+
+                <form id="form-zachaikori" method="POST" action="{{ route('admin.settings.api-hub.update') }}" class="space-y-3">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="provider" value="zachaikori">
+                    <input type="hidden" name="type" value="fraud">
+                    <input type="hidden" name="title" value="Zachaikori Fraud & Courier Risk API">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">API Endpoint URL</label>
+                        <input type="url" name="endpoint_url" value="{{ old('endpoint_url', $apis['zachaikori']->credentials['endpoint_url'] ?? 'https://api.zachaikori.com/api/v1/check') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 outline-none focus:border-indigo-500" placeholder="https://api.zachaikori.com/api/v1/check">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">API Key / Bearer Token</label>
+                        <input type="password" name="api_key" id="zachaikori_api_key" value="{{ old('api_key', $apis['zachaikori']->credentials['api_key'] ?? '') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 outline-none focus:border-indigo-500" placeholder="Enter Zachaikori API Key">
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                        <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <input type="hidden" name="is_active" value="0">
+                            <input type="checkbox" name="is_active" value="1" {{ ($apis['zachaikori']->is_active ?? false) ? 'checked' : '' }} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                            <span>Enable Zachaikori Fraud Check</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Save & Test Footer -->
+            <div class="pt-2 flex items-center justify-between">
+                <button type="button" @click="testProvider('zachaikori')" :disabled="loading.zachaikori" class="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center gap-1">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span x-text="loading.zachaikori ? 'Testing...' : 'Test Connection'"></span>
+                </button>
+                <button type="submit" form="form-zachaikori" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-xl text-xs font-bold transition shadow-xs">Save Zachaikori</button>
+            </div>
+            <div x-show="testResults.zachaikori" class="mt-2 text-xs font-mono p-2.5 rounded-xl" :class="testResults.zachaikori?.success ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300' : 'bg-rose-50 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300'" x-text="JSON.stringify(testResults.zachaikori)"></div>
+        </div>
+
+        <!-- Universal Fraud Checker API Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 {{ ($apis['universal_fraud']->is_active ?? false) ? 'border-sky-500 shadow-md ring-2 ring-sky-500/10' : 'border-slate-200 dark:border-slate-800 shadow-sm' }} flex flex-col justify-between space-y-4">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center font-black text-xs">
+                            <i data-lucide="globe" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-slate-900 dark:text-white">Universal Fraud API</h4>
+                            <span class="text-[10px] text-slate-400">Custom Provider REST Integration</span>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full {{ ($apis['universal_fraud']->is_active ?? false) ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' }}">
+                        {{ ($apis['universal_fraud']->is_active ?? false) ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+
+                <form id="form-universal-fraud" method="POST" action="{{ route('admin.settings.api-hub.update') }}" class="space-y-3">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="provider" value="universal_fraud">
+                    <input type="hidden" name="type" value="fraud">
+                    <input type="hidden" name="title" value="Universal Fraud Checker REST API">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Provider Name</label>
+                        <input type="text" name="provider_name" value="{{ old('provider_name', $apis['universal_fraud']->credentials['provider_name'] ?? 'Universal Fraud Checker') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 outline-none" placeholder="e.g. FraudBD / Custom API">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">API Endpoint URL *</label>
+                        <input type="url" name="endpoint_url" id="universal_fraud_endpoint" value="{{ old('endpoint_url', $apis['universal_fraud']->credentials['endpoint_url'] ?? '') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 outline-none focus:border-sky-500" placeholder="https://api.gateway.com/check">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Auth Header Name</label>
+                            <input type="text" name="auth_header_name" value="{{ old('auth_header_name', $apis['universal_fraud']->credentials['auth_header_name'] ?? 'Authorization') }}" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 outline-none" placeholder="Authorization">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Auth Value / Token</label>
+                            <input type="password" name="auth_header_value" id="universal_fraud_token" value="{{ old('auth_header_value', $apis['universal_fraud']->credentials['auth_header_value'] ?? '') }}" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 outline-none" placeholder="Bearer xyz">
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                        <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <input type="hidden" name="is_active" value="0">
+                            <input type="checkbox" name="is_active" value="1" {{ ($apis['universal_fraud']->is_active ?? false) ? 'checked' : '' }} class="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4">
+                            <span>Enable Universal Fraud API</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Save & Test Footer -->
+            <div class="pt-2 flex items-center justify-between">
+                <button type="button" @click="testProvider('universal_fraud')" :disabled="loading.universal_fraud" class="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-100 text-sky-700 dark:text-sky-300 text-xs font-bold transition flex items-center gap-1">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span x-text="loading.universal_fraud ? 'Testing...' : 'Test Connection'"></span>
+                </button>
+                <button type="submit" form="form-universal-fraud" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-xl text-xs font-bold transition shadow-xs">Save Universal API</button>
+            </div>
+            <div x-show="testResults.universal_fraud" class="mt-2 text-xs font-mono p-2.5 rounded-xl" :class="testResults.universal_fraud?.success ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300' : 'bg-rose-50 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300'" x-text="JSON.stringify(testResults.universal_fraud)"></div>
+        </div>
+
     </div>
 
 </div>
@@ -498,6 +621,8 @@ function apiHubManager() {
             steadfast: false,
             bulksms: false,
             bkash: false,
+            zachaikori: false,
+            universal_fraud: false,
         },
         testResults: {
             custom_sms: null,
@@ -505,6 +630,8 @@ function apiHubManager() {
             steadfast: null,
             bulksms: null,
             bkash: null,
+            zachaikori: null,
+            universal_fraud: null,
         },
         async testCustomGateway() {
             this.loading.custom_sms = true;
@@ -574,6 +701,13 @@ function apiHubManager() {
                 payload.username = document.getElementById('bkash_username')?.value || '';
                 payload.password = document.getElementById('bkash_password')?.value || '';
                 payload.is_sandbox = document.getElementById('bkash_is_sandbox')?.checked ? 1 : 0;
+            } else if (provider === 'zachaikori') {
+                payload.api_key = document.getElementById('zachaikori_api_key')?.value || '';
+                payload.phone = '01711223344';
+            } else if (provider === 'universal_fraud') {
+                payload.endpoint_url = document.getElementById('universal_fraud_endpoint')?.value || '';
+                payload.auth_header_value = document.getElementById('universal_fraud_token')?.value || '';
+                payload.phone = '01711223344';
             }
 
             try {

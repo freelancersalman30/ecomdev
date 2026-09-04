@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ApiSetting;
 use App\Services\BkashService;
 use App\Services\CourierService;
+use App\Services\FraudCheckService;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -41,6 +42,10 @@ class ApiHubController extends Controller
             // Tracking & Pixel
             'fb_capi' => ['type' => 'tracking', 'title' => 'Facebook Conversion API (Multi-Pixel)'],
             'gtm' => ['type' => 'tracking', 'title' => 'Google Tag Manager (GTM)'],
+
+            // Fraud & Courier Risk Gateways
+            'zachaikori' => ['type' => 'fraud', 'title' => 'Zachaikori Fraud & Courier Risk API'],
+            'universal_fraud' => ['type' => 'fraud', 'title' => 'Universal Fraud Checker REST API'],
         ];
 
         // Ensure alias between bulksms and bulksms_bd works both ways
@@ -78,6 +83,8 @@ class ApiHubController extends Controller
             'twilio' => ['type' => 'sms',      'title' => 'Twilio SMS API'],
             'fb_capi' => ['type' => 'tracking', 'title' => 'Facebook Conversion API (Multi-Pixel)'],
             'gtm' => ['type' => 'tracking', 'title' => 'Google Tag Manager (GTM)'],
+            'zachaikori' => ['type' => 'fraud', 'title' => 'Zachaikori Fraud & Courier Risk API'],
+            'universal_fraud' => ['type' => 'fraud', 'title' => 'Universal Fraud Checker REST API'],
         ];
 
         $existing = ApiSetting::where('provider', $provider)->first();
@@ -101,6 +108,13 @@ class ApiHubController extends Controller
         // Handle is_sandbox and is_active accurately:
         $isSandbox = $request->boolean('is_sandbox');
         $isActive = $request->boolean('is_active');
+
+        // If activating a fraud provider, deactivate other fraud providers
+        if ($type === 'fraud' && $isActive) {
+            ApiSetting::where('type', 'fraud')
+                ->where('provider', '!=', $provider)
+                ->update(['is_active' => false]);
+        }
 
         // Handle credentials
         if ($request->has('credentials') && is_array($request->input('credentials'))) {
@@ -164,7 +178,7 @@ class ApiHubController extends Controller
     /**
      * Test live API connection for a provider
      */
-    public function testConnection(Request $request, SmsService $smsService, CourierService $courierService, BkashService $bkashService)
+    public function testConnection(Request $request, SmsService $smsService, CourierService $courierService, BkashService $bkashService, FraudCheckService $fraudCheckService)
     {
         $provider = $request->input('provider');
 
@@ -201,6 +215,20 @@ class ApiHubController extends Controller
                     $request->input('password'),
                     $request->boolean('is_sandbox')
                 );
+
+                return response()->json($result);
+
+            case 'zachaikori':
+            case 'universal_fraud':
+                $tempSetting = new ApiSetting([
+                    'provider' => $provider,
+                    'type' => 'fraud',
+                    'credentials' => $request->all(),
+                    'is_active' => true,
+                ]);
+
+                $phone = $request->input('phone') ?: '01711223344';
+                $result = $fraudCheckService->checkExternalApi($phone, $tempSetting);
 
                 return response()->json($result);
 

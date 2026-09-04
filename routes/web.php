@@ -235,6 +235,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/fraud-checks', [FraudCheckController::class, 'index'])->name('fraud.index');
     Route::post('/fraud-checks/lookup', [FraudCheckController::class, 'checkNumber'])->name('fraud.check');
     Route::post('/fraud-checks/blacklist', [FraudCheckController::class, 'blacklistNumber'])->name('fraud.blacklist');
+    Route::post('/fraud-checks/remove-blacklist/{id}', [FraudCheckController::class, 'removeBlacklist'])->name('fraud.blacklist.remove');
+    Route::post('/fraud-checks/api-settings', [FraudCheckController::class, 'updateApiSettings'])->name('fraud.api_settings');
+    Route::post('/fraud-checks/test-api', [FraudCheckController::class, 'testApiConnection'])->name('fraud.test_api');
 
     // 10. Custom SMS Marketing
     Route::get('/sms-marketing', [SmsMarketingController::class, 'index'])->name('sms.index');
