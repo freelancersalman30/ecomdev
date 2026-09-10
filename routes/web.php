@@ -73,6 +73,9 @@ Route::get('/order-success/{order_no}', [CheckoutController::class, 'success'])-
 
 // Order Live Tracker
 Route::get('/track-order', [FrontendController::class, 'trackOrder'])->name('order.track');
+Route::get('/order/track', [FrontendController::class, 'trackOrder']);
+Route::get('/order-track', [FrontendController::class, 'trackOrder']);
+Route::get('/track', [FrontendController::class, 'trackOrder']);
 
 // Public Product Warranty Verification
 Route::get('/warranty/verify', [CustomerWarrantyController::class, 'publicVerify'])->name('warranty.verify');

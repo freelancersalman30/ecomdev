@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Models\Order;
-use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -34,8 +33,10 @@ class CustomerOrderStatusUpdatedMail extends Mailable
         $this->order = $order->loadMissing(['items.product', 'items.variant']);
         $this->status = $status;
         $this->note = $note;
-        $this->siteName = Setting::get('site_name', 'DREAMERS PCB');
-        $this->trackingUrl = url('/order/track?order_no='.$order->order_no.'&phone='.$order->shipping_phone);
+        $this->trackingUrl = route('order.track', [
+            'order_no' => $order->order_no,
+            'phone' => $order->shipping_phone,
+        ]);
 
         $this->statusTitle = match ($status) {
             'processing' => 'Order In Processing & Packaging',
