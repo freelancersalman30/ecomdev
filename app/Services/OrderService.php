@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -109,8 +110,12 @@ class OrderService
             $paidAmount = (float) ($data['paid_amount'] ?? 0);
             $dueAmount = max(0, $grandTotal - $paidAmount);
 
-            // Generate sequential order ID
-            $orderNo = 'DPCB-'.date('Ymd').'-'.str_pad((string) (Order::count() + 1), 4, '0', STR_PAD_LEFT);
+            // Generate collision-safe sequential order ID
+            $counter = Order::count() + 1;
+            do {
+                $orderNo = 'DPCB-'.date('Ymd').'-'.str_pad((string) $counter, 4, '0', STR_PAD_LEFT);
+                $counter++;
+            } while (Order::where('order_no', $orderNo)->exists());
 
             $order = Order::create([
                 'order_no' => $orderNo,
@@ -148,8 +153,12 @@ class OrderService
                 $order->items()->create($pItem);
             }
 
-            // Sync and issue product warranties
-            $this->warrantyService->syncOrderWarranties($order);
+            // Sync and issue product warranties safely
+            try {
+                $this->warrantyService->syncOrderWarranties($order);
+            } catch (\Throwable $e) {
+                Log::warning('Warranty sync skipped for #'.$order->order_no.': '.$e->getMessage());
+            }
 
             // Create initial status log
             $order->statusLogs()->create([
@@ -161,11 +170,19 @@ class OrderService
 
             // Update customer CRM metrics
             if ($customer) {
-                $customer->recalculateMetrics();
+                try {
+                    $customer->recalculateMetrics();
+                } catch (\Throwable $e) {
+                    // pass
+                }
             }
 
-            // Dispatch SMS Notification
-            if ($customer && $order->shipping_phone) {
+            return $order;
+        });
+
+        // Post-transaction notifications (safe from rollback)
+        try {
+            if ($order->customer && $order->shipping_phone) {
                 $this->smsService->send(
                     $order->shipping_phone,
                     'Dear {customer_name}, your order #{order_id} of TK {grand_total} is confirmed! DREAMERS PCB.',
@@ -176,14 +193,22 @@ class OrderService
                     ]
                 );
             }
+        } catch (\Throwable $e) {
+            Log::warning('SMS notification skipped for #'.$order->order_no.': '.$e->getMessage());
+        }
 
-            // Dispatch Admin Dashboard Notification
+        try {
             $this->adminNotificationService->notifyNewOrder($order);
+        } catch (\Throwable $e) {
+            Log::warning('Admin notification skipped for #'.$order->order_no.': '.$e->getMessage());
+        }
 
-            // Dispatch Automated Email Notifications (Customer Confirmation + Admin Alert)
+        try {
             OrderEmailService::sendOrderPlacedNotifications($order);
+        } catch (\Throwable $e) {
+            Log::warning('Order email skipped for #'.$order->order_no.': '.$e->getMessage());
+        }
 
-            return $order;
-        });
+        return $order;
     }
 }

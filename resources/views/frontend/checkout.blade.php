@@ -18,6 +18,28 @@
         <span>Secure One-Page Checkout</span>
     </h1>
 
+    {{-- Error & Flash Alerts --}}
+    @if ($errors->any())
+    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs space-y-1">
+        <div class="font-bold flex items-center gap-1.5 text-rose-900">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600"></i>
+            <span>Please correct the following before placing your order:</span>
+        </div>
+        <ul class="list-disc list-inside space-y-0.5 text-rose-700 pl-1">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    @if (session('error'))
+    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 flex-shrink-0"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+    @endif
+
     <form method="POST" action="{{ route('checkout.process') }}" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         @csrf
 
@@ -82,7 +104,8 @@
                                         type="radio" 
                                         name="shipping_area" 
                                         value="{{ $method->code }}" 
-                                        :checked="shippingArea === '{{ $method->code }}'" 
+                                        x-model="shippingArea"
+                                        {{ ($defaultMethod && $defaultMethod->code === $method->code) || $loop->first ? 'checked' : '' }}
                                         @change="selectDeliveryMethod('{{ $method->code }}', {{ (float) $method->charge }}, {{ $method->min_order_for_free_delivery ? (float) $method->min_order_for_free_delivery : 'null' }})" 
                                         class="text-daraz-orange focus:ring-daraz-orange">
                                     <div class="truncate">
@@ -124,7 +147,7 @@
                 <div class="space-y-3">
                     <label class="p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="paymentMethod === 'cash_on_delivery' ? 'border-emerald-500 bg-emerald-50 text-slate-900' : 'border-slate-200 text-slate-700'">
                         <div class="flex items-center gap-3">
-                            <input type="radio" name="payment_method" value="cash_on_delivery" :checked="paymentMethod === 'cash_on_delivery'" @change="paymentMethod = 'cash_on_delivery'" class="text-emerald-600 focus:ring-emerald-500">
+                            <input type="radio" name="payment_method" value="cash_on_delivery" x-model="paymentMethod" checked class="text-emerald-600 focus:ring-emerald-500">
                             <div>
                                 <div class="text-xs font-extrabold text-slate-900">Cash On Delivery (COD)</div>
                                 <div class="text-[11px] text-slate-500">Pay cash in hand when you receive the hardware parcel</div>
@@ -136,7 +159,7 @@
                     @if($bkashActive ?? false)
                     <label class="p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition" :class="paymentMethod === 'bkash' ? 'border-pink-500 bg-pink-50 text-slate-900' : 'border-slate-200 text-slate-700'">
                         <div class="flex items-center gap-3">
-                            <input type="radio" name="payment_method" value="bkash" :checked="paymentMethod === 'bkash'" @change="paymentMethod = 'bkash'" class="text-pink-600 focus:ring-pink-500">
+                            <input type="radio" name="payment_method" value="bkash" x-model="paymentMethod" class="text-pink-600 focus:ring-pink-500">
                             <div>
                                 <div class="text-xs font-extrabold text-slate-900">bKash Online Payment</div>
                                 <div class="text-[11px] text-slate-500">Pay via bKash Merchant Gateway / Personal Wallet</div>

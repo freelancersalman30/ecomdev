@@ -96,6 +96,13 @@ class CheckoutController extends Controller
      */
     public function process(Request $request)
     {
+        if (! $request->filled('shipping_area')) {
+            $request->merge(['shipping_area' => 'inside_dhaka']);
+        }
+        if (! $request->filled('payment_method')) {
+            $request->merge(['payment_method' => 'cash_on_delivery']);
+        }
+
         $request->validate([
             'shipping_name' => 'required|string|max:255',
             'shipping_phone' => 'required|string|max:20',
