@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CustomerOrderPlacedMail;
 use App\Models\Order;
 use App\Services\AdminNotificationService;
 use App\Services\CourierService;
 use App\Services\InventoryService;
+use App\Services\MailConfigService;
 use App\Services\OrderEmailService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -190,6 +193,28 @@ class OrderController extends Controller
         $order->load(['customer', 'items.product', 'items.variant']);
 
         return view('admin.orders.invoice', compact('order'));
+    }
+
+    public function sendInvoiceEmail(Request $request, Order $order)
+    {
+        $email = $request->email ?: $order->shipping_email ?: $order->customer?->email;
+
+        if (! $email || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return redirect()->back()->with('error', 'Please provide a valid customer email address to send the invoice.');
+        }
+
+        try {
+            if ($request->filled('email') && $request->email !== $order->shipping_email) {
+                $order->update(['shipping_email' => $request->email]);
+            }
+
+            MailConfigService::applyConfig();
+            Mail::to($email)->send(new CustomerOrderPlacedMail($order));
+
+            return redirect()->back()->with('success', "Invoice email successfully sent to {$email}!");
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', 'Failed to send invoice: '.$e->getMessage());
+        }
     }
 
     public function packingSlip(Order $order)

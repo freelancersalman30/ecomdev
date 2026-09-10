@@ -146,6 +146,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/book-courier', [OrderController::class, 'bookCourier'])->name('orders.courier.book');
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+    Route::post('/orders/{order}/send-invoice', [OrderController::class, 'sendInvoiceEmail'])->name('orders.send_invoice');
     Route::get('/orders/{order}/packing-slip', [OrderController::class, 'packingSlip'])->name('orders.packing_slip');
 
     // 3.1 Admin Notifications Center & Live Polling
