@@ -10,20 +10,47 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->latest()->get();
-        $roles = Role::all();
+        $query = User::with('roles')->latest();
 
-        return view('admin.users.index', compact('users', 'roles'));
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $roleFilter = $request->role;
+            $query->whereHas('roles', function ($q) use ($roleFilter) {
+                $q->where('name', $roleFilter);
+            });
+        }
+
+        $users = $query->paginate(20)->withQueryString();
+        $roles = Role::orderBy('name')->get();
+
+        // Calculate statistics
+        $stats = [
+            'total' => User::count(),
+            'admins' => User::role('admin')->count(),
+            'managers' => User::role('manager')->count(),
+            'others' => User::whereDoesntHave('roles', function ($q) {
+                $q->whereIn('name', ['admin', 'manager']);
+            })->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'roles', 'stats'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'email' => 'required|email|unique:users,email|max:255',
+            'password' => 'required|string|min:6|max:255',
             'role' => 'required|exists:roles,name',
         ]);
 
@@ -35,7 +62,31 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
-        return redirect()->back()->with('success', 'Admin user created successfully!');
+        return redirect()->back()->with('success', "Admin user '{$user->name}' created successfully!");
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'nullable|string|min:6|max:255',
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        $userData = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
+
+        if ($request->filled('password')) {
+            $userData['password'] = Hash::make($request->password);
+        }
+
+        $user->update($userData);
+        $user->syncRoles([$request->role]);
+
+        return redirect()->back()->with('success', "Staff profile for '{$user->name}' updated successfully!");
     }
 
     public function updateRole(Request $request, User $user)
@@ -46,17 +97,18 @@ class UserController extends Controller
 
         $user->syncRoles([$request->role]);
 
-        return redirect()->back()->with('success', 'User role updated successfully!');
+        return redirect()->back()->with('success', "User role for '{$user->name}' updated to {$request->role}!");
     }
 
     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
-            return redirect()->back()->with('error', 'Cannot delete your own account.');
+            return redirect()->back()->with('error', 'Security warning: You cannot delete your own active account.');
         }
 
+        $userName = $user->name;
         $user->delete();
 
-        return redirect()->back()->with('success', 'User deleted.');
+        return redirect()->back()->with('success', "Staff account '{$userName}' has been deleted.");
     }
 }
