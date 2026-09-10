@@ -186,18 +186,29 @@
             </h3>
 
             <!-- Mini Items List -->
-            <div class="max-h-60 overflow-y-auto divide-y divide-slate-100 pr-1 text-xs">
+            <div class="max-h-72 overflow-y-auto divide-y divide-slate-100 pr-1 text-xs">
                 @foreach($cart as $item)
-                <div class="py-3 flex items-center justify-between gap-3">
+                <div class="py-3 flex items-center justify-between gap-3 group">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <img src="{{ $item['thumbnail'] }}" alt="{{ $item['name'] }}" class="w-10 h-10 rounded-lg object-cover border flex-shrink-0">
                         <div class="truncate">
                             <div class="font-bold text-slate-900 truncate">{{ $item['name'] }}</div>
-                            <div class="text-[11px] text-slate-400">{{ $item['quantity'] }}x ৳{{ number_format($item['price'], 2) }}</div>
+                            @if(!empty($item['variant_name']))
+                            <div class="text-[10px] text-emerald-600 font-semibold">{{ $item['variant_name'] }}</div>
+                            @endif
+                            <div class="text-[11px] text-slate-400 font-mono">{{ $item['quantity'] }} &times; ৳{{ number_format($item['price'], 2) }}</div>
                         </div>
                     </div>
-                    <div class="font-black text-slate-900 code-font whitespace-nowrap">
-                        ৳{{ number_format($item['subtotal'], 2) }}
+                    <div class="flex items-center gap-2.5 flex-shrink-0">
+                        <div class="font-black text-slate-900 code-font whitespace-nowrap">
+                            ৳{{ number_format($item['subtotal'], 2) }}
+                        </div>
+                        <button type="button" 
+                            onclick="removeItemFromCheckout('{{ $item['cart_key'] }}', '{{ addslashes($item['name']) }}')" 
+                            class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" 
+                            title="Remove this item from order">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
                 @endforeach
@@ -313,11 +324,24 @@
 
     </form>
 
+    {{-- Hidden Form for Instant Cart Item Removal --}}
+    <form id="removeCartItemForm" method="POST" action="{{ route('cart.remove') }}" style="display: none;">
+        @csrf
+        <input type="hidden" name="cart_key" id="removeCartKey">
+    </form>
+
 </div>
 @endsection
 
 @push('scripts')
 <script>
+    function removeItemFromCheckout(cartKey, itemName) {
+        if (confirm(`Remove "${itemName}" from your order?`)) {
+            document.getElementById('removeCartKey').value = cartKey;
+            document.getElementById('removeCartItemForm').submit();
+        }
+    }
+
     function checkoutPageApp() {
         return {
             subtotal: {{ (float) $subtotal }},
