@@ -375,7 +375,7 @@
                      @click.capture="handleClickCapture($event)"
                      class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                     @foreach($relatedProducts as $rel)
-                        <x-product-card :product="$rel" :layout="$productLayout" class="carousel-card w-[165px] sm:w-[190px] md:w-[205px] flex-shrink-0" />
+                        <x-product-card :product="$rel" :layout="$productLayout" class="carousel-card w-[calc(50%-6px)] sm:w-[190px] md:w-[205px] flex-shrink-0" />
                     @endforeach
                 </div>
 

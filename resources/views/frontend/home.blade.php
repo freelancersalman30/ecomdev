@@ -218,7 +218,7 @@
                          @click.capture="handleClickCapture($event)"
                          class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                         @foreach($flashSaleProducts as $prod)
-                            <x-product-card :product="$prod" :layout="$productLayout" class="carousel-card w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0" />
+                            <x-product-card :product="$prod" :layout="$productLayout" class="carousel-card w-[calc(50%-6px)] sm:w-[195px] md:w-[215px] flex-shrink-0" />
                         @endforeach
                     </div>
 
@@ -292,7 +292,7 @@
                          @click.capture="handleClickCapture($event)"
                          class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                         @foreach($justForYouProducts as $prod)
-                            <x-product-card :product="$prod" :layout="$productLayout" class="carousel-card w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0" />
+                            <x-product-card :product="$prod" :layout="$productLayout" class="carousel-card w-[calc(50%-6px)] sm:w-[195px] md:w-[215px] flex-shrink-0" />
                         @endforeach
                     </div>
 
@@ -392,7 +392,7 @@
                              @click.capture="handleClickCapture($event)"
                              class="carousel-track flex items-stretch gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 cursor-grab active:cursor-grabbing">
                             @foreach($catGroup->products as $prod)
-                                <x-product-card :product="$prod" :layout="$productLayout" class="carousel-card w-[170px] sm:w-[195px] md:w-[215px] flex-shrink-0" />
+                                <x-product-card :product="$prod" :layout="$productLayout" class="carousel-card w-[calc(50%-6px)] sm:w-[195px] md:w-[215px] flex-shrink-0" />
                             @endforeach
                         </div>
 

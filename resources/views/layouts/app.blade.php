@@ -1182,8 +1182,16 @@
                 getCardStep() {
                     const track = this.$refs.track;
                     if (!track) return 220;
-                    const card = track.querySelector(':scope > div, :scope > a, :scope > article');
-                    return card ? (card.offsetWidth + 16) : 220;
+                    const card = track.querySelector(':scope > div, :scope > a, :scope > article, :scope > .carousel-card');
+                    if (!card) return 220;
+                    const computedStyle = window.getComputedStyle(track);
+                    const gap = parseFloat(computedStyle.gap || computedStyle.columnGap) || 12;
+
+                    // On mobile screens (< 640px), advance 2 full products per slide
+                    if (window.innerWidth < 640) {
+                        return (card.offsetWidth + gap) * 2;
+                    }
+                    return card.offsetWidth + gap;
                 },
 
                 next() {
