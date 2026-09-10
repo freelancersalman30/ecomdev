@@ -110,10 +110,19 @@ class OrderService
             $paidAmount = (float) ($data['paid_amount'] ?? 0);
             $dueAmount = max(0, $grandTotal - $paidAmount);
 
-            // Generate collision-safe sequential order ID
-            $counter = Order::count() + 1;
+            // Generate collision-safe sequential order ID for today
+            $prefix = 'DPCB-'.date('Ymd').'-';
+            $lastTodayOrder = Order::where('order_no', 'like', $prefix.'%')->orderByDesc('id')->first();
+            $counter = 1;
+
+            if ($lastTodayOrder) {
+                $parts = explode('-', $lastTodayOrder->order_no);
+                $lastSeq = (int) end($parts);
+                $counter = max($counter, $lastSeq + 1);
+            }
+
             do {
-                $orderNo = 'DPCB-'.date('Ymd').'-'.str_pad((string) $counter, 4, '0', STR_PAD_LEFT);
+                $orderNo = $prefix.str_pad((string) $counter, 4, '0', STR_PAD_LEFT);
                 $counter++;
             } while (Order::where('order_no', $orderNo)->exists());
 
