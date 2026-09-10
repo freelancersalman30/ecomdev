@@ -43,6 +43,14 @@
                     </div>
 
                     <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            <span>Email Address (Optional)</span>
+                            <span class="text-[10px] text-emerald-600 font-semibold">&bull; For instant order invoice & live tracking updates</span>
+                        </label>
+                        <input type="email" name="shipping_email" value="{{ old('shipping_email', auth('customer')->user()?->email) }}" placeholder="e.g. yourname@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none focus:ring-2 focus:ring-daraz-orange/20">
+                    </div>
+
+                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Delivery City / District *</label>
                         <input type="text" name="shipping_city" value="{{ old('shipping_city', 'Dhaka') }}" required placeholder="e.g. Dhaka / Chittagong / Rajshahi" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none">
                     </div>

@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Services\AdminNotificationService;
 use App\Services\CourierService;
 use App\Services\InventoryService;
+use App\Services\OrderEmailService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -99,6 +100,9 @@ class OrderController extends Controller
         $order->logStatusChange($newStatus, $request->note, auth()->id());
         $this->adminNotificationService->notifyStatusChange($order, $newStatus, $request->note);
 
+        // Send automated status update email to customer
+        OrderEmailService::sendOrderStatusUpdatedNotification($order, $newStatus, $request->note);
+
         if ($order->customer) {
             $order->customer->recalculateMetrics();
         }
@@ -118,6 +122,7 @@ class OrderController extends Controller
         foreach ($orders as $order) {
             $order->logStatusChange($request->status, 'Bulk status update by '.auth()->user()->name, auth()->id());
             $this->adminNotificationService->notifyStatusChange($order, $request->status, 'Bulk status update');
+            OrderEmailService::sendOrderStatusUpdatedNotification($order, $request->status, 'Bulk status update');
         }
 
         return redirect()->back()->with('success', count($orders).' orders updated successfully.');

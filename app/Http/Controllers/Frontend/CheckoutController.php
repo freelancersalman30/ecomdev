@@ -99,6 +99,7 @@ class CheckoutController extends Controller
         $request->validate([
             'shipping_name' => 'required|string|max:255',
             'shipping_phone' => 'required|string|max:20',
+            'shipping_email' => 'nullable|email|max:255',
             'shipping_address' => 'required|string|max:1000',
             'shipping_city' => 'required|string|max:100',
             'shipping_area' => 'required|string|max:100',
@@ -152,8 +153,10 @@ class CheckoutController extends Controller
         $orderData = [
             'customer_name' => $request->shipping_name,
             'customer_phone' => $request->shipping_phone,
+            'customer_email' => $request->shipping_email,
             'shipping_name' => $request->shipping_name,
             'shipping_phone' => $request->shipping_phone,
+            'shipping_email' => $request->shipping_email,
             'shipping_address' => $request->shipping_address,
             'shipping_city' => $request->shipping_city,
             'order_type' => 'online',

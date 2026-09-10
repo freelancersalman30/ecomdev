@@ -180,6 +180,9 @@ class OrderService
             // Dispatch Admin Dashboard Notification
             $this->adminNotificationService->notifyNewOrder($order);
 
+            // Dispatch Automated Email Notifications (Customer Confirmation + Admin Alert)
+            OrderEmailService::sendOrderPlacedNotifications($order);
+
             return $order;
         });
     }
