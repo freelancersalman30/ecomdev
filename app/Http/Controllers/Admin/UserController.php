@@ -32,13 +32,14 @@ class UserController extends Controller
         $users = $query->paginate(20)->withQueryString();
         $roles = Role::orderBy('name')->get();
 
-        // Calculate statistics
+        // Calculate statistics safely without strict role name dependency
         $stats = [
             'total' => User::count(),
-            'admins' => User::role('admin')->count(),
-            'managers' => User::role('manager')->count(),
+            'admins' => User::whereHas('roles', fn ($q) => $q->where('name', 'like', '%admin%'))->count(),
+            'managers' => User::whereHas('roles', fn ($q) => $q->where('name', 'like', '%manager%'))->count(),
             'others' => User::whereDoesntHave('roles', function ($q) {
-                $q->whereIn('name', ['admin', 'manager']);
+                $q->where('name', 'like', '%admin%')
+                    ->orWhere('name', 'like', '%manager%');
             })->count(),
         ];
 
