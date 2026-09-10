@@ -56,12 +56,12 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
-                        <input type="text" name="shipping_name" value="{{ old('shipping_name') }}" required placeholder="e.g. Salman Chowdhury" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold outline-none focus:ring-2 focus:ring-daraz-orange/20">
+                        <input type="text" name="shipping_name" x-model="shippingName" @blur="saveIncompleteOrder()" value="{{ old('shipping_name') }}" required placeholder="e.g. Salman Chowdhury" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold outline-none focus:ring-2 focus:ring-daraz-orange/20">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Phone Number (11 Digits) *</label>
-                        <input type="tel" name="shipping_phone" value="{{ old('shipping_phone') }}" required placeholder="01711223344" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-daraz-orange/20">
+                        <input type="tel" name="shipping_phone" x-model="shippingPhone" @blur="saveIncompleteOrder()" value="{{ old('shipping_phone') }}" required placeholder="01711223344" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-daraz-orange/20">
                     </div>
 
                     <div>
@@ -69,17 +69,17 @@
                             <span>Email Address (Optional)</span>
                             <span class="text-[10px] text-emerald-600 font-semibold">&bull; For instant order invoice & live tracking updates</span>
                         </label>
-                        <input type="email" name="shipping_email" value="{{ old('shipping_email', auth('customer')->user()?->email) }}" placeholder="e.g. yourname@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none focus:ring-2 focus:ring-daraz-orange/20">
+                        <input type="email" name="shipping_email" x-model="shippingEmail" @blur="saveIncompleteOrder()" value="{{ old('shipping_email', auth('customer')->user()?->email) }}" placeholder="e.g. yourname@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none focus:ring-2 focus:ring-daraz-orange/20">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Delivery City / District *</label>
-                        <input type="text" name="shipping_city" value="{{ old('shipping_city', 'Dhaka') }}" required placeholder="e.g. Dhaka / Chittagong / Rajshahi" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none">
+                        <input type="text" name="shipping_city" x-model="shippingCity" @blur="saveIncompleteOrder()" value="{{ old('shipping_city', 'Dhaka') }}" required placeholder="e.g. Dhaka / Chittagong / Rajshahi" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Full Delivery Address (House / Road / Area) *</label>
-                        <textarea name="shipping_address" rows="2" required placeholder="Detailed address for courier dispatch..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none">{{ old('shipping_address') }}</textarea>
+                        <textarea name="shipping_address" x-model="shippingAddress" @blur="saveIncompleteOrder()" rows="2" required placeholder="Detailed address for courier dispatch..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs outline-none">{{ old('shipping_address') }}</textarea>
                     </div>
 
                     <!-- Delivery Area Selector with Live Delivery Fee Update -->
@@ -350,6 +350,13 @@
             shippingCharge: {{ (float) ($defaultMethod ? ($globalFreeThreshold && $subtotal >= $globalFreeThreshold ? 0 : $defaultMethod->getEffectiveCharge($subtotal)) : $insideDhaka) }},
             globalFreeThreshold: {{ $globalFreeThreshold ? (float) $globalFreeThreshold : 'null' }},
             paymentMethod: 'cash_on_delivery',
+            shippingName: @json(old('shipping_name', '')),
+            shippingPhone: @json(old('shipping_phone', '')),
+            shippingEmail: @json(old('shipping_email', auth('customer')->user()?->email ?? '')),
+            shippingCity: @json(old('shipping_city', 'Dhaka')),
+            shippingAddress: @json(old('shipping_address', '')),
+            notes: @json(old('notes', '')),
+            saveIncompleteTimeout: null,
             couponCode: '',
             appliedCoupon: @json($coupon),
             couponMessage: '',
@@ -374,6 +381,47 @@
                 } else {
                     this.shippingCharge = parseFloat(charge);
                 }
+                this.scheduleIncompleteSave();
+            },
+
+            scheduleIncompleteSave() {
+                clearTimeout(this.saveIncompleteTimeout);
+                this.saveIncompleteTimeout = setTimeout(() => {
+                    this.saveIncompleteOrder();
+                }, 600);
+            },
+
+            async saveIncompleteOrder() {
+                const phone = (this.shippingPhone || '').trim();
+                const name = (this.shippingName || '').trim();
+
+                // Only record if customer has entered at least a partial phone or name
+                if (!phone && !name) {
+                    return;
+                }
+
+                try {
+                    await fetch(`{{ route('checkout.save_incomplete') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            shipping_name: name,
+                            shipping_phone: phone,
+                            shipping_email: this.shippingEmail,
+                            shipping_city: this.shippingCity,
+                            shipping_address: this.shippingAddress,
+                            shipping_area: this.shippingArea,
+                            payment_method: this.paymentMethod,
+                            notes: this.notes
+                        })
+                    });
+                } catch (e) {
+                    // background drop-off capture, keep silent
+                }
             },
 
             init() {
@@ -382,6 +430,19 @@
                         window.lucide.createIcons();
                     }
                 });
+
+                // Watch inputs for drop-off / incomplete capture
+                this.$watch('shippingPhone', () => this.scheduleIncompleteSave());
+                this.$watch('shippingName', () => this.scheduleIncompleteSave());
+                this.$watch('shippingAddress', () => this.scheduleIncompleteSave());
+                this.$watch('shippingCity', () => this.scheduleIncompleteSave());
+                this.$watch('shippingEmail', () => this.scheduleIncompleteSave());
+                this.$watch('paymentMethod', () => this.scheduleIncompleteSave());
+                this.$watch('notes', () => this.scheduleIncompleteSave());
+
+                if (this.shippingPhone || this.shippingName) {
+                    this.scheduleIncompleteSave();
+                }
             },
 
             async applyCouponCode() {
@@ -410,6 +471,7 @@
                         this.couponSuccess = true;
                         this.couponMessage = data.message;
                         this.couponCode = '';
+                        this.scheduleIncompleteSave();
                     } else {
                         this.couponSuccess = false;
                         this.couponMessage = data.message || 'Invalid or expired coupon code.';
@@ -449,6 +511,10 @@
                         this.couponSuccess = true;
                         this.couponMessage = 'Coupon removed successfully.';
                         this.couponCode = '';
+                        this.scheduleIncompleteSave();
+                    } else {
+                        this.couponSuccess = false;
+                        this.couponMessage = 'Failed to remove coupon.';
                     }
                 } catch (error) {
                     this.couponSuccess = false;

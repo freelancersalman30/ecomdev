@@ -68,6 +68,7 @@ Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->nam
 
 // Fast One-Page Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/save-incomplete', [CheckoutController::class, 'saveIncomplete'])->name('checkout.save_incomplete');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::get('/order-success/{order_no}', [CheckoutController::class, 'success'])->name('checkout.success');
 

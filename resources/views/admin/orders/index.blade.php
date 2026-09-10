@@ -131,7 +131,17 @@
                         </td>
                         <td class="px-4 py-3.5">
                             <div class="font-semibold text-xs text-slate-900 dark:text-white">{{ $order->shipping_name }}</div>
-                            <div class="text-[11px] text-slate-500 font-mono">{{ $order->shipping_phone }}</div>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="text-[11px] text-slate-500 font-mono">{{ $order->shipping_phone }}</span>
+                                @if($order->shipping_phone && $order->shipping_phone !== '01700000000')
+                                <a href="tel:{{ $order->shipping_phone }}" class="text-slate-400 hover:text-emerald-500" title="Call">
+                                    <i data-lucide="phone" class="w-3 h-3"></i>
+                                </a>
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', (str_starts_with($order->shipping_phone, '0') ? '88'.$order->shipping_phone : $order->shipping_phone)) }}" target="_blank" class="text-slate-400 hover:text-emerald-500" title="WhatsApp">
+                                    <i data-lucide="message-circle" class="w-3 h-3"></i>
+                                </a>
+                                @endif
+                            </div>
                             <div class="text-[10px] text-slate-400 truncate max-w-[150px]">{{ $order->shipping_city }}</div>
                         </td>
                         <td class="px-4 py-3.5">
@@ -169,7 +179,7 @@
                                     'completed' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
                                     'cancelled' => 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300',
                                     'returned' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-                                    'incomplete' => 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300',
+                                    'incomplete' => 'bg-amber-50 text-amber-900 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
                                 ];
                             @endphp
                             <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusBadge[$order->status] ?? 'bg-slate-100 text-slate-800' }}">

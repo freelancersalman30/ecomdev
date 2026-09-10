@@ -162,6 +162,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Pipeline Status</label>
                             <select name="status" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white outline-none">
+                                <option value="incomplete" {{ $order->status === 'incomplete' ? 'selected' : '' }}>Incomplete (Drop-off Draft)</option>
                                 <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending (Awaiting Confirmation)</option>
                                 <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing (Packaging & Quality Check)</option>
                                 <option value="on_the_way" {{ $order->status === 'on_the_way' ? 'selected' : '' }}>On the Way</option>
@@ -241,9 +242,19 @@
                 <div class="space-y-2 text-xs">
                     <div>
                         <div class="font-bold text-slate-900 dark:text-white text-sm">{{ $order->shipping_name }}</div>
-                        <div class="text-emerald-600 dark:text-emerald-400 font-mono font-bold">{{ $order->shipping_phone }}</div>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-emerald-600 dark:text-emerald-400 font-mono font-bold">{{ $order->shipping_phone }}</span>
+                            <a href="tel:{{ $order->shipping_phone }}" class="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-emerald-600 text-[10px] font-semibold flex items-center gap-0.5" title="Call Customer">
+                                <i data-lucide="phone" class="w-3 h-3"></i>
+                                <span>Call</span>
+                            </a>
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', (str_starts_with($order->shipping_phone, '0') ? '88'.$order->shipping_phone : $order->shipping_phone)) }}" target="_blank" class="p-1 rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 text-[10px] font-semibold flex items-center gap-0.5" title="WhatsApp Customer">
+                                <i data-lucide="message-circle" class="w-3 h-3"></i>
+                                <span>WhatsApp</span>
+                            </a>
+                        </div>
                         @if($order->shipping_email)
-                        <div class="text-slate-400">{{ $order->shipping_email }}</div>
+                        <div class="text-slate-400 text-[11px] mt-0.5">{{ $order->shipping_email }}</div>
                         @endif
                     </div>
                     <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-300">

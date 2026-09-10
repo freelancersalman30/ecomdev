@@ -92,6 +92,96 @@ class CheckoutController extends Controller
     }
 
     /**
+     * Real-time Debounced Save Incomplete Order (Abandoned Checkout Capture)
+     */
+    public function saveIncomplete(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cart is empty',
+            ], 422);
+        }
+
+        $phone = trim($request->input('shipping_phone', ''));
+        $name = trim($request->input('shipping_name', ''));
+
+        if (empty($phone) && empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No contact information provided yet',
+            ]);
+        }
+
+        $coupon = session()->get('coupon', null);
+        $discount = $coupon ? ($coupon['calculated_discount'] ?? 0) : 0;
+        $subtotal = array_sum(array_column($cart, 'subtotal'));
+
+        $settings = Setting::pluck('value', 'key')->toArray();
+        $globalFreeThreshold = ! empty($settings['free_shipping_threshold']) ? (float) $settings['free_shipping_threshold'] : null;
+
+        $shippingArea = $request->input('shipping_area', 'inside_dhaka');
+        $selectedMethod = null;
+        if (Schema::hasTable('delivery_methods')) {
+            try {
+                $selectedMethod = DeliveryMethod::where('code', $shippingArea)->where('is_active', true)->first();
+            } catch (\Throwable $e) {
+                $selectedMethod = null;
+            }
+        }
+
+        if ($globalFreeThreshold && $subtotal >= $globalFreeThreshold) {
+            $shippingCharge = 0.0;
+        } elseif ($selectedMethod) {
+            $shippingCharge = $selectedMethod->getEffectiveCharge($subtotal);
+        } else {
+            $shippingCharge = $shippingArea === 'inside_dhaka'
+                ? (float) ($settings['inside_dhaka_charge'] ?? 70)
+                : (float) ($settings['outside_dhaka_charge'] ?? 130);
+        }
+
+        $cartItems = [];
+        foreach ($cart as $item) {
+            $cartItems[] = [
+                'product_id' => $item['product_id'],
+                'variant_id' => $item['variant_id'] ?? null,
+                'quantity' => $item['quantity'],
+            ];
+        }
+
+        $orderData = [
+            'shipping_name' => $name,
+            'shipping_phone' => $phone,
+            'shipping_email' => $request->input('shipping_email'),
+            'shipping_address' => $request->input('shipping_address') ?: 'Incomplete Address',
+            'shipping_city' => $request->input('shipping_city') ?: 'Dhaka',
+            'order_type' => 'online',
+            'payment_method' => $request->input('payment_method', 'cash_on_delivery'),
+            'shipping_charge' => $shippingCharge,
+            'discount' => $discount,
+            'coupon_code' => $coupon ? $coupon['code'] : null,
+            'notes' => $request->input('notes'),
+        ];
+
+        try {
+            $order = $this->orderService->saveIncompleteOrder($orderData, $cartItems);
+
+            return response()->json([
+                'success' => true,
+                'order_id' => $order?->id,
+                'order_no' => $order?->order_no,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Process Checkout & Place Order
      */
     public function process(Request $request)

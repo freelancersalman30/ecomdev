@@ -86,8 +86,15 @@ class OrderController extends Controller
         $oldStatus = $order->status;
         $newStatus = $request->status;
 
-        // If transitioning to cancelled/returned, restore inventory
-        if (in_array($newStatus, ['cancelled', 'returned']) && ! in_array($oldStatus, ['cancelled', 'returned'])) {
+        // If transitioning from incomplete to an active status, deduct inventory
+        if ($oldStatus === 'incomplete' && ! in_array($newStatus, ['incomplete', 'cancelled', 'returned'])) {
+            foreach ($order->items as $item) {
+                $this->inventoryService->deductStock($item->product_id, $item->variant_id, $item->quantity);
+            }
+        }
+
+        // If transitioning to cancelled/returned from an active status, restore inventory
+        if (in_array($newStatus, ['cancelled', 'returned']) && ! in_array($oldStatus, ['cancelled', 'returned', 'incomplete'])) {
             foreach ($order->items as $item) {
                 $this->inventoryService->restoreStock($item->product_id, $item->variant_id, $item->quantity);
             }
@@ -123,6 +130,12 @@ class OrderController extends Controller
 
         $orders = Order::whereIn('id', $request->order_ids)->get();
         foreach ($orders as $order) {
+            $oldStatus = $order->status;
+            if ($oldStatus === 'incomplete' && ! in_array($request->status, ['incomplete', 'cancelled', 'returned'])) {
+                foreach ($order->items as $item) {
+                    $this->inventoryService->deductStock($item->product_id, $item->variant_id, $item->quantity);
+                }
+            }
             $order->logStatusChange($request->status, 'Bulk status update by '.auth()->user()->name, auth()->id());
             $this->adminNotificationService->notifyStatusChange($order, $request->status, 'Bulk status update');
             OrderEmailService::sendOrderStatusUpdatedNotification($order, $request->status, 'Bulk status update');
@@ -143,7 +156,7 @@ class OrderController extends Controller
 
         foreach ($orders as $order) {
             $customer = $order->customer;
-            if (! in_array($order->status, ['cancelled', 'returned'])) {
+            if (! in_array($order->status, ['cancelled', 'returned', 'incomplete'])) {
                 foreach ($order->items as $item) {
                     $this->inventoryService->restoreStock($item->product_id, $item->variant_id, $item->quantity);
                 }
@@ -162,7 +175,7 @@ class OrderController extends Controller
         $orderNo = $order->order_no;
         $customer = $order->customer;
 
-        if (! in_array($order->status, ['cancelled', 'returned'])) {
+        if (! in_array($order->status, ['cancelled', 'returned', 'incomplete'])) {
             foreach ($order->items as $item) {
                 $this->inventoryService->restoreStock($item->product_id, $item->variant_id, $item->quantity);
             }
