@@ -1,0 +1,48 @@
+name: flutter_ecom_app
+description: "A production-ready Flutter mobile app for Ecomdev Laravel backend."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Networking & REST API
+  dio: ^5.4.3+1
+  
+  # State Management
+  flutter_riverpod: ^2.5.1
+
+  # Local Persistence & Secure Storage
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.2.3
+
+  # UI Components, Carousels & Images
+  cached_network_image: ^3.3.1
+  carousel_slider: ^5.0.0
+  smooth_page_indicator: ^1.1.0
+  shimmer: ^3.0.0
+  google_fonts: ^6.2.1
+  flutter_rating_bar: ^4.0.1
+  badges: ^3.1.2
+  flutter_spinkit: ^5.2.1
+
+  # Barcode / QR Scanner (Warranties & Order Tracking)
+  mobile_scanner: ^5.1.8
+
+  # Internationalization & Formatters
+  intl: ^0.19.0
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

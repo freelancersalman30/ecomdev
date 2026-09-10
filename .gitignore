@@ -25,3 +25,18 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Android & Flutter build artifacts
+*.hprof
+.gradle/
+android_starter/.gradle/
+android_starter/.idea/
+android_starter/build/
+android_starter/app/build/
+android_starter/local.properties
+android_starter/*.hprof
+flutter_app/.dart_tool/
+flutter_app/build/
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-dependencies
+
