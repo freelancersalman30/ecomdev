@@ -64,18 +64,22 @@ class Warranty extends Model
      */
     public function getRemainingDaysAttribute(): int
     {
-        if ($this->status === 'voided') {
+        if ($this->status === 'voided' || empty($this->end_date)) {
             return 0;
         }
 
-        $end = Carbon::parse($this->end_date)->startOfDay();
-        $today = Carbon::now()->startOfDay();
+        try {
+            $end = Carbon::parse($this->end_date)->startOfDay();
+            $today = Carbon::now()->startOfDay();
 
-        if ($today->greaterThan($end)) {
+            if ($today->greaterThan($end)) {
+                return 0;
+            }
+
+            return max(0, (int) $today->diffInDays($end, false));
+        } catch (\Throwable $e) {
             return 0;
         }
-
-        return max(0, (int) $today->diffInDays($end, false));
     }
 
     /**
@@ -99,11 +103,19 @@ class Warranty extends Model
      */
     public function getElapsedPercentageAttribute(): int
     {
-        $start = Carbon::parse($this->start_date)->startOfDay();
-        $totalDays = max(1, $this->warranty_days);
-        $elapsedDays = max(0, Carbon::now()->diffInDays($start));
+        if (empty($this->start_date)) {
+            return 0;
+        }
 
-        return (int) min(100, max(0, round(($elapsedDays / $totalDays) * 100)));
+        try {
+            $start = Carbon::parse($this->start_date)->startOfDay();
+            $totalDays = max(1, (int) ($this->warranty_days ?: 365));
+            $elapsedDays = max(0, Carbon::now()->diffInDays($start));
+
+            return (int) min(100, max(0, round(($elapsedDays / $totalDays) * 100)));
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     /**

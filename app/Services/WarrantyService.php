@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Warranty;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 class WarrantyService
 {
@@ -76,6 +77,10 @@ class WarrantyService
      */
     public function verifyWarranty(string $query): ?Warranty
     {
+        if (! Schema::hasTable('product_warranties')) {
+            return null;
+        }
+
         $cleanQuery = trim($query);
         if (empty($cleanQuery)) {
             return null;

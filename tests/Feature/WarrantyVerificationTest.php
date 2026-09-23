@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\User;
@@ -22,6 +23,25 @@ class WarrantyVerificationTest extends TestCase
         $this->admin = User::firstOrCreate(
             ['email' => 'admin@dreamerspcb.com'],
             ['name' => 'Dreamers Admin', 'password' => Hash::make('password')]
+        );
+
+        $category = Category::firstOrCreate(
+            ['slug' => 'microcontrollers'],
+            ['name' => 'Microcontrollers', 'is_active' => true]
+        );
+
+        Product::firstOrCreate(
+            ['sku' => 'TEST-SKU-001'],
+            [
+                'category_id' => $category->id,
+                'name' => 'ESP32 Development Board',
+                'slug' => 'esp32-development-board',
+                'regular_price' => 500,
+                'sale_price' => 450,
+                'stock_quantity' => 50,
+                'is_active' => true,
+                'warranty' => '1 Year Official Warranty',
+            ]
         );
     }
 

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Warranty;
 use App\Services\WarrantyService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class CustomerWarrantyController extends Controller
 {
@@ -18,6 +20,14 @@ class CustomerWarrantyController extends Controller
     public function index(Request $request)
     {
         $customer = Auth::guard('customer')->user();
+
+        if (! Schema::hasTable('product_warranties')) {
+            $warranties = new LengthAwarePaginator([], 0, 12);
+            $stats = ['total' => 0, 'active' => 0, 'expiring_soon' => 0, 'expired' => 0];
+            $lookupResult = null;
+
+            return view('customer.warranties.index', compact('warranties', 'stats', 'lookupResult'));
+        }
 
         $query = Warranty::with(['product', 'order'])
             ->where(function ($q) use ($customer) {

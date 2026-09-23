@@ -8,6 +8,8 @@ use App\Models\Warranty;
 use App\Services\WarrantyService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Schema;
 
 class WarrantyController extends Controller
 {
@@ -15,6 +17,24 @@ class WarrantyController extends Controller
 
     public function index(Request $request)
     {
+        $tableExists = Schema::hasTable('product_warranties');
+
+        if (! $tableExists) {
+            $warranties = new LengthAwarePaginator([], 0, 20);
+            $kpis = [
+                'total' => 0,
+                'active' => 0,
+                'expiring_soon' => 0,
+                'expired' => 0,
+                'claimed' => 0,
+            ];
+            $products = Product::where('is_active', true)->select('id', 'name', 'sku', 'warranty')->orderBy('name')->get();
+            $verifiedWarranty = null;
+            $tableMissing = true;
+
+            return view('admin.warranties.index', compact('warranties', 'kpis', 'products', 'verifiedWarranty', 'tableMissing'));
+        }
+
         $query = Warranty::with(['product', 'order', 'customer'])->latest();
 
         // Search
@@ -65,7 +85,9 @@ class WarrantyController extends Controller
             'total' => Warranty::count(),
             'active' => Warranty::where('status', 'active')->where('end_date', '>=', $today)->count(),
             'expiring_soon' => Warranty::where('status', 'active')->where('end_date', '>=', $today)->where('end_date', '<=', $in30Days)->count(),
-            'expired' => Warranty::where('status', 'expired')->orWhere(fn ($q) => $q->where('status', 'active')->where('end_date', '<', $today))->count(),
+            'expired' => Warranty::where('status', 'expired')->orWhere(function ($q) use ($today) {
+                $q->where('status', 'active')->where('end_date', '<', $today);
+            })->count(),
             'claimed' => Warranty::where('status', 'claimed')->count(),
         ];
 
@@ -77,7 +99,9 @@ class WarrantyController extends Controller
             $verifiedWarranty = $this->warrantyService->verifyWarranty($request->verify_code);
         }
 
-        return view('admin.warranties.index', compact('warranties', 'kpis', 'products', 'verifiedWarranty'));
+        $tableMissing = false;
+
+        return view('admin.warranties.index', compact('warranties', 'kpis', 'products', 'verifiedWarranty', 'tableMissing'));
     }
 
     public function store(Request $request)
@@ -131,12 +155,12 @@ class WarrantyController extends Controller
                 'found' => true,
                 'warranty_code' => $warranty->warranty_code,
                 'serial_number' => $warranty->serial_number,
-                'product_name' => $warranty->product->name,
+                'product_name' => $warranty->product?->name ?? 'Product Record',
                 'customer_name' => $warranty->customer_name,
                 'customer_phone' => $warranty->customer_phone,
                 'warranty_period' => $warranty->warranty_period,
-                'start_date' => $warranty->start_date->format('Y-m-d'),
-                'end_date' => $warranty->end_date->format('Y-m-d'),
+                'start_date' => $warranty->start_date?->format('Y-m-d') ?? '',
+                'end_date' => $warranty->end_date?->format('Y-m-d') ?? '',
                 'remaining_days' => $warranty->remaining_days,
                 'status' => $warranty->status,
                 'is_valid' => $warranty->is_valid,

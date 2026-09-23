@@ -6,6 +6,27 @@
 @section('content')
 <div x-data="{ createModalOpen: false, editModalOpen: false, activeWarranty: null }" class="space-y-6">
 
+    @if(!empty($tableMissing))
+    <!-- Migration Required Banner -->
+    <div class="rounded-2xl p-5 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm">Database Table Migration Required</h4>
+                <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                    The <code class="px-1.5 py-0.5 rounded bg-amber-200/60 dark:bg-amber-900/60 font-mono font-bold">product_warranties</code> table has not been migrated on this server yet. Run <code class="px-1.5 py-0.5 rounded bg-amber-200/60 dark:bg-amber-900/60 font-mono font-bold">php artisan migrate</code> on your server or terminal.
+                </p>
+            </div>
+        </div>
+        <a href="{{ route('admin.system.tools') }}" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs whitespace-nowrap transition flex items-center gap-1.5">
+            <i data-lucide="terminal" class="w-4 h-4"></i>
+            <span>System Tools</span>
+        </a>
+    </div>
+    @endif
+
     <!-- Top KPI Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
         
@@ -102,7 +123,7 @@
                         </span>
                         <span class="font-mono text-xs text-emerald-400 font-bold">{{ $verifiedWarranty->warranty_code }}</span>
                     </div>
-                    <h3 class="text-base sm:text-lg font-black text-white mt-1">{{ $verifiedWarranty->product->name }}</h3>
+                    <h3 class="text-base sm:text-lg font-black text-white mt-1">{{ $verifiedWarranty->product?->name ?? 'Custom / Deleted Product' }}</h3>
                 </div>
             </div>
 
@@ -132,7 +153,7 @@
             </div>
             <div>
                 <span class="text-[10px] text-slate-400 uppercase font-bold">Coverage Dates</span>
-                <div class="text-slate-200 mt-0.5">{{ $verifiedWarranty->start_date->format('d M Y') }} &rarr; {{ $verifiedWarranty->end_date->format('d M Y') }}</div>
+                <div class="text-slate-200 mt-0.5">{{ $verifiedWarranty->start_date?->format('d M Y') ?? 'N/A' }} &rarr; {{ $verifiedWarranty->end_date?->format('d M Y') ?? 'N/A' }}</div>
                 <div class="text-[10px] text-emerald-400">{{ $verifiedWarranty->warranty_period }}</div>
             </div>
             <div>
@@ -156,7 +177,6 @@
             </div>
         </div>
         @endif
-    </div>
     @endif
 
     <!-- Verification Search & Action Bar -->
@@ -251,8 +271,8 @@
 
                         <!-- Product -->
                         <td class="px-5 py-4">
-                            <div class="font-semibold text-slate-900 dark:text-white line-clamp-1 max-w-xs">{{ $w->product->name }}</div>
-                            <div class="text-[10px] text-slate-400 font-mono">{{ $w->product->sku }} &bull; {{ $w->warranty_period }}</div>
+                            <div class="font-semibold text-slate-900 dark:text-white line-clamp-1 max-w-xs">{{ $w->product?->name ?? 'Custom / Deleted Product' }}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">{{ $w->product?->sku ?? 'N/A' }} &bull; {{ $w->warranty_period }}</div>
                         </td>
 
                         <!-- Customer -->
@@ -263,7 +283,7 @@
 
                         <!-- Dates -->
                         <td class="px-5 py-4">
-                            <div class="text-slate-700 dark:text-slate-300">{{ $w->start_date->format('d M Y') }} &rarr; {{ $w->end_date->format('d M Y') }}</div>
+                            <div class="text-slate-700 dark:text-slate-300">{{ $w->start_date?->format('d M Y') ?? 'N/A' }} &rarr; {{ $w->end_date?->format('d M Y') ?? 'N/A' }}</div>
                             <div class="text-[10px] text-slate-400 font-mono">Duration: {{ $w->warranty_days }} days</div>
                         </td>
 
@@ -300,7 +320,7 @@
                         <td class="px-5 py-4 text-right">
                             <div class="flex items-center justify-end gap-1.5">
                                 <button 
-                                    @click="activeWarranty = {{ json_encode($w) }}; editModalOpen = true" 
+                                    @click="activeWarranty = @js($w); editModalOpen = true" 
                                     class="p-1.5 rounded-lg text-slate-500 hover:text-emerald-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition" 
                                     title="Edit & Extend Warranty">
                                     <i data-lucide="edit-3" class="w-4 h-4"></i>
