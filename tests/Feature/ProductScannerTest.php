@@ -34,9 +34,9 @@ class ProductScannerTest extends TestCase
         $response = $this->actingAs($this->admin, 'web')->get(route('admin.products.scanner'));
 
         $response->assertStatus(200);
-        $response->assertSee('Barcode Scanner & Rapid Auto-Entry Hub');
         $response->assertSee('Auto Stock-In');
-        $response->assertSee('Device Camera Feed');
+        $response->assertSee('Auto-Entry');
+        $response->assertSee('Session Scans');
     }
 
     public function test_scanner_lookup_finds_existing_product_by_barcode_or_sku(): void

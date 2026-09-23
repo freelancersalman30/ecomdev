@@ -4,7 +4,28 @@
 @section('page-title', 'Barcode Scanner & Rapid Auto-Entry Hub')
 
 @push('styles')
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+    #camera-reader {
+        width: 100% !important;
+        border: none !important;
+    }
+    #camera-reader video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 1rem;
+    }
+    #camera-reader__scan_region {
+        background: transparent !important;
+    }
+    .scan-laser {
+        animation: scanBeam 2s ease-in-out infinite alternate;
+    }
+    @keyframes scanBeam {
+        0% { top: 10%; opacity: 0.8; }
+        100% { top: 90%; opacity: 0.8; }
+    }
+</style>
 @endpush
 
 @section('content')
@@ -142,41 +163,82 @@
             </div>
 
             <!-- Interactive Live Camera Scanner Viewport -->
-            <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3.5">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-500 flex items-center justify-center">
                             <i data-lucide="camera" class="w-4 h-4"></i>
                         </div>
-                        <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">Device Camera Feed</h3>
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">Mobile & Web Camera</h3>
                     </div>
-                    <button 
-                        @click="toggleCamera()" 
-                        :class="cameraActive ? 'bg-rose-500 hover:bg-rose-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'"
-                        class="px-3 py-1.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
-                        <i :data-lucide="cameraActive ? 'video-off' : 'video'" class="w-3.5 h-3.5"></i>
-                        <span x-text="cameraActive ? 'Stop Camera' : 'Start Camera'">Start Camera</span>
-                    </button>
+
+                    <div class="flex items-center gap-2">
+                        <!-- Torch / Flashlight Button (when supported) -->
+                        <button 
+                            x-show="cameraActive && torchSupported" 
+                            @click="toggleTorch()" 
+                            :class="isTorchOn ? 'bg-amber-400 text-slate-950 font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white'"
+                            class="p-1.5 rounded-xl transition" 
+                            title="Toggle Flashlight / Torch">
+                            <i data-lucide="flashlight" class="w-4 h-4"></i>
+                        </button>
+
+                        <!-- Flip / Switch Camera Button -->
+                        <button 
+                            x-show="cameraActive && availableCameras.length > 1" 
+                            @click="switchCamera()" 
+                            class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white transition" 
+                            title="Switch Front/Rear Lens">
+                            <i data-lucide="switch-camera" class="w-4 h-4"></i>
+                        </button>
+
+                        <button 
+                            @click="toggleCamera()" 
+                            :class="cameraActive ? 'bg-rose-500 hover:bg-rose-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'"
+                            class="px-3 py-1.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
+                            <i :data-lucide="cameraActive ? 'video-off' : 'video'" class="w-3.5 h-3.5"></i>
+                            <span x-text="cameraActive ? 'Stop Camera' : 'Start Camera'">Start Camera</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Camera Lens Selector (when multiple lenses detected) -->
+                <div x-show="availableCameras.length > 1" class="flex items-center gap-2">
+                    <label class="text-[11px] font-bold text-slate-400 whitespace-nowrap">Camera Lens:</label>
+                    <select 
+                        x-model="selectedCameraId" 
+                        @change="onCameraSelected()" 
+                        class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-[11px] text-slate-800 dark:text-slate-200 outline-none">
+                        <template x-for="cam in availableCameras" :key="cam.id">
+                            <option :value="cam.id" x-text="cam.label || ('Camera ' + cam.id)"></option>
+                        </template>
+                    </select>
                 </div>
 
                 <!-- Camera Container -->
-                <div class="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 aspect-video flex items-center justify-center">
-                    <div id="camera-reader" class="w-full h-full"></div>
+                <div class="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 min-h-[220px] flex items-center justify-center">
+                    <div id="camera-reader" class="w-full h-full min-h-[220px]"></div>
                     
                     <!-- Scan Guide Overlay -->
-                    <div x-show="cameraActive" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-6">
-                        <div class="w-48 h-32 border-2 border-dashed border-emerald-400 rounded-xl relative flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                            <div class="w-full h-0.5 bg-emerald-400/80 animate-pulse"></div>
-                            <span class="absolute -bottom-6 text-[10px] text-emerald-400 font-bold uppercase tracking-wider bg-slate-950/80 px-2 py-0.5 rounded">Align Barcode</span>
+                    <div x-show="cameraActive" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4">
+                        <div class="w-56 h-36 border-2 border-dashed border-emerald-400 rounded-2xl relative flex items-center justify-center shadow-2xl shadow-emerald-500/30 overflow-hidden bg-emerald-500/5">
+                            <div class="absolute left-0 right-0 h-0.5 bg-emerald-400 scan-laser shadow-[0_0_12px_#34d399]"></div>
+                            <span class="absolute bottom-2 text-[9px] text-emerald-300 font-extrabold uppercase tracking-widest bg-slate-950/90 px-2 py-0.5 rounded-md border border-emerald-500/30">Target Barcode / QR</span>
                         </div>
                     </div>
 
                     <!-- Inactive Placeholder -->
                     <div x-show="!cameraActive" class="text-center p-6 space-y-2 text-slate-500">
                         <i data-lucide="qr-code" class="w-12 h-12 mx-auto stroke-1 text-slate-600"></i>
-                        <p class="text-xs font-semibold text-slate-400">Camera scanner is standby.</p>
-                        <p class="text-[11px] text-slate-500">Click "Start Camera" or use a handheld USB laser barcode scanner anytime.</p>
+                        <p class="text-xs font-semibold text-slate-400">Mobile Barcode Scanner Ready</p>
+                        <p class="text-[11px] text-slate-500">Tap "Start Camera" to scan 1D (EAN/UPC/Code128) & 2D (QR) barcodes.</p>
                     </div>
+                </div>
+
+                <!-- HTTPS Notice for Mobile Camera Access -->
+                <div x-show="isInsecureContext" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 text-amber-500"></i>
+                    <span>Mobile browsers require HTTPS to grant camera access. On local testing, use <code>localhost</code> or a secure tunnel.</span>
                 </div>
             </div>
 
@@ -445,6 +507,8 @@
 
 </div>
 
+@push('scripts')
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 function scannerApp() {
     return {
@@ -453,6 +517,13 @@ function scannerApp() {
         soundEnabled: true,
         cameraActive: false,
         html5QrCode: null,
+        availableCameras: [],
+        selectedCameraId: '',
+        currentCameraIndex: 0,
+        torchSupported: false,
+        isTorchOn: false,
+        isInsecureContext: false,
+        isProcessingScan: false,
         manualInput: '',
         scannedItems: [],
         entryModalOpen: false,
@@ -488,11 +559,14 @@ function scannerApp() {
         },
 
         initScanner() {
+            // Check Secure Context (HTTPS or Localhost)
+            if (window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                this.isInsecureContext = true;
+            }
+
             // Setup Global Hardware Gun Scanner Interceptor
             window.addEventListener('keydown', (e) => {
                 const now = Date.now();
-                
-                // If user is currently focused in a text input or textarea (except when buffer is fast scanner speed)
                 const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
                 const isInputActive = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select';
 
@@ -520,8 +594,13 @@ function scannerApp() {
             });
         },
 
-        // Web Audio Synthesizer (No external asset files needed)
+        // Web Audio Synthesizer & Mobile Haptics
         playBeep(freq = 1000, type = 'sine', duration = 0.1) {
+            // Mobile Haptic Vibration
+            if (navigator.vibrate) {
+                try { navigator.vibrate(70); } catch(e) {}
+            }
+
             if (!this.soundEnabled) return;
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -539,11 +618,17 @@ function scannerApp() {
         },
 
         playChime() {
+            if (navigator.vibrate) {
+                try { navigator.vibrate([60, 40, 90]); } catch(e) {}
+            }
             this.playBeep(880, 'sine', 0.08);
             setTimeout(() => this.playBeep(1320, 'sine', 0.12), 90);
         },
 
         playError() {
+            if (navigator.vibrate) {
+                try { navigator.vibrate([150, 60, 150]); } catch(e) {}
+            }
             this.playBeep(300, 'sawtooth', 0.2);
         },
 
@@ -556,52 +641,160 @@ function scannerApp() {
             }
         },
 
-        startCamera() {
+        async startCamera() {
             if (!window.Html5Qrcode) {
-                alert('Camera library loading. Please try again.');
+                alert('Camera library loading. Please check internet connection and try again.');
                 return;
             }
 
-            this.html5QrCode = new Html5Qrcode("camera-reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 160 } };
-
-            this.html5QrCode.start(
-                { facingMode: "environment" },
-                config,
-                (decodedText) => {
-                    const now = Date.now();
-                    if (now - this.lastScanTime > 1500) {
-                        this.lastScanTime = now;
-                        this.processScannedCode(decodedText);
+            try {
+                // Discover cameras
+                const devices = await Html5Qrcode.getCameras();
+                if (devices && devices.length > 0) {
+                    this.availableCameras = devices;
+                    if (!this.selectedCameraId) {
+                        // Prefer rear / back / environment camera
+                        const backCam = devices.find(d => 
+                            d.label.toLowerCase().includes('back') || 
+                            d.label.toLowerCase().includes('rear') ||
+                            d.label.toLowerCase().includes('environment')
+                        );
+                        this.selectedCameraId = backCam ? backCam.id : devices[0].id;
+                        this.currentCameraIndex = devices.indexOf(backCam || devices[0]);
                     }
-                },
-                (errorMessage) => {}
-            ).then(() => {
-                this.cameraActive = true;
-            }).catch(err => {
-                console.error("Camera start error", err);
-                alert("Camera permission denied or camera not found on this device.");
-                this.cameraActive = false;
-            });
-        },
+                }
+            } catch (e) {
+                console.warn("Could not enumerate cameras beforehand", e);
+            }
 
-        stopCamera() {
-            if (this.html5QrCode) {
-                this.html5QrCode.stop().then(() => {
-                    this.cameraActive = false;
-                }).catch(err => {
-                    this.cameraActive = false;
+            // Explicitly support ALL 1D & 2D Barcode Formats for product retail/hardware
+            const formatsToSupport = [
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.CODE_93,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.UPC_E,
+                Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+                Html5QrcodeSupportedFormats.ITF,
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.DATA_MATRIX,
+                Html5QrcodeSupportedFormats.CODABAR
+            ];
+
+            try {
+                if (this.html5QrCode) {
+                    try { await this.html5QrCode.stop(); } catch(e) {}
+                }
+
+                this.html5QrCode = new Html5Qrcode("camera-reader", {
+                    formatsToSupport: formatsToSupport,
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true
+                    },
+                    verbose: false
                 });
-            } else {
+
+                const cameraConfig = this.selectedCameraId 
+                    ? { deviceId: { exact: this.selectedCameraId } }
+                    : { facingMode: "environment" };
+
+                const scanConfig = {
+                    fps: 15,
+                    qrbox: (viewfinderWidth, viewfinderHeight) => {
+                        const minDim = Math.min(viewfinderWidth, viewfinderHeight);
+                        const width = Math.floor(minDim * 0.88);
+                        const height = Math.floor(minDim * 0.55);
+                        return { 
+                            width: Math.max(220, Math.min(width, 340)), 
+                            height: Math.max(120, Math.min(height, 200)) 
+                        };
+                    },
+                    aspectRatio: 1.777778,
+                    showTorchButtonIfSupported: true,
+                    videoConstraints: {
+                        facingMode: "environment",
+                        focusMode: "continuous"
+                    }
+                };
+
+                await this.html5QrCode.start(
+                    cameraConfig,
+                    scanConfig,
+                    (decodedText) => {
+                        const now = Date.now();
+                        if (now - this.lastScanTime > 1200 && !this.isProcessingScan && !this.entryModalOpen) {
+                            this.lastScanTime = now;
+                            this.processScannedCode(decodedText);
+                        }
+                    },
+                    (errorMessage) => {}
+                );
+
+                this.cameraActive = true;
+
+                // Check Torch / Flashlight capabilities
+                setTimeout(() => {
+                    try {
+                        const capabilities = this.html5QrCode.getRunningTrackCapabilities();
+                        this.torchSupported = !!capabilities.torch;
+                    } catch(e) {
+                        this.torchSupported = false;
+                    }
+                }, 800);
+
+            } catch (err) {
+                console.error("Camera start error", err);
                 this.cameraActive = false;
+                alert("Camera permission denied or camera unavailable.\n\nTip: On mobile devices, ensure your browser is allowed camera permissions and you are accessing via HTTPS or localhost.");
             }
         },
 
-        // Master Code Processor
+        async stopCamera() {
+            if (this.html5QrCode) {
+                try {
+                    await this.html5QrCode.stop();
+                } catch(e) {}
+            }
+            this.cameraActive = false;
+            this.isTorchOn = false;
+            this.torchSupported = false;
+        },
+
+        async switchCamera() {
+            if (this.availableCameras.length <= 1) return;
+            this.currentCameraIndex = (this.currentCameraIndex + 1) % this.availableCameras.length;
+            this.selectedCameraId = this.availableCameras[this.currentCameraIndex].id;
+            await this.stopCamera();
+            await this.startCamera();
+        },
+
+        async onCameraSelected() {
+            if (this.cameraActive) {
+                await this.stopCamera();
+                await this.startCamera();
+            }
+        },
+
+        async toggleTorch() {
+            if (!this.html5QrCode || !this.torchSupported) return;
+            this.isTorchOn = !this.isTorchOn;
+            try {
+                await this.html5QrCode.applyVideoConstraints({
+                    advanced: [{ torch: this.isTorchOn }]
+                });
+            } catch(e) {
+                console.warn("Torch toggle error", e);
+            }
+        },
+
+        // Master Code Processor with Concurrency Guard
         async processScannedCode(code) {
             const cleanCode = (code || '').trim();
-            if (!cleanCode) return;
+            if (!cleanCode || this.isProcessingScan) return;
 
+            this.isProcessingScan = true;
             this.manualInput = '';
 
             try {
@@ -617,7 +810,7 @@ function scannerApp() {
                 const data = await res.json();
 
                 if (data.exists) {
-                    this.handleExistingProduct(data.product);
+                    await this.handleExistingProduct(data.product);
                 } else {
                     this.handleNewBarcode(cleanCode, data.suggestion);
                 }
@@ -625,6 +818,10 @@ function scannerApp() {
             } catch (err) {
                 console.error("Lookup failed", err);
                 this.playError();
+            } finally {
+                setTimeout(() => {
+                    this.isProcessingScan = false;
+                }, 500);
             }
         },
 
@@ -633,7 +830,6 @@ function scannerApp() {
             const qty = this.batchIncrement || 1;
 
             if (this.scanMode === 'stock_in') {
-                // Instantly call stock-in API
                 try {
                     const res = await fetch('{{ route("admin.products.scanner.stock_in") }}', {
                         method: 'POST',
@@ -667,7 +863,6 @@ function scannerApp() {
                     this.playError();
                 }
             } else {
-                // Add to batch session table
                 this.playBeep(1000, 'sine', 0.08);
                 this.addOrUpdateSessionLedger({
                     product_id: prod.id,
@@ -688,7 +883,6 @@ function scannerApp() {
         handleNewBarcode(barcode, suggestion) {
             this.playChime();
 
-            // Setup modal product data
             const defaultCat = this.categoriesList.length > 0 ? this.categoriesList[0].id : '';
 
             this.modalProduct = {
@@ -818,4 +1012,5 @@ function scannerApp() {
     };
 }
 </script>
+@endpush
 @endsection
