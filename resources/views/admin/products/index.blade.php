@@ -40,10 +40,17 @@
             @endif
         </form>
 
-        <a href="{{ route('admin.products.create') }}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5 whitespace-nowrap">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>Add New Product / PCB</span>
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.products.scanner') }}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs transition flex items-center gap-1.5 whitespace-nowrap border border-slate-700">
+                <i data-lucide="scan-barcode" class="w-4 h-4 text-emerald-400"></i>
+                <span>Scan & Auto-Entry</span>
+            </a>
+
+            <a href="{{ route('admin.products.create') }}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5 whitespace-nowrap">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Add New Product / PCB</span>
+            </a>
+        </div>
 
     </div>
 

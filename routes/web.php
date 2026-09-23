@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductLayoutController;
+use App\Http\Controllers\Admin\ProductScannerController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController;
@@ -178,6 +179,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::post('/delivery/global-rules', [DeliveryController::class, 'updateGlobalRules'])->name('delivery.global-rules');
 
     // 4. Product & Catalog Management
+    Route::get('products/scanner', [ProductScannerController::class, 'index'])->name('products.scanner');
+    Route::post('products/scanner/lookup', [ProductScannerController::class, 'lookup'])->name('products.scanner.lookup');
+    Route::post('products/scanner/quick-store', [ProductScannerController::class, 'quickStore'])->name('products.scanner.quick_store');
+    Route::post('products/scanner/stock-in', [ProductScannerController::class, 'stockIn'])->name('products.scanner.stock_in');
+    Route::post('products/scanner/batch-commit', [ProductScannerController::class, 'batchCommit'])->name('products.scanner.batch_commit');
+    Route::get('products/{product}/barcode-label', [ProductScannerController::class, 'printBarcode'])->name('products.barcode_label');
+
     Route::get('products/layout', [ProductLayoutController::class, 'index'])->name('products.layout');
     Route::post('products/layout', [ProductLayoutController::class, 'update'])->name('products.layout.update');
     Route::post('products/layout/reset', [ProductLayoutController::class, 'reset'])->name('products.layout.reset');
