@@ -225,6 +225,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
     Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
     Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
+    Route::post('/purchases/{purchase}/pay', [PurchaseController::class, 'storePayment'])->name('purchases.pay');
 
     // 6. Supplier Management
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');

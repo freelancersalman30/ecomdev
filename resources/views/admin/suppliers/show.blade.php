@@ -43,12 +43,26 @@
                 @forelse($supplier->purchases as $po)
                 <div class="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
                     <div>
-                        <div class="font-bold text-xs text-slate-900 dark:text-white code-font">{{ $po->purchase_no }}</div>
+                        <a href="{{ route('admin.purchases.show', $po->id) }}" class="font-bold text-xs text-slate-900 dark:text-white code-font hover:text-emerald-500">
+                            {{ $po->purchase_no }}
+                        </a>
                         <div class="text-[11px] text-slate-400">{{ $po->purchase_date->format('d M Y') }}</div>
+                        <div class="mt-1">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase {{ $po->payment_status === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : ($po->payment_status === 'partial' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300') }}">
+                                {{ $po->payment_status }}
+                            </span>
+                        </div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right space-y-1">
                         <div class="text-xs font-bold text-slate-900 dark:text-white code-font">৳{{ number_format($po->grand_total, 2) }}</div>
-                        <div class="text-[10px] font-bold uppercase text-rose-500">Due: ৳{{ number_format($po->due_amount, 2) }}</div>
+                        <div class="text-[10px] font-bold uppercase {{ $po->due_amount > 0 ? 'text-rose-500' : 'text-slate-400' }}">Due: ৳{{ number_format($po->due_amount, 2) }}</div>
+                        @if($po->due_amount > 0)
+                        <button type="button" 
+                                onclick="paySpecificPo('{{ $po->id }}', '{{ $po->due_amount }}')"
+                                class="px-2 py-0.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 text-[10px] font-bold transition">
+                            Pay This PO
+                        </button>
+                        @endif
                     </div>
                 </div>
                 @empty
@@ -68,7 +82,15 @@
                 <div class="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
                     <div>
                         <div class="font-bold text-xs text-emerald-600 dark:text-emerald-400 code-font">৳{{ number_format($pmt->amount, 2) }}</div>
-                        <div class="text-[11px] text-slate-400">{{ $pmt->payment_date->format('d M Y') }} via {{ strtoupper($pmt->payment_method) }}</div>
+                        <div class="text-[11px] text-slate-400">
+                            {{ $pmt->payment_date->format('d M Y') }} via {{ strtoupper($pmt->payment_method) }}
+                            @if($pmt->purchase_id && $pmt->purchase)
+                                <span class="text-sky-500 font-mono font-semibold">({{ $pmt->purchase->purchase_no }})</span>
+                            @endif
+                        </div>
+                        @if($pmt->reference_no)
+                        <div class="text-[10px] text-slate-400 font-mono">Ref: {{ $pmt->reference_no }}</div>
+                        @endif
                         @if($pmt->notes)
                         <div class="text-[10px] text-slate-500">{{ $pmt->notes }}</div>
                         @endif
@@ -96,8 +118,22 @@
             <form method="POST" action="{{ route('admin.suppliers.pay', $supplier->id) }}" class="space-y-3">
                 @csrf
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Payment Amount (৳) *</label>
-                    <input type="number" step="0.01" name="amount" required max="{{ $supplier->current_due > 0 ? $supplier->current_due : 1000000 }}" placeholder="0.00" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold code-font text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Apply To Purchase (Optional)</label>
+                    <select name="purchase_id" id="modalSupplierPurchaseSelect" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                        <option value="">Auto-allocate across all due (FIFO)</option>
+                        @foreach($supplier->purchases as $po)
+                            @if($po->due_amount > 0)
+                            <option value="{{ $po->id }}">{{ $po->purchase_no }} (Due: ৳{{ number_format($po->due_amount, 2) }})</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-500">Payment Amount (৳) *</label>
+                        <span class="text-[11px] text-rose-500 font-bold">Total Due: ৳{{ number_format($supplier->current_due, 2) }}</span>
+                    </div>
+                    <input type="number" step="0.01" name="amount" id="modalSupplierAmountInput" required min="0.01" value="{{ $supplier->current_due > 0 ? $supplier->current_due : '' }}" placeholder="0.00" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold code-font text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Payment Date *</label>
@@ -132,4 +168,14 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+    function paySpecificPo(purchaseId, dueAmount) {
+        document.getElementById('modalSupplierPurchaseSelect').value = purchaseId;
+        document.getElementById('modalSupplierAmountInput').value = parseFloat(dueAmount).toFixed(2);
+        document.getElementById('paySupplierModal').style.display = 'flex';
+    }
+</script>
+@endpush
 @endsection

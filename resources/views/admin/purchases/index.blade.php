@@ -107,9 +107,19 @@
                             </span>
                         </td>
                         <td class="px-4 py-3.5 text-right">
-                            <a href="{{ route('admin.purchases.show', $purchase->id) }}" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-emerald-500 hover:bg-slate-100 dark:hover:bg-slate-800 inline-flex">
-                                <i data-lucide="eye" class="w-4 h-4"></i>
-                            </a>
+                            <div class="flex items-center justify-end gap-1.5">
+                                @if($purchase->due_amount > 0)
+                                <button type="button" 
+                                        onclick="openPayModal('{{ $purchase->id }}', '{{ $purchase->purchase_no }}', '{{ $purchase->supplier->name ?? 'Supplier' }}', '{{ $purchase->due_amount }}')"
+                                        class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:hover:bg-rose-950/80 dark:text-rose-400 font-bold text-[11px] transition inline-flex items-center gap-1">
+                                    <i data-lucide="dollar-sign" class="w-3.5 h-3.5"></i>
+                                    <span>Pay Due</span>
+                                </button>
+                                @endif
+                                <a href="{{ route('admin.purchases.show', $purchase->id) }}" title="View PO Details" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-emerald-500 hover:bg-slate-100 dark:hover:bg-slate-800 inline-flex">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -128,5 +138,76 @@
         </div>
     </div>
 
+    <!-- QUICK PAY PURCHASE DUE MODAL -->
+    <div id="quickPayModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Pay Due for <span id="modalPoNo" class="code-font text-emerald-500"></span></h3>
+                    <div id="modalSupplierName" class="text-xs text-slate-500"></div>
+                </div>
+                <button type="button" onclick="closePayModal()" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+            </div>
+            
+            <form id="quickPayForm" method="POST" action="" class="space-y-3">
+                @csrf
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-500">Payment Amount (৳) *</label>
+                        <span class="text-[11px] text-rose-500 font-bold">Outstanding: ৳<span id="modalDueText"></span></span>
+                    </div>
+                    <input type="number" step="0.01" name="amount" id="modalAmountInput" required min="0.01" placeholder="0.00" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold code-font text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Payment Date *</label>
+                    <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Payment Method</label>
+                    <select name="payment_method" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                        <option value="bank">Bank Transfer</option>
+                        <option value="cash">Cash In Drawer</option>
+                        <option value="bkash">bKash Merchant</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Cheque / Transaction Ref</label>
+                    <input type="text" name="reference_no" placeholder="TRX-9812903" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Notes</label>
+                    <textarea name="notes" rows="2" placeholder="Payment remarks..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePayModal()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md">
+                        Record Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
+
+@push('scripts')
+<script>
+    function openPayModal(purchaseId, poNo, supplierName, dueAmount) {
+        const form = document.getElementById('quickPayForm');
+        form.action = "{{ url('admin/purchases') }}/" + purchaseId + "/pay";
+        document.getElementById('modalPoNo').innerText = poNo;
+        document.getElementById('modalSupplierName').innerText = 'Supplier: ' + supplierName;
+        document.getElementById('modalDueText').innerText = parseFloat(dueAmount).toFixed(2);
+        document.getElementById('modalAmountInput').value = parseFloat(dueAmount).toFixed(2);
+        document.getElementById('modalAmountInput').max = parseFloat(dueAmount);
+        document.getElementById('quickPayModal').style.display = 'flex';
+    }
+
+    function closePayModal() {
+        document.getElementById('quickPayModal').style.display = 'none';
+    }
+</script>
+@endpush
 @endsection

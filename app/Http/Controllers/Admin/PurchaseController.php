@@ -154,8 +154,33 @@ class PurchaseController extends Controller
 
     public function show(Purchase $purchase)
     {
-        $purchase->load(['supplier', 'items.product', 'items.variant', 'payments', 'createdBy']);
+        $purchase->load(['supplier', 'items.product', 'items.variant', 'payments.createdBy', 'createdBy']);
 
         return view('admin.purchases.show', compact('purchase'));
+    }
+
+    public function storePayment(Request $request, Purchase $purchase)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'payment_date' => 'required|date',
+            'payment_method' => 'required|string',
+        ]);
+
+        $amount = (float) $request->amount;
+
+        $purchase->supplier->payments()->create([
+            'purchase_id' => $purchase->id,
+            'payment_date' => $request->payment_date,
+            'amount' => $amount,
+            'payment_method' => $request->payment_method ?? 'cash',
+            'reference_no' => $request->reference_no,
+            'notes' => $request->notes ?? ('Payment for PO '.$purchase->purchase_no),
+            'created_by' => auth()->id(),
+        ]);
+
+        $purchase->supplier->recalculateDue();
+
+        return redirect()->back()->with('success', 'Payment of TK '.number_format($amount, 2).' recorded for PO '.$purchase->purchase_no);
     }
 }

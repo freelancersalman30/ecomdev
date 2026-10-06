@@ -49,12 +49,14 @@ class SupplierController extends Controller
     public function storePayment(Request $request, Supplier $supplier)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
             'payment_method' => 'required|string',
+            'purchase_id' => 'nullable|exists:purchases,id',
         ]);
 
         $supplier->payments()->create([
+            'purchase_id' => $request->purchase_id,
             'payment_date' => $request->payment_date,
             'amount' => $request->amount,
             'payment_method' => $request->payment_method,
