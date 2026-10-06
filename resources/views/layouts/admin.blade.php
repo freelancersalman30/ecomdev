@@ -116,6 +116,18 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(100, 116, 139, 0.7);
         }
+        /* Completely eliminate horizontal scrollbars in admin sidebar */
+        aside,
+        aside * {
+            max-width: 100%;
+        }
+        aside ::-webkit-scrollbar:horizontal,
+        aside::-webkit-scrollbar:horizontal {
+            display: none !important;
+            height: 0px !important;
+            width: 0px !important;
+            opacity: 0 !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -131,15 +143,15 @@
                 'translate-x-0': mobileSidebarOpen,
                 '-translate-x-full lg:translate-x-0': !mobileSidebarOpen
             }"
-            class="fixed lg:static inset-y-0 left-0 z-40 bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out flex flex-col border-r border-slate-800 shadow-2xl">
+            class="fixed lg:static inset-y-0 left-0 z-40 bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out flex flex-col border-r border-slate-800 shadow-2xl overflow-x-hidden select-none">
             
             <!-- Logo Header -->
-            <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800 bg-slate-950/60">
+            <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800 bg-slate-950/60 overflow-hidden">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 overflow-hidden">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/20 flex-shrink-0">
                         <i data-lucide="cpu" class="w-6 h-6 text-slate-950"></i>
                     </div>
-                    <div x-show="sidebarOpen" x-transition class="whitespace-nowrap">
+                    <div x-show="sidebarOpen" x-transition class="whitespace-nowrap overflow-hidden">
                         <span class="font-extrabold text-base tracking-wider text-white truncate max-w-[150px] block">{{ \App\Models\Setting::get('site_name', 'DREAMERS PCB') }}</span>
                         <span class="block text-[10px] tracking-widest text-emerald-400/80 uppercase font-semibold">Enterprise Hub</span>
                     </div>
@@ -150,51 +162,51 @@
             </div>
 
             <!-- Navigation Links -->
-            <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+            <div class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 space-y-1">
 
                 <div x-show="sidebarOpen" class="px-3 pt-1 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Core Operations</div>
 
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Dashboard Overview</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Dashboard Overview</span>
                 </a>
 
                 <!-- POS System -->
                 <a href="{{ route('admin.pos.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.pos.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white text-emerald-400' }}">
                     <i data-lucide="scan-barcode" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>POS System</span>
-                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-bold">Counter</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">POS System</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-bold flex-shrink-0">Counter</span>
                     </span>
                 </a>
 
                 <!-- Orders Management -->
                 <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.orders.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shopping-bag" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Orders Management</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Orders Management</span>
                 </a>
 
                 <!-- Delivery & Shipping Control -->
                 <a href="{{ route('admin.delivery.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.delivery.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="truck" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>Delivery & Charges</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">Rates</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">Delivery & Charges</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase flex-shrink-0">Rates</span>
                     </span>
                 </a>
 
                 <!-- Product Warranty Verification -->
                 <a href="{{ route('admin.warranties.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.warranties.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-check" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Warranty Verification</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Warranty Verification</span>
                 </a>
 
                 <!-- Notifications & Activity Hub -->
                 <a href="{{ route('admin.notifications.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.notifications.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="bell" class="w-5 h-5 flex-shrink-0 text-amber-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>Notifications</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">Notifications</span>
                         @php
                             $unreadSidebarCount = 0;
                             try {
@@ -204,7 +216,7 @@
                             } catch (\Throwable $e) {}
                         @endphp
                         @if($unreadSidebarCount > 0)
-                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold">{{ $unreadSidebarCount }}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold flex-shrink-0">{{ $unreadSidebarCount }}</span>
                         @endif
                     </span>
                 </a>
@@ -262,22 +274,22 @@
                 <!-- Custom Pages & Policies -->
                 <a href="{{ route('admin.pages.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.pages.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="file-text" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>Custom Pages & Policies</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">Pages</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">Custom Pages & Policies</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase flex-shrink-0">Pages</span>
                     </span>
                 </a>
 
                 <!-- Fraud & Risk Check -->
                 <a href="{{ route('admin.fraud.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.fraud.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-alert" class="w-5 h-5 flex-shrink-0 text-red-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Fraud & Risk Check</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Fraud & Risk Check</span>
                 </a>
 
                 <!-- SMS Marketing -->
                 <a href="{{ route('admin.sms.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.sms.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="message-square" class="w-5 h-5 flex-shrink-0 text-sky-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Custom SMS Marketing</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Custom SMS Marketing</span>
                 </a>
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Finance & Ledgers</div>
@@ -285,13 +297,13 @@
                 <!-- Accounts & Funds -->
                 <a href="{{ route('admin.accounts.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.accounts.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="wallet" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Accounts & Funds</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Accounts & Funds</span>
                 </a>
 
                 <!-- Expenses & Budgeting -->
                 <a href="{{ route('admin.expenses.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.expenses.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="receipt" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Expenses & Budgeting</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Expenses & Budgeting</span>
                 </a>
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Reports & Intelligence</div>
@@ -303,9 +315,9 @@
                             title="Reports (Order, Purchase, Expense, Stock, Profit & Loss)">
                         <div class="flex items-center gap-3">
                             <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
-                            <span x-show="sidebarOpen" class="whitespace-nowrap font-medium">Reports</span>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap font-medium truncate">Reports</span>
                         </div>
-                        <div x-show="sidebarOpen" class="flex items-center gap-1.5">
+                        <div x-show="sidebarOpen" class="flex items-center gap-1.5 flex-shrink-0">
                             <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-bold">5</span>
                             <i data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform text-slate-400"></i>
                         </div>
@@ -341,9 +353,9 @@
                     <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
                         <div class="flex items-center gap-3">
                             <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
-                            <span x-show="sidebarOpen" class="whitespace-nowrap">Users, Roles & CRM</span>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Users, Roles & CRM</span>
                         </div>
-                        <i x-show="sidebarOpen" data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform"></i>
+                        <i x-show="sidebarOpen" data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform flex-shrink-0"></i>
                     </button>
                     <div x-cloak x-show="open && sidebarOpen" class="pl-8 pr-2 py-1 space-y-1 text-xs">
                         <a href="{{ route('admin.users.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.users.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Admin Users</a>
@@ -355,88 +367,88 @@
                 <!-- General Settings -->
                 <a href="{{ route('admin.settings.general') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.general') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="sliders" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">General Settings</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">General Settings</span>
                 </a>
 
                 <!-- Email Configuration -->
                 <a href="{{ route('admin.settings.email') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.email') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="mail" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Email Configuration</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Email Configuration</span>
                 </a>
 
                 <!-- Fraud API Manager -->
                 <a href="{{ route('admin.settings.fraud') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.fraud') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="shield-check" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Fraud API Manager</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Fraud API Manager</span>
                 </a>
 
                 <!-- Third-Party API Hub -->
                 <a href="{{ route('admin.settings.api_hub') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.api_hub') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="plug-zap" class="w-5 h-5 flex-shrink-0 text-emerald-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Third-Party API Hub</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Third-Party API Hub</span>
                 </a>
 
                 <!-- System & Git Version Update -->
                 <a href="{{ route('admin.settings.system_update') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.system_update') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="git-branch" class="w-5 h-5 flex-shrink-0 text-cyan-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>System & Git Update</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300 font-extrabold uppercase">Git</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">System & Git Update</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300 font-extrabold uppercase flex-shrink-0">Git</span>
                     </span>
                 </a>
 
                 <!-- Gemini AI Engine -->
                 <a href="{{ route('admin.settings.gemini') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.gemini*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="sparkles" class="w-5 h-5 flex-shrink-0 text-yellow-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>Gemini AI Engine</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase">AI</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">Gemini AI Engine</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 font-extrabold uppercase flex-shrink-0">AI</span>
                     </span>
                 </a>
 
                 <!-- Product Layout & Display Customizer -->
                 <a href="{{ route('admin.products.layout') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.products.layout*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="layout-grid" class="w-5 h-5 flex-shrink-0 text-sky-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between w-full">
-                        <span>Product Layout & Cards</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-400/20 text-sky-300 font-extrabold uppercase">UI</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">Product Layout & Cards</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-400/20 text-sky-300 font-extrabold uppercase flex-shrink-0">UI</span>
                     </span>
                 </a>
 
                 <!-- Banners & Advertising -->
                 <a href="{{ route('admin.banners.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.banners.*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="image" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Banners & Advertising</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Banners & Advertising</span>
                 </a>
 
                 <!-- SEO Settings -->
                 <a href="{{ route('admin.settings.seo') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.seo') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="globe" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">SEO Settings</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">SEO Settings</span>
                 </a>
 
                 <!-- Sitemap Settings -->
                 <a href="{{ route('admin.settings.sitemap') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.sitemap') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="network" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Sitemap Settings</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Sitemap Settings</span>
                 </a>
 
                 <!-- System Tools & Cache -->
                 <a href="{{ route('admin.system.tools') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.system.tools') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="wrench" class="w-5 h-5 flex-shrink-0"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">System Tools & Cache</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">System Tools & Cache</span>
                 </a>
 
                 <!-- Footer & CMS Info -->
                 <a href="{{ route('admin.settings.footer') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.settings.footer*') ? 'bg-emerald-500 text-slate-950 font-semibold' : 'hover:bg-slate-800 hover:text-white' }}">
                     <i data-lucide="layout" class="w-5 h-5 flex-shrink-0 text-amber-400"></i>
-                    <span x-show="sidebarOpen" class="whitespace-nowrap">Footer Info & CMS</span>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap truncate">Footer Info & CMS</span>
                 </a>
 
             </div>
 
             <!-- Sidebar Footer User Status & Logout -->
-            <div class="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
+            <div class="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between overflow-x-hidden">
                 <div class="flex items-center gap-3 overflow-hidden">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-md flex-shrink-0">
                         {{ strtoupper(substr(Auth::guard('web')->user()->name ?? 'A', 0, 1)) }}
