@@ -222,7 +222,7 @@
                 </a>
 
                 <!-- Product & Catalog -->
-                <div x-data="{ open: {{ request()->routeIs('admin.products.*', 'admin.categories.*', 'admin.brands.*', 'admin.attributes.*') ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ request()->routeIs('admin.products.*', 'admin.categories.*', 'admin.brands.*', 'admin.attributes.*', 'admin.custom-pc-builds.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
                         <div class="flex items-center gap-3">
                             <i data-lucide="package-search" class="w-5 h-5 flex-shrink-0"></i>
@@ -237,11 +237,24 @@
                             <span class="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-emerald-500/20 text-emerald-300">Fast</span>
                         </a>
                         <a href="{{ route('admin.products.create') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.products.create') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Add New Product</a>
+                        <a href="{{ route('admin.custom-pc-builds.index') }}" class="flex items-center justify-between px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.custom-pc-builds.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">
+                            <span>Custom PC Builder</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-indigo-500/20 text-indigo-300">Builder</span>
+                        </a>
                         <a href="{{ route('admin.categories.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.categories.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Categories (3-Tier)</a>
                         <a href="{{ route('admin.brands.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.brands.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Brands</a>
                         <a href="{{ route('admin.attributes.index') }}" class="block px-3 py-1.5 rounded-lg {{ request()->routeIs('admin.attributes.*') ? 'text-emerald-400 font-semibold' : 'hover:text-white' }}">Colors & Sizes / Pinouts</a>
                     </div>
                 </div>
+
+                <!-- Dedicated Custom PC Builder Direct Item -->
+                <a href="{{ route('admin.custom-pc-builds.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition {{ request()->routeIs('admin.custom-pc-builds.*') ? 'bg-emerald-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/20' : 'hover:bg-slate-800 hover:text-white text-indigo-400' }}">
+                    <i data-lucide="cpu" class="w-5 h-5 flex-shrink-0 text-indigo-400 {{ request()->routeIs('admin.custom-pc-builds.*') ? 'text-slate-950' : '' }}"></i>
+                    <span x-show="sidebarOpen" class="whitespace-nowrap flex items-center justify-between flex-1 min-w-0">
+                        <span class="truncate">Custom PC Builder</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full {{ request()->routeIs('admin.custom-pc-builds.*') ? 'bg-slate-950/20 text-slate-950' : 'bg-indigo-400/20 text-indigo-300' }} font-extrabold uppercase flex-shrink-0">Ready PCs</span>
+                    </span>
+                </a>
 
                 <div x-show="sidebarOpen" class="px-3 pt-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Procurement & Vendors</div>
 

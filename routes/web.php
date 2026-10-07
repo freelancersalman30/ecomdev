@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\CustomPcBuildController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeliveryController;
 use App\Http\Controllers\Admin\EmailSettingController;
@@ -237,6 +238,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth:web')->group(function (
     Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
     Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
     Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy');
+
+    // 7.5 Ready Custom PC Builder & Prebuilt Rig Management
+    Route::get('/custom-pc-builds/search-products', [CustomPcBuildController::class, 'searchProducts'])->name('custom-pc-builds.search-products');
+    Route::post('/custom-pc-builds/{customPcBuild}/duplicate', [CustomPcBuildController::class, 'duplicate'])->name('custom-pc-builds.duplicate');
+    Route::get('/custom-pc-builds/{customPcBuild}/quotation', [CustomPcBuildController::class, 'quotation'])->name('custom-pc-builds.quotation');
+    Route::post('/custom-pc-builds/{customPcBuild}/convert-order', [CustomPcBuildController::class, 'convertToOrder'])->name('custom-pc-builds.convert-order');
+    Route::resource('custom-pc-builds', CustomPcBuildController::class);
 
     // 8. Landing Page & Campaign Builder
     Route::resource('landing-pages', LandingPageController::class);
