@@ -34,7 +34,11 @@ class AccountController extends Controller
             ->whereYear('transaction_date', Carbon::now()->year)
             ->sum('amount');
 
-        $recentTransactions = Transaction::with('account')->latest('transaction_date')->take(20)->get();
+        $recentTransactions = Transaction::with('account')
+            ->orderBy('transaction_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->take(20)
+            ->get();
 
         return view('admin.accounts.index', compact(
             'accounts', 'totalBalance', 'thisMonthIn', 'thisMonthOut',

@@ -75,6 +75,7 @@ class PosController extends Controller
             'customer_email' => 'nullable|email|max:191',
             'customer_note' => 'nullable|string|max:500',
             'customer_id' => 'nullable|integer',
+            'account_id' => 'nullable|exists:accounts,id',
         ]);
 
         try {

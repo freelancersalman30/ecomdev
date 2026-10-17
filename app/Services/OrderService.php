@@ -22,18 +22,22 @@ class OrderService
 
     protected AdminNotificationService $adminNotificationService;
 
+    protected AccountTransactionService $accountTransactionService;
+
     public function __construct(
         InventoryService $inventoryService,
         FraudCheckService $fraudCheckService,
         SmsService $smsService,
         WarrantyService $warrantyService,
-        AdminNotificationService $adminNotificationService
+        AdminNotificationService $adminNotificationService,
+        AccountTransactionService $accountTransactionService
     ) {
         $this->inventoryService = $inventoryService;
         $this->fraudCheckService = $fraudCheckService;
         $this->smsService = $smsService;
         $this->warrantyService = $warrantyService;
         $this->adminNotificationService = $adminNotificationService;
+        $this->accountTransactionService = $accountTransactionService;
     }
 
     /**
@@ -386,6 +390,20 @@ class OrderService
                     'note' => 'Order created via '.strtoupper($order->order_type),
                     'changed_by' => auth()->id(),
                 ]);
+            }
+
+            // Record payment in account and transaction ledger if paid_amount > 0
+            if ($paidAmount > 0.0001) {
+                try {
+                    $this->accountTransactionService->creditOrderPayment(
+                        $order,
+                        $paidAmount,
+                        $data['account_id'] ?? null,
+                        "Sale payment collected for Order #{$order->order_no} (".strtoupper($order->order_type).')'
+                    );
+                } catch (\Throwable $e) {
+                    Log::error('Failed to credit account for order #'.$order->order_no.': '.$e->getMessage());
+                }
             }
 
             session()->forget('incomplete_order_id');

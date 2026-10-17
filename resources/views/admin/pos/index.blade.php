@@ -405,7 +405,7 @@
                 <div class="grid grid-cols-3 gap-2">
                     <button 
                         type="button"
-                        @click="paymentMethod = 'pos_cash'"
+                        @click="setPaymentMethod('pos_cash')"
                         :class="paymentMethod === 'pos_cash' ? 'bg-emerald-600 text-white font-bold border-emerald-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'"
                         class="py-2 rounded-xl text-xs border flex flex-col items-center gap-1 transition">
                         <i data-lucide="banknote" class="w-4 h-4"></i>
@@ -413,7 +413,7 @@
                     </button>
                     <button 
                         type="button"
-                        @click="paymentMethod = 'bkash'"
+                        @click="setPaymentMethod('bkash')"
                         :class="paymentMethod === 'bkash' ? 'bg-pink-600 text-white font-bold border-pink-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'"
                         class="py-2 rounded-xl text-xs border flex flex-col items-center gap-1 transition">
                         <i data-lucide="smartphone" class="w-4 h-4"></i>
@@ -421,12 +421,25 @@
                     </button>
                     <button 
                         type="button"
-                        @click="paymentMethod = 'pos_card'"
+                        @click="setPaymentMethod('pos_card')"
                         :class="paymentMethod === 'pos_card' ? 'bg-indigo-600 text-white font-bold border-indigo-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'"
                         class="py-2 rounded-xl text-xs border flex flex-col items-center gap-1 transition">
                         <i data-lucide="credit-card" class="w-4 h-4"></i>
                         <span>Card / POS</span>
                     </button>
+                </div>
+
+                <!-- Deposit Account Selection -->
+                <div class="pt-1.5 pb-1">
+                    <div class="flex items-center justify-between text-[11px] mb-1">
+                        <span class="font-semibold text-slate-600 dark:text-slate-400">Deposit Account:</span>
+                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">Credits Available Balance</span>
+                    </div>
+                    <select x-model="selectedAccountId" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-emerald-500">
+                        @foreach($accounts as $acc)
+                        <option value="{{ $acc->id }}">{{ $acc->name }} (৳{{ number_format($acc->current_balance, 2) }})</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Paid Amount Input & Change Due Calculator -->
@@ -656,9 +669,22 @@
             },
             customersList: @json($customers),
             paymentMethod: 'pos_cash',
+            selectedAccountId: '{{ $accounts->firstWhere("is_default", true)?->id ?? ($accounts->first()?->id ?? 1) }}',
+            accountMappings: {
+                pos_cash: '{{ $accounts->firstWhere("account_type", "cash")?->id ?? ($accounts->firstWhere("is_default", true)?->id ?? 1) }}',
+                bkash: '{{ $accounts->first(fn($a) => str_contains(strtolower($a->name), "bkash"))?->id ?? ($accounts->firstWhere("account_type", "mobile_banking")?->id ?? 1) }}',
+                pos_card: '{{ $accounts->firstWhere("account_type", "bank")?->id ?? ($accounts->first()?->id ?? 1) }}'
+            },
             isProcessing: false,
             variantModalOpen: false,
             selectedProductForVariant: null,
+
+            setPaymentMethod(method) {
+                this.paymentMethod = method;
+                if (this.accountMappings[method]) {
+                    this.selectedAccountId = this.accountMappings[method];
+                }
+            },
 
             resetCustomerToWalkin() {
                 this.selectedCustomerId = '';
@@ -864,6 +890,7 @@
                     customer_city: hasCustomerDetails ? this.customer.city.trim() : null,
                     customer_email: hasCustomerDetails ? this.customer.email.trim() : null,
                     customer_note: hasCustomerDetails ? this.customer.note.trim() : null,
+                    account_id: this.selectedAccountId ? Number(this.selectedAccountId) : null,
                 };
 
                 try {

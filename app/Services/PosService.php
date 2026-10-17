@@ -77,7 +77,7 @@ class PosService
             'shipping_charge' => (float) ($payload['shipping_charge'] ?? 0),
             'paid_amount' => (float) ($payload['paid_amount'] ?? 0),
             'payment_method' => $payload['payment_method'] ?? 'pos_cash',
-            'account_id' => $payload['account_id'] ?? 1,
+            'account_id' => ! empty($payload['account_id']) ? (int) $payload['account_id'] : null,
             'admin_note' => 'POS Terminal Sale. Cashier: '.(auth()->user()->name ?? 'Admin'),
         ];
 

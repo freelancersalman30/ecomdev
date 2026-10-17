@@ -149,8 +149,104 @@
                         <span class="code-font">৳{{ number_format($order->due_amount, 2) }}</span>
                     </div>
                     @endif
+                    <div class="flex justify-between text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800">
+                        <span>Payment Method:</span>
+                        <span class="font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">{{ str_replace('_', ' ', $order->payment_method) }}</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Fund Account:</span>
+                        <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ $order->account->name ?? 'Cash in Counter / Default' }}</span>
+                    </div>
                 </div>
             </div>
+
+            @if($order->due_amount > 0 && !in_array($order->status, ['cancelled', 'returned']))
+            <!-- Collect Payment Form -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-emerald-500/30 dark:border-emerald-500/20 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Collect Due Payment</span>
+                    </h3>
+                    <span class="text-xs font-bold text-rose-500 code-font">Due: ৳{{ number_format($order->due_amount, 2) }}</span>
+                </div>
+
+                <form method="POST" action="{{ route('admin.orders.payment', $order->id) }}" class="space-y-3">
+                    @csrf
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Amount to Collect (৳) *</label>
+                            <input type="number" step="0.01" name="amount" value="{{ $order->due_amount }}" max="{{ $order->due_amount }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-emerald-600 code-font outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Deposit Account *</label>
+                            <select name="account_id" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-emerald-500">
+                                @foreach($accounts as $acc)
+                                <option value="{{ $acc->id }}" {{ ($order->account_id == $acc->id || ($order->account_id === null && $acc->is_default)) ? 'selected' : '' }}>
+                                    {{ $acc->name }} (৳{{ number_format($acc->current_balance, 2) }})
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Payment Method</label>
+                            <select name="payment_method" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-emerald-500">
+                                <option value="cash_on_delivery" {{ $order->payment_method === 'cash_on_delivery' ? 'selected' : '' }}>Cash / COD</option>
+                                <option value="bkash" {{ $order->payment_method === 'bkash' ? 'selected' : '' }}>bKash</option>
+                                <option value="nagad" {{ $order->payment_method === 'nagad' ? 'selected' : '' }}>Nagad</option>
+                                <option value="pos_card" {{ $order->payment_method === 'pos_card' ? 'selected' : '' }}>Bank / Card</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Payment Note (Optional)</label>
+                        <input type="text" name="note" placeholder="e.g. Courier COD cash remittance / partial customer payment" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none focus:border-emerald-500">
+                    </div>
+                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Confirm Payment & Credit Available Balance</span>
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            @php
+                $orderTransactions = \App\Models\Transaction::where('source_type', 'order')->where('source_id', $order->id)->latest()->get();
+            @endphp
+            @if($orderTransactions->isNotEmpty())
+            <!-- Account & Ledger Credit History -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="wallet" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Account Fund Ledger (Available Balance Updates)</span>
+                    </h3>
+                    <span class="text-[10px] text-slate-400 font-mono">{{ $orderTransactions->count() }} Entry</span>
+                </div>
+                <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                    @foreach($orderTransactions as $tx)
+                    <div class="py-2.5 flex items-center justify-between gap-2">
+                        <div>
+                            <div class="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase {{ $tx->type === 'credit' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' }}">
+                                    {{ $tx->type }}
+                                </span>
+                                <span>{{ $tx->account->name ?? 'Account' }}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">{{ $tx->note }}</div>
+                            <div class="text-[10px] font-mono text-slate-400">{{ $tx->created_at->format('d M Y, h:i A') }}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold code-font {{ $tx->type === 'credit' ? 'text-emerald-500' : 'text-rose-500' }}">
+                                {{ $tx->type === 'credit' ? '+' : '-' }}৳{{ number_format($tx->amount, 2) }}
+                            </div>
+                            <div class="text-[10px] text-slate-400">Balance: ৳{{ number_format($tx->balance_after, 2) }}</div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
 
             <!-- Order Status Pipeline Update Form -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">

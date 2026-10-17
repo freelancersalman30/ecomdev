@@ -229,8 +229,13 @@
                             ৳{{ number_format($trx->balance_after, 2) }}
                         </td>
                         <td class="p-3.5 text-slate-500 dark:text-slate-400">
-                            {{ $trx->note ?? '-' }}
-                            @if($trx->reference_no)
+                            @if($trx->source_type === 'order' && $trx->source_id)
+                            <a href="{{ route('admin.orders.show', $trx->source_id) }}" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 hover:underline mr-1" title="View Order">
+                                <span>Order #{{ $trx->reference_no ?? $trx->source_id }}</span>
+                            </a>
+                            @endif
+                            <span>{{ $trx->note ?? '-' }}</span>
+                            @if($trx->reference_no && $trx->source_type !== 'order')
                             <span class="ml-1 text-[10px] font-mono text-slate-400">Ref: {{ $trx->reference_no }}</span>
                             @endif
                         </td>
